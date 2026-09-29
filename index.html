@@ -421,6 +421,10 @@
             *, *::before, *::after { animation: none !important; transition: none !important; }
         }
 
+        .tut-focus { outline: 3px solid #fde047 !important; outline-offset: 2px; border-radius: 8px; }
+        .tut-panel-top { top: calc(env(safe-area-inset-top, 0px) + 3.25rem); bottom: auto; }
+        .tut-panel-bottom { bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem); top: auto; }
+
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: #3b3531; border-radius: 4px; }
     </style>
@@ -474,6 +478,17 @@
 
             <!-- メニュー 4行式リスト（縦並びで余白を最適化） -->
             <div class="flex flex-col gap-2.5 my-auto py-2">
+                <button onclick="startTutorial()" class="w-full p-3 sm:p-3.5 rounded-2xl border border-emerald-950/80 bg-gradient-to-r from-[#0f1a14] via-[#0c130f] to-[#0a100c] hover:border-emerald-700/80 active:scale-98 transition shadow-lg group flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl sm:text-3xl group-hover:scale-110 transition shrink-0">📖</span>
+                        <div class="text-left">
+                            <div class="font-bold text-sm sm:text-base text-stone-100 font-serif">チュートリアル</div>
+                            <div class="text-[10px] sm:text-xs text-stone-400 mt-0.5">操作とルールを順番に学ぶ</div>
+                        </div>
+                    </div>
+                    <span class="text-[10px] px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-800/80 font-bold shrink-0">はじめて</span>
+                </button>
+
                 <button onclick="openCpuSelectModal()" class="w-full p-3 sm:p-3.5 rounded-2xl border border-rose-950/80 bg-gradient-to-r from-[#1c1214] via-[#140e10] to-[#120c0e] hover:border-rose-700/80 active:scale-98 transition shadow-lg group flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <span class="text-2xl sm:text-3xl group-hover:scale-110 transition shrink-0">⚔️</span>
@@ -994,6 +1009,20 @@
     </div>
 
     <!-- 汎用トーストメッセージ -->
+    <div id="tutorialPanel" class="hidden fixed left-1/2 z-40 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 rounded-2xl border border-amber-600/80 bg-[#161311]/95 p-3 shadow-2xl backdrop-blur-sm tut-panel-bottom">
+        <div class="flex items-center justify-between text-[10px] text-amber-400 font-mono">
+            <span>📖 チュートリアル <span id="tutStepNo">1</span> / <span id="tutStepTotal">1</span></span>
+            <button onclick="toggleTutorialPanelPos()" class="px-1.5 py-0.5 rounded border border-stone-700 text-stone-300 hover:bg-stone-800">↕ 位置</button>
+        </div>
+        <div id="tutTitle" class="mt-1 font-bold text-sm text-amber-100 font-serif"></div>
+        <p id="tutText" class="mt-1 text-xs leading-relaxed text-stone-200"></p>
+        <div class="mt-2.5 grid grid-cols-3 gap-2">
+            <button id="tutPrevBtn" onclick="tutorialStep(-1)" class="py-2 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs hover:bg-stone-800 active:scale-95 disabled:opacity-40">◀ 前へ</button>
+            <button onclick="exitTutorial()" class="py-2 rounded-xl border border-stone-700 bg-stone-950 text-stone-400 font-bold text-xs hover:bg-stone-800 active:scale-95">終了</button>
+            <button id="tutNextBtn" onclick="tutorialStep(1)" class="py-2 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs hover:brightness-110 active:scale-95">次へ ▶</button>
+        </div>
+    </div>
+
     <div id="gameToast" role="status" aria-live="polite" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none px-3.5 py-1.5 rounded-full bg-stone-950/95 border border-amber-600/80 text-amber-200 text-xs font-serif shadow-2xl opacity-0 transition-opacity duration-300">
         メッセージ
     </div>
@@ -1094,6 +1123,127 @@
     let connectSynth = null;
     let defeatSynth = null;
     let clashSynth = null;
+
+    /* ================= チュートリアル（前へ／次へで進む解説モード） ================= */
+    let tutorialActive = false;
+    let tutIndex = 0;
+
+    const TUT_STEPS = (() => {
+        const P = (id, o) => { const d = ALL_PIECES_DATA.find(x => x.id === id); return { ...d, dir: [...d.dir], owner: o, currentPower: d.power, shieldTurns: 0 }; };
+        const M = (n, ic, p) => ({ type: 'monster', id: 'm' + p, name: n, icon: ic, power: p, basePower: p, owner: 'neutral', dir: [] });
+        const bs = dead => ({ ...(dead ? {} : { 2: M('焦げ魔', '👹', 8) }), 20: M('煮崩れ鬼', '👺', 11), 24: M('出汁啜り', '👻', 13) });
+        const ch = () => ({ 7: P(2, 'player'), 12: P(1, 'player'), 17: P(5, 'player') });
+        const H2 = [1, 5, 3, 6], H4 = [3, 6, 7, 4];
+        return [
+            { t: 'ようこそ、鍋の陣へ', x: '盤面の見方から配置・連結・攻撃・道具・ボス強襲・勝敗までを、前へ／次へで順番に確認できます。まず画面上部のスコア表示です。赤があなた、青が相手の得点、「ボス残」は中立ボスの残り数です。', b: () => bs(), f: ['playerScoreDisplay', 'opponentScoreDisplay', 'bossRemainingCount'] },
+            { t: '中立ボス', x: '紫の駒は中立ボスです。円の数字がパワーで、これを上回る連結パワーを隣接させると討伐でき、そのパワーぶんの得点を得ます。ボスは相手にも倒されます。', b: () => bs(), c: [2, 20, 24] },
+            { t: '手札の見方', x: '手札は4枚。上段は★（レア度）と連結タイプ、中央が具材、下の数字が基本パワーです。数字の周りの▲は矢印の向きで、その方向にだけ連結できます。山札の残り枚数は右上に出ます。', b: () => bs(), f: ['playerHandSlots'], top: 1 },
+            { t: '具材を選ぶ', x: '手札をタップして選びます。下の説明バーに名前・方向・効果が出て、「詳細」で全文を確認できます。もう一度タップすると選択を解除します。', b: () => bs(), s: 0, f: ['playerHandSlots', 'selectedCardBrief'], top: 1 },
+            { t: '空きマスに置く', x: '選択中に空きマスをタップすると半透明のプレビューが出ます。別の空きマスをタップすれば置き直せます。ここではボスの真下に置いています。', b: () => bs(), s: 0, v: 7, c: [7] },
+            { t: '配置の確定', x: 'プレビューは「アタックへ進む」を押すと確定し、山札から1枚補充されます。具材を置けるのは1ターンに1枚です。ターンエンドを押しても確定します。', b: () => ({ ...bs(), 7: P(2, 'player') }), h: H2, f: ['mainPhaseActionBtn'], top: 1 },
+            { t: '相手の手番', x: 'あなたのターンを終えると、相手（CPU）が具材を置き、条件が合えば攻撃してきます。相手の具材は青色です。なお後攻の1ターン目は攻撃できません。', b: () => ({ ...bs(), 7: P(2, 'player'), 22: P(1, 'opponent') }), h: H2, o: 1 },
+            { t: '連結の条件', x: '2ターン目。たまごの↓と、置こうとしている大根の↑が向き合うと「連結」します。矢印が向き合った同じ持ち主の具材だけが連結します。', b: () => ({ ...bs(), 7: P(2, 'player'), 22: P(1, 'opponent') }), h: H2, n: 2, s: 0, v: 12, c: [7, 12] },
+            { t: '連結パワー', x: '連結した具材は光る線で結ばれ、盤面の数字は連結全体の合計（3+4=7）になります。ボス焦げ魔のパワー8にはまだ届きません。', b: () => ({ ...bs(), 7: P(2, 'player'), 12: P(1, 'player'), 22: P(1, 'opponent') }), h: [5, 3, 6, 7], n: 2, c: [7, 12] },
+            { t: '攻撃できるマス', x: 'しらたきを加えた3枚連結の合計は9。ボス（8）を上回ったので紫に光り、討伐できます。さらに、しらたきの↓と相手の大根の↑が向き合い、9が相手の4を上回るので「激突!」も可能です。', b: () => ({ ...bs(), ...ch(), 22: P(1, 'opponent') }), h: H4, n: 2, c: [2, 22] },
+            { t: 'アタックフェーズ', x: '「アタックへ進む」で戦闘に移ると配置ができなくなり、光ったマスをタップして攻撃します。攻撃は何度でもでき、終わったら「ターンエンド」を押します。', b: () => ({ ...bs(), ...ch(), 22: P(1, 'opponent') }), h: H4, n: 2, a: 1, c: [2, 22] },
+            { t: 'ボスを討伐', x: '光ったボスをタップして討伐します。ボスのパワー8がそのまま得点（+8）になり、ボス残りが減ります。', b: () => ({ ...bs(1), ...ch(), 22: P(1, 'opponent') }), h: H4, n: 2, a: 1, ps: 8, br: 2 },
+            { t: '相手に激突', x: '相手の具材を撃破すると、その具材のパワー（4）が相手の得点から引かれます（0未満にはなりません）。同じ条件で、相手もあなたの具材を攻撃してきます。撃破されるとあなたの得点が減ります。', b: () => ({ ...bs(1), ...ch() }), h: H4, n: 2, a: 1, ps: 8, br: 2 },
+            { t: '秘伝の道具', x: '「道具」から使えます。鍋蓋は2ターン自軍1体を攻撃から守り、日本酒・割り箸・土鍋・お皿は矢印を1つ追加します。黄金トング（相手の攻撃を3ターン封殺）と伝説の調味料（自軍全体のパワー+4）は4ターン目から使えます。回数には限りがあります。', b: () => ({ ...bs(1), ...ch() }), h: H4, n: 2, a: 1, ps: 8, br: 2, f: ['openItemBoxBtn'], top: 1 },
+            { t: 'ボス強襲', x: '3の倍数のターンの開始時、ボスが残っていると強襲が起きます。ピンクに点滅する3〜5マスの具材は、敵味方を問わず破壊されます。ここでは真ん中の大根が狙われています。', b: () => ({ ...bs(1), ...ch() }), h: H4, n: 3, ps: 8, br: 2, lost: 0, d: [3, 12, 21] },
+            { t: '連結が切れると', x: '大根が破壊され、連結が切れました。たまごとしらたきは単独に戻り、パワーは3と2に下がります。強襲は避けられないので、連結を一本に頼りすぎないのがコツです。', b: () => { const o = { ...bs(1), ...ch() }; delete o[12]; return o; }, h: H4, n: 3, ps: 8, br: 2, lost: 1 },
+            { t: '勝敗とレート', x: '終局は、①ボスを全員倒す ②盤面が埋まる ③互いの手札が尽きる、のいずれかです。得点が多い方が勝ちで、勝つとレートが上がり、負けると下がります。「完了」を押して、CPU対戦に挑戦しましょう！', b: () => { const o = { ...bs(1), ...ch() }; delete o[12]; return o; }, h: H4, n: 3, ps: 8, br: 2, lost: 1 }
+        ];
+    })();
+
+    function tutorialNudge() {
+        if (tutorialActive) showToast('説明の「次へ」ボタンで進みます');
+    }
+
+    function startTutorial() {
+        initAudioEngine();
+        battleId++;
+        battleOver = false;
+        inputLocked = true;      // 盤面は説明専用（操作は前へ／次へのみ）
+        tutorialActive = true;
+        isPlayerFirst = true;
+        tutIndex = 0;
+        playerItemStocks = JSON.parse(JSON.stringify(INITIAL_ITEM_STOCKS));
+        document.getElementById('opponentNameDisplay').textContent = 'チュートリアル相手';
+        switchScreen('battle');
+        document.getElementById('globalBackBtn').innerHTML = '◀ 終了';
+        document.getElementById('tutStepTotal').textContent = TUT_STEPS.length;
+        document.getElementById('tutorialPanel').classList.remove('hidden');
+        renderTutorialStep();
+    }
+
+    function renderTutorialStep() {
+        const st = TUT_STEPS[tutIndex];
+        boardCells = Array(25).fill(null);
+        Object.entries(st.b()).forEach(([k, v]) => { boardCells[+k] = v; });
+        playerHand = [...(st.h || [2, 1, 5, 3])];
+        const placed = boardCells.filter(c => c && c.owner === 'player').length;
+        playerDrawPile = Array(Math.max(0, 6 - placed - (st.lost || 0))).fill(0);
+        playerScore = st.ps || 0;
+        opponentScore = st.os || 0;
+        bossRemaining = st.br ?? 3;
+        turnCount = st.n || 1;
+        isPlayerTurn = !st.o;
+        currentPhase = st.a ? 'attack' : 'standby';
+        selectedHandIndex = st.s ?? null;
+        previewPlacementIndex = st.v ?? null;
+        selectedActiveItemId = null;
+        dangerTargetCells = st.d || [];
+
+        updateBattleStatusHeader();
+        updatePhaseUI();
+        renderPlayerHand();
+        renderBattleBoard();
+        updateSelectedCardBrief(st.s != null ? ALL_PIECES_DATA.find(x => x.id === playerHand[st.s]) : null);
+
+        document.querySelectorAll('.tut-focus').forEach(e => e.classList.remove('tut-focus'));
+        (st.f || []).forEach(id => document.getElementById(id)?.classList.add('tut-focus'));
+        const cells = document.getElementById('battleBoardGrid').children;
+        (st.c || []).forEach(i => cells[i]?.classList.add('tut-focus'));
+
+        const panel = document.getElementById('tutorialPanel');
+        panel.classList.toggle('tut-panel-top', !!st.top);
+        panel.classList.toggle('tut-panel-bottom', !st.top);
+        document.getElementById('tutStepNo').textContent = tutIndex + 1;
+        document.getElementById('tutTitle').textContent = st.t;
+        document.getElementById('tutText').textContent = st.x;
+        document.getElementById('tutPrevBtn').disabled = tutIndex === 0;
+        document.getElementById('tutNextBtn').textContent = tutIndex === TUT_STEPS.length - 1 ? '完了 ✓' : '次へ ▶';
+    }
+
+    function tutorialStep(d) {
+        if (!tutorialActive) return;
+        playSound('click');
+        const next = tutIndex + d;
+        if (next < 0) return;
+        if (next >= TUT_STEPS.length) { exitTutorial(); return; }
+        tutIndex = next;
+        renderTutorialStep();
+    }
+
+    function toggleTutorialPanelPos() {
+        const panel = document.getElementById('tutorialPanel');
+        panel.classList.toggle('tut-panel-top');
+        panel.classList.toggle('tut-panel-bottom');
+    }
+
+    function exitTutorial() {
+        tutorialActive = false;
+        inputLocked = false;
+        battleOver = true;
+        battleId++;
+        dangerTargetCells = [];
+        selectedHandIndex = null;
+        previewPlacementIndex = null;
+        boardCells = Array(25).fill(null);
+        document.getElementById('tutorialPanel').classList.add('hidden');
+        document.querySelectorAll('.tut-focus').forEach(e => e.classList.remove('tut-focus'));
+        switchScreen('home');
+    }
 
     /* ================= 共通ヘルパー（タイマー・制限・保存・音声解禁） ================= */
     function later(fn, ms) {
@@ -1374,6 +1524,7 @@
     }
 
     function handleGlobalBackClick() {
+        if (tutorialActive) { exitTutorial(); return; }
         if (currentScreen === 'battle') {
             openSurrenderModal();
         } else if (currentScreen === 'deck') {
@@ -1843,7 +1994,7 @@
     }
 
     function handleMainPhaseButtonClick() {
-        if (!isPlayerTurn || battleOver || inputLocked) return;
+        if (!isPlayerTurn || battleOver || inputLocked) { tutorialNudge(); return; }
 
         if (currentPhase === 'standby') {
             if (previewPlacementIndex !== null && selectedHandIndex !== null) {
@@ -2128,7 +2279,7 @@
     }
 
     function selectHandPiece(index) {
-        if (!isPlayerTurn || battleOver || inputLocked) return;
+        if (!isPlayerTurn || battleOver || inputLocked) { tutorialNudge(); return; }
         if (currentPhase !== 'standby') {
             playSound('error');
             showToast("アタックフェーズ中は具材の配置はできません");
@@ -2164,7 +2315,7 @@
     }
 
     function handleCellClick(index) {
-        if (!isPlayerTurn || battleOver || inputLocked) return;
+        if (!isPlayerTurn || battleOver || inputLocked) { tutorialNudge(); return; }
         const cell = boardCells[index];
 
         if (selectedActiveItemId) {
@@ -2395,7 +2546,7 @@
             return;
         }
         if (!isPlayerTurn || battleOver || inputLocked) {
-            showToast('今は道具を使えません');
+            showToast(tutorialActive ? '説明の「次へ」ボタンで進みます' : '今は道具を使えません');
             return;
         }
         initAudioEngine();
@@ -2453,7 +2604,7 @@
     }
 
     function activateItem(itemId) {
-        if (!isPlayerTurn || battleOver || inputLocked) return;
+        if (!isPlayerTurn || battleOver || inputLocked) { tutorialNudge(); return; }
         const item = playerItemStocks[itemId];
         if (!item || item.count <= 0) return;
         if (item.minTurn && turnCount < item.minTurn) {
