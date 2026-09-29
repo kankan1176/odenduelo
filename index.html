@@ -483,7 +483,7 @@
                 </div>
             </div>
 
-            <!-- メニュー 4行式リスト（縦並びで余白を最適化） -->
+            <!-- メニュー 4行式リスト -->
             <div class="flex flex-col gap-2.5 my-auto py-2">
                 <button onclick="openCpuSelectModal()" class="w-full p-3 sm:p-3.5 rounded-2xl border border-rose-950/80 bg-gradient-to-r from-[#1c1214] via-[#140e10] to-[#120c0e] hover:border-rose-700/80 active:scale-98 transition shadow-lg group flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -501,7 +501,7 @@
                         <span class="text-2xl sm:text-3xl group-hover:scale-110 transition shrink-0">🛜</span>
                         <div class="text-left">
                             <div class="font-bold text-sm sm:text-base text-stone-100 font-serif">友達と遊ぶ【オンライン対戦】</div>
-                            <div class="text-[10px] sm:text-xs text-stone-400 mt-0.5">個別合言葉対局（リアルタイム同期）</div>
+                            <div class="text-[10px] sm:text-xs text-stone-400 mt-0.5">個別合言葉対局（リアルタイム通信）</div>
                         </div>
                     </div>
                     <span class="text-[10px] px-2.5 py-1 rounded-lg bg-amber-950 text-amber-300 border border-amber-800/80 font-bold shrink-0">合言葉対局</span>
@@ -590,7 +590,7 @@
                 </div>
             </div>
 
-            <!-- 中央：5×5 盤面（隙間限定コネクタ線SVGは背面 z-[4] に配置） -->
+            <!-- 中央：5×5 盤面（連結線SVGは駒の下レイヤー z-[4] に配置） -->
             <div class="my-auto py-1 flex items-center justify-center">
                 <div class="board-container">
                     <div id="battleBoardGrid" class="w-full h-full grid grid-cols-5 grid-rows-5 gap-1 p-1 bg-[#100d0c] border border-[#2b2420] rounded-xl relative shadow-2xl z-0">
@@ -610,18 +610,18 @@
                     <span class="text-[10px] font-mono">山札: <span id="drawPileCount" class="text-amber-400 font-bold">6</span></span>
                 </div>
 
-                <!-- 手札スロット（数字に▲が付いた形式） -->
+                <!-- 手札スロット -->
                 <div id="playerHandSlots" class="grid grid-cols-4 gap-1.5 h-[72px] sm:h-[82px]">
                     <!-- JS描画 -->
                 </div>
 
-                <!-- 説明文バー（重なり防止） -->
+                <!-- 説明文バー -->
                 <div id="selectedCardBrief" class="min-h-[28px] text-[10px] text-stone-300 bg-[#191513] px-2.5 py-1 rounded-lg border border-[#2b2522] flex items-center justify-between">
                     <span id="selectedCardBriefText" class="truncate">具材を選択してください</span>
                     <button id="showSelectedCardDetailBtn" onclick="showSelectedPieceDetailModal()" class="text-amber-400 underline hidden text-[9px] shrink-0 ml-1">詳細</button>
                 </div>
 
-                <!-- アクションボタン（1:2の押しやすい配置） -->
+                <!-- アクションボタン -->
                 <div class="grid grid-cols-3 gap-2 pt-0.5">
                     <button id="openItemBoxBtn" onclick="openItemBoxModal()" class="col-span-1 py-2.5 rounded-xl border border-amber-700/80 bg-gradient-to-br from-amber-950 to-[#261709] text-amber-200 font-bold text-xs hover:brightness-110 active:scale-95 flex items-center justify-center gap-1 shadow-md transition">
                         <span>🧰</span>
@@ -636,7 +636,6 @@
 
         <!-- ================= 3. デッキ編成画面 ================= -->
         <section id="deckScreen" class="flex-1 hidden flex-col justify-between overflow-hidden" style="display: none;">
-            <!-- 上段：デッキ枠（5列×2段＝10枚） -->
             <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-2 shrink-0 space-y-1">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-1.5">
@@ -659,13 +658,11 @@
                     <span class="font-mono text-amber-400"><span id="deckSelectedCountText">10</span>/10 選択中</span>
                 </div>
 
-                <!-- 5列×2段の10枠グリッド -->
                 <div id="deckSlotsGrid" class="grid grid-cols-5 gap-1 p-1 bg-stone-950/90 rounded-lg border border-stone-800/80 min-h-[128px]">
                     <!-- JS描画 -->
                 </div>
             </div>
 
-            <!-- 下段：全20種具材一覧（2カラムグリッド） -->
             <div class="flex-1 overflow-hidden flex flex-col pt-1.5 pb-1">
                 <div class="text-[10px] text-stone-400 mb-1 flex items-center justify-between shrink-0 px-0.5">
                     <span>具材一覧（全20種 / タップで選抜・解除）</span>
@@ -675,7 +672,6 @@
                 </div>
             </div>
 
-            <!-- 最下部アクションバー -->
             <div class="pt-1.5 shrink-0 border-t border-stone-800/80 flex items-center gap-2">
                 <button onclick="switchScreen('home')" class="flex-1 py-2 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs hover:bg-stone-800 active:scale-95 transition flex items-center justify-center gap-1">
                     ◀ ホームへ戻る
@@ -690,7 +686,30 @@
 
     <!-- ================= モーダル群 ================= -->
 
-    <!-- 降参確認モーダル（サレンダー） -->
+    <!-- オンライン対戦待機モーダル -->
+    <div id="onlineWaitingModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3">
+        <div class="bg-[#161311] border border-amber-800/90 rounded-2xl w-full max-w-sm p-4 space-y-4 shadow-2xl text-center">
+            <div class="w-12 h-12 mx-auto rounded-full border-2 border-amber-500/80 border-t-transparent animate-spin"></div>
+            <div>
+                <div class="font-bold text-base text-amber-100 font-serif">対戦相手を待っています...</div>
+                <p class="text-xs text-stone-300 mt-1 leading-relaxed">
+                    合言葉: <span id="waitingRoomCodeBadge" class="font-mono text-amber-400 font-bold px-2 py-0.5 bg-stone-950 rounded border border-stone-800">oden777</span>
+                </p>
+                <p class="text-[11px] text-stone-400 mt-2">相手が入室すると自動で対局が始まります。<br>招待URLを友達に共有してください。</p>
+            </div>
+
+            <div class="flex flex-col gap-2 pt-1">
+                <button onclick="copyOnlineShareUrl()" class="py-2.5 rounded-xl border border-amber-700/80 bg-stone-900 text-amber-200 font-bold text-xs hover:bg-stone-800 active:scale-95 transition">
+                    📋 招待URLをコピー
+                </button>
+                <button onclick="cancelOnlineWaiting()" class="py-2 rounded-xl border border-stone-700 bg-stone-950 text-stone-400 font-bold text-xs hover:bg-stone-900 active:scale-95 transition">
+                    待機を中止して戻る
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 降参確認モーダル -->
     <div id="surrenderModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
         <div class="bg-[#161311] border border-rose-900/80 rounded-2xl w-full max-w-sm p-4 space-y-3 shadow-2xl text-center">
             <div class="text-3xl">🏳️</div>
@@ -779,7 +798,7 @@
         </div>
     </div>
 
-    <!-- オンライン対戦合言葉モーダル（Firebase Realtime Database対応） -->
+    <!-- オンライン対戦合言葉モーダル -->
     <div id="onlineMatchModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
         <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm p-4 space-y-3 shadow-2xl">
             <div class="flex items-center justify-between pb-2 border-b border-stone-800">
@@ -809,7 +828,6 @@
                 </button>
             </div>
 
-            <!-- Firebase 接続情報（シンガポールリージョン設定済み） -->
             <div class="pt-2 border-t border-stone-800 text-[10px] text-stone-400">
                 <div class="flex items-center justify-between">
                     <span>📡 通信状態: <span id="firebaseStatusIndicator" class="text-amber-400">未接続</span></span>
@@ -828,7 +846,7 @@
         </div>
     </div>
 
-    <!-- 初手確認・先攻後攻選択モーダル（数字に▲が付いた形式） -->
+    <!-- 初手確認・先攻後攻選択モーダル -->
     <div id="turnOrderSelectModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
         <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm p-4 space-y-3 shadow-2xl">
             <div class="flex items-center gap-2 pb-2 border-b border-stone-800">
@@ -1080,9 +1098,11 @@
     let roomRef = null;
     let currentRoomCode = null;
     let onlinePlayerRole = 'host'; // 'host' (先攻/赤) または 'guest' (後攻/青)
+    let matchStartTime = 0;
+    let sharedMonstersData = null;
 
     let currentScreen = 'home';
-    let currentBattleMode = 'cpu'; // 'cpu' または 'online'
+    let currentBattleMode = 'cpu';
     let cpuDifficulty = 'take';
 
     let playerName = "名無しの出汁";
@@ -1138,7 +1158,7 @@
     let defeatSynth = null;
     let clashSynth = null;
 
-    /* ================= 共通ヘルパー（タイマー・保存・音声解禁） ================= */
+    /* ================= 共通ヘルパー ================= */
     function later(fn, ms) {
         const id = battleId;
         setTimeout(() => { if (id === battleId) fn(); }, ms);
@@ -1421,11 +1441,13 @@
         document.getElementById('phaseCutinOverlay')?.classList.remove('active');
 
         if (currentBattleMode === 'online' && roomRef) {
-            roomRef.child('events').push({
+            sendNetworkEvent({
                 type: 'surrender',
-                by: onlinePlayerRole,
-                timestamp: Date.now()
+                by: onlinePlayerRole
             });
+            setTimeout(() => {
+                if (roomRef) { roomRef.off(); roomRef = null; }
+            }, 500);
         }
 
         if (!alreadyOver) {
@@ -1702,7 +1724,7 @@
 
     function copyOnlineShareUrl() {
         playSound('click');
-        const code = document.getElementById('onlineRoomCodeInput').value.trim() || 'oden777';
+        const code = currentRoomCode || document.getElementById('onlineRoomCodeInput').value.trim() || 'oden777';
         const url = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(code)}`;
         if (navigator.clipboard) {
             navigator.clipboard.writeText(url).then(() => {
@@ -1717,7 +1739,7 @@
 
     function startOnlineRoomMatch() {
         if (!initFirebaseClient()) return;
-        const code = document.getElementById('onlineRoomCodeInput').value.trim();
+        const code = document.getElementById('onlineRoomCodeInput').value.trim().toLowerCase();
         if (!code) {
             showToast("合言葉を入力してください");
             return;
@@ -1725,14 +1747,19 @@
 
         currentRoomCode = code;
         currentBattleMode = 'online';
+        matchStartTime = Date.now();
         closeOnlineMatchModal();
-        showToast(`合言葉「${currentRoomCode}」の部屋へ接続中...`);
+
+        showToast(`合言葉「${currentRoomCode}」の部屋を確認中...`);
 
         roomRef = firebaseDb.ref(`rooms/${currentRoomCode}`);
         roomRef.once('value').then(snap => {
             const data = snap.val();
-            if (!data || !data.host) {
-                // ホスト（部屋主）として部屋を生成
+            const now = Date.now();
+            const isStale = data && data.updatedAt && (now - data.updatedAt > 3600000); // 1時間以上経過した部屋は再利用
+
+            if (!data || !data.host || data.status === 'finished' || isStale) {
+                // ホスト（部屋主）として部屋を作成
                 onlinePlayerRole = 'host';
                 isPlayerFirst = true; // ホストが先攻
                 isPlayerTurn = true;
@@ -1749,6 +1776,8 @@
                     return { pos, name: monsterNames[idx], icon: monsterIcons[idx], power: pVal };
                 });
 
+                sharedMonstersData = initialMonsters;
+
                 roomRef.set({
                     host: { name: playerName, rate: playerRate, ready: true },
                     guest: null,
@@ -1756,44 +1785,84 @@
                     monsters: initialMonsters,
                     currentTurnRole: 'host',
                     turnCount: 1,
-                    events: {}
+                    events: {},
+                    createdAt: now,
+                    updatedAt: now
+                }).then(() => {
+                    showOnlineWaitingModal(currentRoomCode);
+                    setupRoomListeners();
                 });
 
-                showToast("相手の入室を待機中...（招待URLを共有できます）");
-                setupRoomListeners();
-                startBattlePreparation();
-            } else if (!data.guest) {
+            } else if (!data.guest || data.status === 'waiting') {
                 // ゲスト（参加者）として合流
                 onlinePlayerRole = 'guest';
                 isPlayerFirst = false; // ゲストが後攻
                 isPlayerTurn = false;
+                sharedMonstersData = data.monsters || [];
 
                 roomRef.child('guest').set({ name: playerName, rate: playerRate, ready: true });
                 roomRef.child('status').set('playing');
+                roomRef.child('updatedAt').set(now);
 
                 showToast("部屋に合流しました！対局を開始します！");
                 setupRoomListeners();
+                
+                // ゲスト側は即座に対局画面へ
                 startBattlePreparation();
+
             } else {
-                showToast("この合言葉の部屋はすでに満員です。別の合言葉をお試しください");
+                showToast("この合言葉の部屋は対局中です。別の合言葉をお試しください");
                 switchScreen('home');
             }
         }).catch(err => {
-            console.error(err);
-            showToast("通信エラーが発生しました。DBルールを確認してください");
+            console.error("Firebase access error:", err);
+            if (err.message && err.message.includes('PERMISSION_DENIED')) {
+                alert("【Firebaseアクセス拒否】\nRealtime Databaseの「ルール」設定を確認してください。\n.read と .write を true に設定することで接続できます。");
+            } else {
+                showToast("通信エラーが発生しました。DBのURLを確認してください");
+            }
         });
+    }
+
+    function showOnlineWaitingModal(code) {
+        document.getElementById('waitingRoomCodeBadge').textContent = code;
+        document.getElementById('onlineWaitingModal').classList.remove('hidden');
+        document.getElementById('onlineWaitingModal').classList.add('flex');
+    }
+
+    function closeOnlineWaitingModal() {
+        document.getElementById('onlineWaitingModal').classList.remove('flex');
+        document.getElementById('onlineWaitingModal').classList.add('hidden');
+    }
+
+    function cancelOnlineWaiting() {
+        closeOnlineWaitingModal();
+        if (roomRef && onlinePlayerRole === 'host') {
+            roomRef.remove();
+            roomRef.off();
+            roomRef = null;
+        }
+        showToast("待機をキャンセルしました");
+        switchScreen('home');
     }
 
     function setupRoomListeners() {
         if (!roomRef) return;
 
-        // 対戦相手の情報同期
+        // ルーム状態の監視（相手の入室やステータス）
         roomRef.on('value', snap => {
             const data = snap.val();
             if (!data) return;
 
             if (onlinePlayerRole === 'host') {
-                if (data.guest) {
+                if (data.guest && data.status === 'playing') {
+                    // ゲストが入室した ➔ 待機モーダルを閉じてホストも対局開始
+                    const waitingModal = document.getElementById('onlineWaitingModal');
+                    if (!waitingModal.classList.contains('hidden')) {
+                        closeOnlineWaitingModal();
+                        showToast(`相手【${data.guest.name}】が入室しました！対局開始！`);
+                        startBattlePreparation();
+                    }
                     document.getElementById('opponentNameDisplay').textContent = `${data.guest.name} (LIVE)`;
                 } else {
                     document.getElementById('opponentNameDisplay').textContent = "待機中...";
@@ -1809,6 +1878,7 @@
         roomRef.child('events').on('child_added', snap => {
             const ev = snap.val();
             if (!ev || ev.by === onlinePlayerRole) return; // 自分の送信したイベントは無視
+            if (ev.timestamp && ev.timestamp < matchStartTime - 5000) return; // 古い対局イベントを無視
 
             handleIncomingNetworkEvent(ev);
         });
@@ -1819,11 +1889,11 @@
         eventPayload.by = onlinePlayerRole;
         eventPayload.timestamp = Date.now();
         roomRef.child('events').push(eventPayload);
+        roomRef.child('updatedAt').set(Date.now());
     }
 
     function handleIncomingNetworkEvent(ev) {
         if (ev.type === 'place') {
-            // 相手が具材を配置
             const p = ALL_PIECES_DATA.find(x => x.id === ev.pieceId);
             if (p) {
                 boardCells[ev.cellIndex] = {
@@ -1839,7 +1909,6 @@
                 renderBattleBoard();
             }
         } else if (ev.type === 'clash') {
-            // 相手がこちらの駒を激突・撃破
             const pl = boardCells[ev.cellIndex];
             if (pl) {
                 playerScore = Math.max(0, playerScore - pl.power);
@@ -1852,7 +1921,6 @@
                 checkBattleEndCondition();
             }
         } else if (ev.type === 'defeat_monster') {
-            // 相手が中立ボスを討伐
             const monster = boardCells[ev.cellIndex];
             if (monster) {
                 opponentScore += monster.power;
@@ -1865,13 +1933,11 @@
                 checkBattleEndCondition();
             }
         } else if (ev.type === 'item_global') {
-            // 相手が全体道具を使用
             if (ev.itemId === 'tongs') {
                 opponentAttackDisabledTurns = 3;
                 showToast("🔱 相手が【黄金トング】を発動！3ターンの間こちらの攻撃が封殺されます！");
             }
         } else if (ev.type === 'item_target') {
-            // 相手が味方駒にアイテムを使用
             const oppPiece = boardCells[ev.cellIndex];
             if (oppPiece) {
                 if (ev.itemId === 'shield') oppPiece.shieldTurns = 2;
@@ -1880,15 +1946,12 @@
                 renderBattleBoard();
             }
         } else if (ev.type === 'turn_end') {
-            // 相手がターンエンド ➔ 自分の手番開始
             switchTurnToPlayer();
         } else if (ev.type === 'boss_strike') {
-            // ホスト主導のボス強襲破壊マス通知
             if (onlinePlayerRole === 'guest') {
                 applyBossStrikeTargetCells(ev.targetCells);
             }
         } else if (ev.type === 'surrender') {
-            // 相手が降参
             showToast("相手が対局を降参しました！あなたの不戦勝です！");
             playerScore += 50;
             checkBattleEndCondition();
@@ -1963,7 +2026,21 @@
         playerItemStocks = JSON.parse(JSON.stringify(INITIAL_ITEM_STOCKS));
         opponentItemStocks = JSON.parse(JSON.stringify(INITIAL_ITEM_STOCKS));
 
-        if (currentBattleMode === 'cpu') {
+        if (currentBattleMode === 'online' && sharedMonstersData && sharedMonstersData.length > 0) {
+            // オンライン対戦：ホストが生成した共通の中立ボス3体を配置
+            sharedMonstersData.forEach((m, idx) => {
+                boardCells[m.pos] = {
+                    type: 'monster',
+                    id: `monster_${idx}`,
+                    name: m.name,
+                    icon: m.icon,
+                    power: m.power,
+                    basePower: m.power,
+                    owner: 'neutral',
+                    dir: []
+                };
+            });
+        } else {
             const diffLabel = cpuDifficulty === 'matsu' ? '松' : (cpuDifficulty === 'ume' ? '梅' : '竹');
             document.getElementById('opponentNameDisplay').textContent = `相手（CPU・${diffLabel}）`;
 
@@ -1985,26 +2062,6 @@
                     owner: 'neutral',
                     dir: []
                 };
-            });
-        } else if (currentBattleMode === 'online' && roomRef) {
-            // オンライン同期：ホストが部屋に書き込んだ中立ボスを読み込む
-            roomRef.child('monsters').once('value').then(snap => {
-                const list = snap.val();
-                if (list) {
-                    list.forEach((m, idx) => {
-                        boardCells[m.pos] = {
-                            type: 'monster',
-                            id: `monster_${idx}`,
-                            name: m.name,
-                            icon: m.icon,
-                            power: m.power,
-                            basePower: m.power,
-                            owner: 'neutral',
-                            dir: []
-                        };
-                    });
-                    renderBattleBoard();
-                }
             });
         }
 
@@ -3350,7 +3407,6 @@
             }).observe(boardEl);
         }
 
-        // URLパラメータ（?room=xxx）で開かれた場合は自動でオンライン対戦画面を開く
         const urlParams = new URLSearchParams(window.location.search);
         const roomFromUrl = urlParams.get('room');
         if (roomFromUrl) {
