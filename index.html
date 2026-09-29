@@ -1100,6 +1100,7 @@
     let onlinePlayerRole = 'host'; // 'host' (先攻/赤) または 'guest' (後攻/青)
     let matchStartTime = 0;
     let sharedMonstersData = null;
+    let isCleaningUpRoom = false;
 
     let currentScreen = 'home';
     let currentBattleMode = 'cpu';
@@ -1164,6 +1165,7 @@
         setTimeout(() => { if (id === battleId) fn(); }, ms);
     }
 
+    // 後攻プレイヤーの最初の手番（通算ターン2）は攻撃制限
     function isPlayerRestrictedTurn() {
         return !isPlayerFirst && turnCount === 2;
     }
@@ -1445,9 +1447,7 @@
                 type: 'surrender',
                 by: onlinePlayerRole
             });
-            setTimeout(() => {
-                if (roomRef) { roomRef.off(); roomRef = null; }
-            }, 500);
+            leaveAndCleanupRoom();
         }
 
         if (!alreadyOver) {
@@ -1673,13 +1673,19 @@
                 firebase.initializeApp(currentFirebaseConfig);
             }
             firebaseDb = firebase.database();
-            document.getElementById('firebaseStatusIndicator').textContent = "接続可能";
-            document.getElementById('firebaseStatusIndicator').className = "text-emerald-400 font-bold";
+            const ind = document.getElementById('firebaseStatusIndicator');
+            if (ind) {
+                ind.textContent = "接続可能";
+                ind.className = "text-emerald-400 font-bold";
+            }
             return true;
         } catch (e) {
             console.error("Firebase init error:", e);
-            document.getElementById('firebaseStatusIndicator').textContent = "接続エラー";
-            document.getElementById('firebaseStatusIndicator').className = "text-rose-400 font-bold";
+            const ind = document.getElementById('firebaseStatusIndicator');
+            if (ind) {
+                ind.textContent = "接続エラー";
+                ind.className = "text-rose-400 font-bold";
+            }
             showToast("Firebaseの初期化に失敗しました。URLをご確認ください");
             return false;
         }
@@ -1748,6 +1754,7 @@
         currentRoomCode = code;
         currentBattleMode = 'online';
         matchStartTime = Date.now();
+        isCleaningUpRoom = false;
         closeOnlineMatchModal();
 
         showToast(`合言葉「${currentRoomCode}」の部屋を確認中...`);
@@ -1756,10 +1763,11 @@
         roomRef.once('value').then(snap => {
             const data = snap.val();
             const now = Date.now();
-            const isStale = data && data.updatedAt && (now - data.updatedAt > 3600000); // 1時間以上経過した部屋は再利用
+            const isStale = data && data.updatedAt && (now - data.updatedAt > 1800000); // 30分以上経過した部屋は再利用
+            const isRoomEmpty = !data || !data.presence || Object.keys(data.presence).length === 0;
 
-            if (!data || !data.host || data.status === 'finished' || isStale) {
-                // ホスト（部屋主）として部屋を作成
+            if (!data || isRoomEmpty || isStale || data.status === 'finished') {
+                // ホスト（部屋主）として部屋を新設
                 onlinePlayerRole = 'host';
                 isPlayerFirst = true; // ホストが先攻
                 isPlayerTurn = true;
@@ -1783,12 +1791,16 @@
                     guest: null,
                     status: 'waiting',
                     monsters: initialMonsters,
-                    currentTurnRole: 'host',
                     turnCount: 1,
                     events: {},
+                    presence: { host: true },
                     createdAt: now,
                     updatedAt: now
                 }).then(() => {
+                    // 切断時の自動解散設定（ホスト待機中なら部屋ごと削除）
+                    roomRef.onDisconnect().remove();
+                    roomRef.child('presence/host').onDisconnect().remove();
+
                     showOnlineWaitingModal(currentRoomCode);
                     setupRoomListeners();
                 });
@@ -1800,18 +1812,22 @@
                 isPlayerTurn = false;
                 sharedMonstersData = data.monsters || [];
 
+                // ホスト側の部屋即死 onDisconnect をキャンセルし、presence管理に切り替え
+                roomRef.onDisconnect().cancel();
+                roomRef.child('presence/host').onDisconnect().remove();
+                roomRef.child('presence/guest').onDisconnect().remove();
+
                 roomRef.child('guest').set({ name: playerName, rate: playerRate, ready: true });
+                roomRef.child('presence/guest').set(true);
                 roomRef.child('status').set('playing');
                 roomRef.child('updatedAt').set(now);
 
                 showToast("部屋に合流しました！対局を開始します！");
                 setupRoomListeners();
-                
-                // ゲスト側は即座に対局画面へ
                 startBattlePreparation();
 
             } else {
-                showToast("この合言葉の部屋は対局中です。別の合言葉をお試しください");
+                showToast("この部屋は満員または対局中です。別の合言葉をお試しください");
                 switchScreen('home');
             }
         }).catch(err => {
@@ -1837,26 +1853,47 @@
 
     function cancelOnlineWaiting() {
         closeOnlineWaitingModal();
-        if (roomRef && onlinePlayerRole === 'host') {
-            roomRef.remove();
-            roomRef.off();
-            roomRef = null;
-        }
+        leaveAndCleanupRoom();
         showToast("待機をキャンセルしました");
         switchScreen('home');
+    }
+
+    // 部屋から退出し、必要に応じて部屋を自動解散
+    function leaveAndCleanupRoom() {
+        if (!roomRef || isCleaningUpRoom) return;
+        isCleaningUpRoom = true;
+
+        const currentRef = roomRef;
+        const role = onlinePlayerRole;
+
+        // 自分のpresenceを削除
+        currentRef.child(`presence/${role}`).remove();
+        currentRef.child('presence').once('value').then(snap => {
+            const pres = snap.val() || {};
+            delete pres[role];
+            // 参加者が全員いなくなった場合は部屋データを完全に削除
+            if (Object.keys(pres).length === 0) {
+                currentRef.remove();
+            }
+        }).finally(() => {
+            currentRef.off();
+            roomRef = null;
+            currentRoomCode = null;
+            isCleaningUpRoom = false;
+        });
     }
 
     function setupRoomListeners() {
         if (!roomRef) return;
 
-        // ルーム状態の監視（相手の入室やステータス）
+        // ルーム状態の監視（相手の入退室・切断・ステータス）
         roomRef.on('value', snap => {
+            if (isCleaningUpRoom) return;
             const data = snap.val();
             if (!data) return;
 
             if (onlinePlayerRole === 'host') {
                 if (data.guest && data.status === 'playing') {
-                    // ゲストが入室した ➔ 待機モーダルを閉じてホストも対局開始
                     const waitingModal = document.getElementById('onlineWaitingModal');
                     if (!waitingModal.classList.contains('hidden')) {
                         closeOnlineWaitingModal();
@@ -1864,7 +1901,7 @@
                         startBattlePreparation();
                     }
                     document.getElementById('opponentNameDisplay').textContent = `${data.guest.name} (LIVE)`;
-                } else {
+                } else if (data.status === 'waiting') {
                     document.getElementById('opponentNameDisplay').textContent = "待機中...";
                 }
             } else {
@@ -1874,11 +1911,31 @@
             }
         });
 
-        // アクションイベント通知（具材配置・激突・討伐・道具・ターンエンド）
+        // 接続プレゼンス（切断検知による自動解散）の監視
+        roomRef.child('presence').on('value', snap => {
+            if (isCleaningUpRoom || battleOver) return;
+            const pres = snap.val();
+            if (!pres) return;
+
+            const otherRole = onlinePlayerRole === 'host' ? 'guest' : 'host';
+            const isPlaying = currentScreen === 'battle';
+
+            // 対戦中に相手の接続が完全に切断された場合
+            if (isPlaying && !pres[otherRole]) {
+                showToast("⚠️ 相手との接続が切断されました。対局を終了します");
+                later(() => {
+                    battleOver = true;
+                    leaveAndCleanupRoom();
+                    switchScreen('home');
+                }, 2000);
+            }
+        });
+
+        // アクションイベント通知（具材配置・激突・討伐・道具・ターンエンド・ボス強襲）
         roomRef.child('events').on('child_added', snap => {
             const ev = snap.val();
-            if (!ev || ev.by === onlinePlayerRole) return; // 自分の送信したイベントは無視
-            if (ev.timestamp && ev.timestamp < matchStartTime - 5000) return; // 古い対局イベントを無視
+            if (!ev || ev.by === onlinePlayerRole) return;
+            if (ev.timestamp && ev.timestamp < matchStartTime - 5000) return;
 
             handleIncomingNetworkEvent(ev);
         });
@@ -1946,11 +2003,12 @@
                 renderBattleBoard();
             }
         } else if (ev.type === 'turn_end') {
+            // 相手からのターン終了通知：ターン数を完全同期して自分の手番へ
+            turnCount = ev.nextTurn || (turnCount + 1);
             switchTurnToPlayer();
         } else if (ev.type === 'boss_strike') {
-            if (onlinePlayerRole === 'guest') {
-                applyBossStrikeTargetCells(ev.targetCells);
-            }
+            // 相手（手番主）からのボス強襲マス通知を受信
+            applyBossStrikeTargetCells(ev.targetCells);
         } else if (ev.type === 'surrender') {
             showToast("相手が対局を降参しました！あなたの不戦勝です！");
             playerScore += 50;
@@ -2928,6 +2986,10 @@
         previewPlacementIndex = null;
         selectedActiveItemId = null;
 
+        // 相手に手番が移る（ターン数+1）
+        turnCount++;
+
+        updateBattleStatusHeader();
         updatePhaseUI();
         renderBattleBoard();
         renderPlayerHand();
@@ -2935,7 +2997,11 @@
         if (currentBattleMode === 'cpu') {
             later(executeCpuTurn, 1000);
         } else if (currentBattleMode === 'online') {
-            sendNetworkEvent({ type: 'turn_end' });
+            // 同期先のターン数を指定して送信
+            sendNetworkEvent({
+                type: 'turn_end',
+                nextTurn: turnCount
+            });
         }
     }
 
@@ -2943,27 +3009,25 @@
         if (checkBattleEndCondition()) return;
 
         tickShieldTurns('opponent');
-        turnCount++;
         isPlayerTurn = true;
         hasPlacedPieceThisTurn = false;
         currentPhase = 'standby';
-        inputLocked = (turnCount % 3 === 0 && bossRemaining > 0);
+
+        // 3の倍数ターンかつ中立ボス生存ならボス強襲フェーズへ
+        const isStrikeTurn = (turnCount % 3 === 0 && bossRemaining > 0);
+        inputLocked = isStrikeTurn;
 
         updateBattleStatusHeader();
         updatePhaseUI();
 
-        if (turnCount % 3 === 0 && bossRemaining > 0) {
-            if (currentBattleMode === 'online' && onlinePlayerRole === 'guest') {
-                // ゲスト側はホストからのボス強襲イベント受信を待機
-            } else {
-                triggerBossRandomStrike(() => {
-                    inputLocked = false;
-                    triggerPhaseCutin('standby', 'スタンバイフェーズ', `TURN ${turnCount} あなたの手番`, '🍱');
-                    showToast(`TURN ${turnCount}: あなたの手番です`);
-                    renderBattleBoard();
-                    renderPlayerHand();
-                });
-            }
+        if (isStrikeTurn) {
+            triggerBossRandomStrike(() => {
+                inputLocked = false;
+                triggerPhaseCutin('standby', 'スタンバイフェーズ', `TURN ${turnCount} あなたの手番`, '🍱');
+                showToast(`TURN ${turnCount}: あなたの手番です`);
+                renderBattleBoard();
+                renderPlayerHand();
+            });
         } else {
             triggerPhaseCutin('standby', 'スタンバイフェーズ', `TURN ${turnCount} あなたの手番`, '🍱');
             showToast(`TURN ${turnCount}: あなたの手番です`);
@@ -2989,7 +3053,8 @@
         const shuffled = shuffleArray(eligibleCells);
         dangerTargetCells = shuffled.slice(0, numTargets);
 
-        if (currentBattleMode === 'online' && onlinePlayerRole === 'host') {
+        // 手番プレイヤーが抽選した被弾マスを相手に共有
+        if (currentBattleMode === 'online') {
             sendNetworkEvent({
                 type: 'boss_strike',
                 targetCells: dangerTargetCells
@@ -3044,7 +3109,7 @@
             dangerTargetCells = [];
             calculateConnectedGroups();
             renderBattleBoard();
-            showToast("💥 相手ホストからのボス強襲が着弾しました！");
+            showToast("💥 ボス強襲が着弾しました！");
             checkBattleEndCondition();
         }, 1100);
     }
@@ -3102,7 +3167,7 @@
 
             if (opponentAttackDisabledTurns > 0) {
                 showToast(`🔱 黄金トングの封印効果中！相手は攻撃を行えません（残${opponentAttackDisabledTurns}ターン）`);
-            } else if (!(turnCount === 1 && isPlayerFirst)) {
+            } else if (!(turnCount === 2 && !isPlayerFirst)) {
                 // 中立ボス討伐
                 for (let i = 0; i < 25; i++) {
                     const c = boardCells[i];
@@ -3176,7 +3241,10 @@
             renderBattleBoard();
 
             if (!checkBattleEndCondition()) {
-                later(switchTurnToPlayer, 1000);
+                later(() => {
+                    turnCount++;
+                    switchTurnToPlayer();
+                }, 1000);
             }
         }, 800);
     }
@@ -3253,6 +3321,9 @@
     function returnToMainMenuFromResult() {
         document.getElementById('resultModal').classList.remove('flex');
         document.getElementById('resultModal').classList.add('hidden');
+        if (currentBattleMode === 'online') {
+            leaveAndCleanupRoom();
+        }
         switchScreen('home');
     }
 
@@ -3260,6 +3331,7 @@
         document.getElementById('resultModal').classList.remove('flex');
         document.getElementById('resultModal').classList.add('hidden');
         if (currentBattleMode === 'online') {
+            leaveAndCleanupRoom();
             startOnlineRoomMatch();
         } else {
             startBattlePreparation();
@@ -3397,6 +3469,13 @@
                 pausedByHidden = false;
                 const settingsOpen = !document.getElementById('settingsModal').classList.contains('hidden');
                 if (!isMuted && !settingsOpen) Tone.Transport.start();
+            }
+        });
+
+        // ページを閉じる・離脱時の自動解散・プレゼンス解除
+        window.addEventListener('beforeunload', () => {
+            if (currentBattleMode === 'online' && roomRef) {
+                leaveAndCleanupRoom();
             }
         });
 
