@@ -90,7 +90,7 @@
             box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
         }
 
-        /* 手札・初手確認用：数字の周りに▲が付くドゥエロ式パワーバッジ */
+        /* 手札用：数字の周りに▲が付くドゥエロ式パワーバッジ */
         .hand-power-wrapper {
             position: relative;
             width: 24px;
@@ -214,6 +214,19 @@
             cursor: pointer;
         }
 
+        /* チュートリアル用 誘導ハイライト枠 */
+        .tut-active-target {
+            border-color: #38bdf8 !important;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.95), inset 0 0 10px rgba(56, 189, 248, 0.5) !important;
+            animation: pulse-border-cyan 0.9s infinite alternate !important;
+            z-index: 35 !important;
+            cursor: pointer;
+        }
+        @keyframes pulse-border-cyan {
+            0% { transform: scale(0.97); filter: brightness(1.1); }
+            100% { transform: scale(1.05); filter: brightness(1.6); }
+        }
+
         /* 中立ボスの強襲ターゲットマス警告 */
         .grid-cell.cell-danger-target {
             border-color: #ec4899 !important;
@@ -240,7 +253,7 @@
             50% { border-color: #fef08a; box-shadow: 0 0 18px rgba(234, 179, 8, 0.95); }
         }
 
-        /* 盤面駒カード（連結線より前面に表示するため z-index: 10 を付与） */
+        /* 盤面駒カード */
         .piece-card {
             width: 100%;
             height: 100%;
@@ -263,8 +276,6 @@
             border: 1.5px solid rgba(56, 189, 248, 0.9);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
         }
-
-        /* 中立ボス：紫（パープル） */
         .piece-monster {
             background: radial-gradient(circle, #2d124d 0%, #150824 100%);
             border: 1.8px solid #a855f7;
@@ -534,15 +545,16 @@
                     <span class="text-[10px] px-2.5 py-1 rounded-lg bg-[#0f2330] text-cyan-300 border border-cyan-800/80 font-bold shrink-0">デッキ編成</span>
                 </button>
 
-                <button onclick="openRulesModal()" class="w-full p-3 sm:p-3.5 rounded-2xl border border-stone-800 bg-gradient-to-r from-[#161413] via-[#110f0e] to-[#0f0d0c] hover:border-stone-600 active:scale-98 transition shadow-lg group flex items-center justify-between">
+                <!-- 実践体験型インタラクティブ・チュートリアル起動ボタン -->
+                <button onclick="startInteractiveTutorial()" class="w-full p-3 sm:p-3.5 rounded-2xl border border-sky-900/60 bg-gradient-to-r from-[#0c1822] via-[#08121a] to-[#050c12] hover:border-sky-500 active:scale-98 transition shadow-lg group flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <span class="text-2xl sm:text-3xl group-hover:scale-110 transition shrink-0">📖</span>
+                        <span class="text-2xl sm:text-3xl group-hover:scale-110 transition shrink-0">🔰</span>
                         <div class="text-left">
-                            <div class="font-bold text-sm sm:text-base text-stone-100 font-serif">説明【ガイド】</div>
-                            <div class="text-[10px] sm:text-xs text-stone-400 mt-0.5">操作・ルールについてはこちら</div>
+                            <div class="font-bold text-sm sm:text-base text-stone-100 font-serif">実践指南【チュートリアル】</div>
+                            <div class="text-[10px] sm:text-xs text-sky-400 mt-0.5">実際の盤面で操作しながら学ぶ手ほどき</div>
                         </div>
                     </div>
-                    <span class="text-[10px] px-2.5 py-1 rounded-lg bg-stone-800 text-stone-300 border border-stone-700 font-bold shrink-0">ガイド</span>
+                    <span class="text-[10px] px-2.5 py-1 rounded-lg bg-sky-950 text-sky-300 border border-sky-800/80 font-bold shrink-0">実戦指南</span>
                 </button>
             </div>
         </section>
@@ -550,6 +562,25 @@
         <!-- ================= 2. バトル画面 ================= -->
         <section id="battleScreen" class="flex-1 hidden flex-col justify-between overflow-hidden" style="display: none;">
             
+            <!-- 実践チュートリアル専用ガイダンスバナー -->
+            <div id="tutorialGuideBar" class="hidden shrink-0 mb-1 p-2 rounded-xl border border-sky-500/80 bg-gradient-to-r from-[#0d1e2e] via-[#091520] to-[#0d1e2e] shadow-lg flex items-center justify-between z-30">
+                <div class="flex items-center gap-2 min-w-0 flex-1">
+                    <span class="text-base shrink-0 animate-bounce">👉</span>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-1.5">
+                            <span id="tutStepLabel" class="text-[9px] px-1.5 py-px rounded bg-sky-950 text-sky-300 border border-sky-800 font-bold font-mono">Step 1/6</span>
+                            <span id="tutStepTitle" class="text-[11px] font-bold text-sky-200 font-serif truncate">具材の配置</span>
+                        </div>
+                        <div id="tutStepInstruction" class="text-[10px] text-stone-200 leading-tight mt-0.5">
+                            手札の【大根】をタップし、中央の光るマスに置いてみましょう！
+                        </div>
+                    </div>
+                </div>
+                <button onclick="quitTutorialPrompt()" class="ml-2 px-2 py-1 rounded bg-stone-900 border border-stone-700 text-stone-400 text-[10px] hover:text-rose-400 shrink-0">
+                    ✕ 中断
+                </button>
+            </div>
+
             <!-- フェーズ切替カットイン演出 -->
             <div id="phaseCutinOverlay" class="cutin-container">
                 <div id="phaseCutinBanner" class="cutin-banner cutin-standby">
@@ -993,50 +1024,6 @@
         </div>
     </div>
 
-    <!-- ルール解説モーダル -->
-    <div id="rulesModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
-        <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm max-h-[85vh] p-4 flex flex-col justify-between shadow-2xl">
-            <div class="flex items-center justify-between pb-2 border-b border-stone-800">
-                <div class="flex items-center gap-2">
-                    <span class="text-xl">📖</span>
-                    <span class="font-bold text-sm text-stone-100 font-serif">おでん道の作法</span>
-                </div>
-                <button onclick="closeRulesModal()" class="text-stone-400 hover:text-stone-200 text-lg">✕</button>
-            </div>
-
-            <div class="flex-1 overflow-y-auto py-2 space-y-2.5 text-xs text-stone-300 leading-relaxed pr-1">
-                <div>
-                    <span class="text-amber-400 font-bold">1. 終局と勝利条件</span><br>
-                    盤面にランダム配置される<strong class="text-purple-400">中立ボス3体（紫枠・数字8〜15）</strong>がすべて討伐された時点、または<strong class="text-amber-300">お互いの手札が尽きた（0枚になった）時点</strong>、あるいは盤面が全て埋まった時点で対局終了となり、獲得スコアの多いプレイヤーが勝利となります。
-                </div>
-                <div>
-                    <span class="text-amber-400 font-bold">2. 直交連結（タテ・ヨコ）</span><br>
-                    上下左右に向き合う矢印同士が繋がるとグループを形成し、すべての具材のパワーが合計値へと跳ね上がります。連結線は具材の隙間を美しく接続します。
-                </div>
-                <div>
-                    <span class="text-amber-400 font-bold">3. 相手駒との直接戦闘（激突！）</span><br>
-                    相手の駒（青）と矢印が向き合っている場合、直接攻撃が可能。現在の連結合計値で勝負し、敗北した駒は盤面から除外され、その駒の元パワー分スコアが減少します。<strong class="text-amber-300">激突可能な箇所がある限り、1ターンに何度でも攻撃可能です。</strong>
-                </div>
-                <div>
-                    <span class="text-amber-400 font-bold">4. フェーズ進行と攻撃制約</span><br>
-                    ターンは「スタンバイフェーズ（具材配置）」➔「バトルフェーズ（攻撃）」の順に進みます。<strong class="text-rose-400">攻撃を行った後は手札から具材を配置できません。</strong>
-                </div>
-                <div>
-                    <span class="text-amber-400 font-bold">5. 秘伝の道具と伝説の品</span><br>
-                    鍋蓋（2ターン攻撃無効シールド x2）、日本酒（上追加）、割り箸（右追加）、土鍋（左追加）、お皿（下追加）に加え、4ターン目以降に解放される<strong class="text-amber-300">【黄金トング】（3ターン敵攻撃封殺）</strong>や<strong class="text-amber-300">【伝説の調味料】（全味方具材+4強化）</strong>を駆使して勝利を掴みましょう。
-                </div>
-                <div>
-                    <span class="text-purple-400 font-bold">6. 中立ボスの強襲（天災）</span><br>
-                    <strong class="text-rose-400">3の倍数ターン（3, 6, 9…ターン目）</strong>の開始時、盤面に生き残っている中立ボスが暴走！<strong class="text-amber-300">完全ランダムに3〜5マス</strong>へ破壊の熱波を放ち、巻き込まれたマスにある具材カード（自軍・敵軍問わず）は即座に粉砕されます（中立ボスのマスは除外）。
-                </div>
-            </div>
-
-            <button onclick="closeRulesModal()" class="w-full py-2 rounded-xl border border-stone-700 bg-stone-900 text-stone-300 font-bold text-xs hover:bg-stone-800">
-                理解した
-            </button>
-        </div>
-    </div>
-
     <!-- 終局リザルトモーダル -->
     <div id="resultModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3">
         <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm p-4 space-y-4 shadow-2xl text-center">
@@ -1133,7 +1120,7 @@
     let firebaseDb = null;
     let roomRef = null;
     let currentRoomCode = null;
-    let onlinePlayerRole = 'host'; // 'host' (先攻/赤) または 'guest' (後攻/青)
+    let onlinePlayerRole = 'host';
     let matchStartTime = 0;
     let sharedMonstersData = null;
     let isCleaningUpRoom = false;
@@ -1141,6 +1128,10 @@
     let currentScreen = 'home';
     let currentBattleMode = 'cpu';
     let cpuDifficulty = 'take';
+
+    /* ===== 実践インタラクティブ・チュートリアル管理変数 ===== */
+    let isTutorialMode = false;
+    let tutorialInteractiveStep = 1;
 
     let playerName = "名無しの出汁";
     let playerRate = 1500;
@@ -1195,13 +1186,13 @@
     let defeatSynth = null;
     let clashSynth = null;
 
-    /* ================= 共通ヘルパー ================= */
     function later(fn, ms) {
         const id = battleId;
         setTimeout(() => { if (id === battleId) fn(); }, ms);
     }
 
     function isPlayerRestrictedTurn() {
+        if (isTutorialMode) return false;
         return !isPlayerFirst && turnCount === 2;
     }
 
@@ -1217,8 +1208,7 @@
     function saveGame() {
         try {
             localStorage.setItem(SAVE_KEY, JSON.stringify({
-                playerName, playerRate, playerWins, playerLosses, playerDeckIds, bgmVolume, seVolume, isMuted,
-                customDbUrl: currentFirebaseConfig.databaseURL
+                playerName, playerRate, playerWins, playerLosses, playerDeckIds, bgmVolume, seVolume, isMuted
             }));
         } catch (e) {}
     }
@@ -1237,12 +1227,6 @@
             const l = num(d.playerLosses, 0, 999999); if (l !== null) playerLosses = Math.floor(l);
             const bv = num(d.bgmVolume, 0, 1); if (bv !== null) bgmVolume = bv;
             const sv = num(d.seVolume, 0, 1); if (sv !== null) seVolume = sv;
-
-            if (typeof d.customDbUrl === 'string' && d.customDbUrl.trim()) {
-                currentFirebaseConfig.databaseURL = d.customDbUrl.trim();
-                const dbInput = document.getElementById('customDbUrlInput');
-                if (dbInput) dbInput.value = currentFirebaseConfig.databaseURL;
-            }
 
             if (Array.isArray(d.playerDeckIds) && d.playerDeckIds.length === 10) {
                 const ids = d.playerDeckIds;
@@ -1265,59 +1249,6 @@
         }
     }
 
-    /* ================= キャッシュクリア＆最新版強制再読込 ================= */
-    async function confirmClearCacheAndUpdate() {
-        initAudioEngine();
-        playSound('click');
-        const confirmed = confirm("【最新版への更新確認】\n端末内のキャッシュとローカルセーブデータを消去し、最新バージョンを強制再読込します。\nよろしいですか？");
-        if (!confirmed) return;
-
-        try {
-            // LocalStorage & SessionStorage を全消去
-            localStorage.clear();
-            sessionStorage.clear();
-
-            // CacheStorage (ServiceWorkerキャッシュ等) が存在する場合はすべて消去
-            if ('caches' in window) {
-                const cacheKeys = await caches.keys();
-                await Promise.all(cacheKeys.map(key => caches.delete(key)));
-            }
-
-            // ServiceWorkerが登録されていれば解除
-            if ('serviceWorker' in navigator) {
-                const registrations = await navigator.serviceWorker.getRegistrations();
-                for (let registration of registrations) {
-                    await registration.unregister();
-                }
-            }
-        } catch (e) {
-            console.warn("Cache clean error:", e);
-        }
-
-        // キャッシュバスタークエリを付加して強制リロード
-        const cleanUrl = window.location.origin + window.location.pathname + '?reload=' + Date.now();
-        window.location.replace(cleanUrl);
-    }
-
-    /* ================= 方向記号 & 数字周り▲生成ヘルパー ================= */
-    function getDirectionGlyphs(dirs) {
-        const glyphMap = { up: '↑', right: '→', down: '↓', left: '←' };
-        return dirs.map(d => glyphMap[d] || '').join(' ');
-    }
-
-    function createHandPowerBadgeHtml(power, dirs) {
-        const trianglesHtml = dirs.map(d => `<div class="badge-tri badge-tri-${d}"></div>`).join('');
-        return `
-            <div class="hand-power-wrapper">
-                ${trianglesHtml}
-                <div class="hand-badge-diamond">
-                    <span class="hand-badge-text">${power}</span>
-                </div>
-            </div>
-        `;
-    }
-
-    /* ================= 音響エンジン (Tone.js 雀魂風メジャー調) ================= */
     function initAudioEngine() {
         if (isAudioStarted || typeof Tone === 'undefined') return;
         if (Tone.context.state !== 'running') return;
@@ -1441,7 +1372,52 @@
         }
     }
 
-    /* ================= 画面遷移 & 戻る/降参制御 ================= */
+    async function confirmClearCacheAndUpdate() {
+        initAudioEngine();
+        playSound('click');
+        const confirmed = confirm("【最新版への更新確認】\n端末内のキャッシュとローカルセーブデータを消去し、最新バージョンを強制再読込します。\nよろしいですか？");
+        if (!confirmed) return;
+
+        try {
+            localStorage.clear();
+            sessionStorage.clear();
+
+            if ('caches' in window) {
+                const cacheKeys = await caches.keys();
+                await Promise.all(cacheKeys.map(key => caches.delete(key)));
+            }
+
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (let registration of registrations) {
+                    await registration.unregister();
+                }
+            }
+        } catch (e) {
+            console.warn("Cache clean error:", e);
+        }
+
+        const cleanUrl = window.location.origin + window.location.pathname + '?reload=' + Date.now();
+        window.location.replace(cleanUrl);
+    }
+
+    function getDirectionGlyphs(dirs) {
+        const glyphMap = { up: '↑', right: '→', down: '↓', left: '←' };
+        return dirs.map(d => glyphMap[d] || '').join(' ');
+    }
+
+    function createHandPowerBadgeHtml(power, dirs) {
+        const trianglesHtml = dirs.map(d => `<div class="badge-tri badge-tri-${d}"></div>`).join('');
+        return `
+            <div class="hand-power-wrapper">
+                ${trianglesHtml}
+                <div class="hand-badge-diamond">
+                    <span class="hand-badge-text">${power}</span>
+                </div>
+            </div>
+        `;
+    }
+
     function switchScreen(target) {
         initAudioEngine();
         playSound('click');
@@ -1451,6 +1427,7 @@
         const battle = document.getElementById('battleScreen');
         const deck = document.getElementById('deckScreen');
         const backBtn = document.getElementById('globalBackBtn');
+        const tutBar = document.getElementById('tutorialGuideBar');
 
         home.style.display = 'none';
         battle.style.display = 'none';
@@ -1460,6 +1437,8 @@
         deck.classList.add('hidden');
 
         if (target === 'home') {
+            isTutorialMode = false;
+            if (tutBar) tutBar.classList.add('hidden');
             home.style.display = 'flex';
             home.classList.remove('hidden');
             backBtn.classList.add('hidden');
@@ -1468,9 +1447,15 @@
             battle.style.display = 'flex';
             battle.classList.remove('hidden');
             backBtn.classList.remove('hidden');
-            backBtn.innerHTML = "🏳️ 降参";
-            backBtn.className = "px-2.5 py-1 rounded-lg border border-rose-800/80 bg-rose-950/70 text-rose-300 text-xs font-bold hover:bg-rose-900 active:scale-95 transition";
+            if (isTutorialMode) {
+                backBtn.innerHTML = "◀ 中断";
+                backBtn.className = "px-2.5 py-1 rounded-lg border border-sky-800 bg-sky-950/80 text-sky-300 text-xs font-bold hover:bg-sky-900 active:scale-95 transition";
+            } else {
+                backBtn.innerHTML = "🏳️ 降参";
+                backBtn.className = "px-2.5 py-1 rounded-lg border border-rose-800/80 bg-rose-950/70 text-rose-300 text-xs font-bold hover:bg-rose-900 active:scale-95 transition";
+            }
         } else if (target === 'deck') {
+            isTutorialMode = false;
             deck.style.display = 'flex';
             deck.classList.remove('hidden');
             backBtn.classList.remove('hidden');
@@ -1483,7 +1468,11 @@
 
     function handleGlobalBackClick() {
         if (currentScreen === 'battle') {
-            openSurrenderModal();
+            if (isTutorialMode) {
+                quitTutorialPrompt();
+            } else {
+                openSurrenderModal();
+            }
         } else if (currentScreen === 'deck') {
             switchScreen('home');
         }
@@ -1519,12 +1508,12 @@
             leaveAndCleanupRoom();
         }
 
-        if (!alreadyOver) {
+        if (!alreadyOver && !isTutorialMode) {
             playerLosses++;
             playerRate = Math.max(1000, playerRate - 15);
             saveGame();
         }
-        showToast("対局を降参し、メニューへ戻りました");
+        showToast("対局を中断し、メニューへ戻りました");
         switchScreen('home');
     }
 
@@ -1536,7 +1525,6 @@
         document.getElementById('homeDeckCount').textContent = playerDeckIds.length;
     }
 
-    /* ================= デッキ編成画面 ================= */
     function renderDeckScreen() {
         const slotsCont = document.getElementById('deckSlotsGrid');
         const listCont = document.getElementById('deckPiecePoolGrid');
@@ -1712,7 +1700,6 @@
         switchScreen('home');
     }
 
-    /* ================= CPU 難易度選択 ================= */
     function openCpuSelectModal() {
         initAudioEngine();
         playSound('click');
@@ -1734,7 +1721,6 @@
         startBattlePreparation();
     }
 
-    /* ================= Firebase オンライン対戦機能 ================= */
     function initFirebaseClient() {
         if (firebaseDb) return true;
         try {
@@ -1832,16 +1818,14 @@
         roomRef.once('value').then(snap => {
             const data = snap.val();
             const now = Date.now();
-            const isStale = data && data.updatedAt && (now - data.updatedAt > 1800000); // 30分以上経過した部屋は再利用
+            const isStale = data && data.updatedAt && (now - data.updatedAt > 1800000);
             const isRoomEmpty = !data || !data.presence || Object.keys(data.presence).length === 0;
 
             if (!data || isRoomEmpty || isStale || data.status === 'finished') {
-                // ホスト（部屋主）として部屋を新設
                 onlinePlayerRole = 'host';
-                isPlayerFirst = true; // ホストが先攻
+                isPlayerFirst = true;
                 isPlayerTurn = true;
 
-                // 中立ボス3体の位置と初期パワーを生成
                 const availablePositions = Array.from({ length: 25 }, (_, i) => i);
                 const shuffledPos = shuffleArray(availablePositions);
                 const monsterPos = shuffledPos.slice(0, 3);
@@ -1874,9 +1858,8 @@
                 });
 
             } else if (!data.guest || data.status === 'waiting') {
-                // ゲスト（参加者）として合流
                 onlinePlayerRole = 'guest';
-                isPlayerFirst = false; // ゲストが後攻
+                isPlayerFirst = false;
                 isPlayerTurn = false;
                 sharedMonstersData = data.monsters || [];
 
@@ -2074,8 +2057,128 @@
         }
     }
 
-    /* ================= 初手確認 & 先攻後攻選択 ================= */
+    function startInteractiveTutorial() {
+        initAudioEngine();
+        playSound('connect');
+        isTutorialMode = true;
+        tutorialInteractiveStep = 1;
+        currentBattleMode = 'tutorial';
+
+        // 指南専用の固定初手（大根、たまご、牛すじ、はんぺん）
+        playerHand = [1, 2, 7, 6];
+        playerDrawPile = [3, 4, 5, 8, 9, 10];
+        opponentHand = [];
+        opponentDrawPile = [];
+
+        boardCells = Array(25).fill(null);
+        playerScore = 0;
+        opponentScore = 0;
+        turnCount = 1;
+        bossRemaining = 1;
+        isPlayerFirst = true;
+        isPlayerTurn = true;
+        currentPhase = 'standby';
+        hasPlacedPieceThisTurn = false;
+        selectedHandIndex = null;
+        previewPlacementIndex = null;
+        selectedActiveItemId = null;
+        battleOver = false;
+        inputLocked = false;
+        dangerTargetCells = [];
+
+        // 指南用の敵・ボス配置
+        // マス6（2行目2列）に相手のちくわ（パワー3、下向き）
+        boardCells[6] = {
+            ...ALL_PIECES_DATA.find(x => x.id === 3),
+            dir: ['down'],
+            owner: 'opponent',
+            power: 3,
+            currentPower: 3,
+            instanceId: 'tut_opp_chikuwa',
+            shieldTurns: 0
+        };
+
+        // マス8（2行目4列）に見習い中立ボス（パワー6）
+        boardCells[8] = {
+            type: 'monster',
+            id: 'tut_monster_1',
+            name: '見習い鬼',
+            icon: '👺',
+            power: 6,
+            basePower: 6,
+            owner: 'neutral',
+            dir: []
+        };
+
+        document.getElementById('opponentNameDisplay').textContent = "師範代（指南）";
+        updateBattleStatusHeader();
+
+        switchScreen('battle');
+
+        const tutBar = document.getElementById('tutorialGuideBar');
+        if (tutBar) tutBar.classList.remove('hidden');
+
+        applyTutorialStepState();
+    }
+
+    function applyTutorialStepState() {
+        const stepLabel = document.getElementById('tutStepLabel');
+        const stepTitle = document.getElementById('tutStepTitle');
+        const stepInstr = document.getElementById('tutStepInstruction');
+
+        if (!stepLabel || !stepTitle || !stepInstr) return;
+
+        switch (tutorialInteractiveStep) {
+            case 1:
+                stepLabel.textContent = "Step 1/6";
+                stepTitle.textContent = "具材の配置";
+                stepInstr.textContent = "手札の【大根】をタップし、中央の光るマスに置いてみましょう！";
+                break;
+            case 2:
+                stepLabel.textContent = "Step 2/6";
+                stepTitle.textContent = "直交連結（出汁の道）";
+                stepInstr.textContent = "手札の【たまご】を大根の上（マス7）に配置して出汁を繋ぎましょう！";
+                break;
+            case 3:
+                stepLabel.textContent = "Step 3/6";
+                stepTitle.textContent = "アタックへ進む";
+                stepInstr.textContent = "連結が成立！全員【パワー7】に合算！「アタックへ進む」を押してください。";
+                break;
+            case 4:
+                stepLabel.textContent = "Step 4/6";
+                stepTitle.textContent = "直接激突（相手駒の撃破）";
+                stepInstr.textContent = "矢印が向かい合う相手の「ちくわ」をタップして激突・粉砕しましょう！";
+                break;
+            case 5:
+                stepLabel.textContent = "Step 5/6";
+                stepTitle.textContent = "中立ボスの討伐";
+                stepInstr.textContent = "連結パワー7はボスの数字(6)より上！右隣のボスをタップして討伐！";
+                break;
+            case 6:
+                stepLabel.textContent = "Step 6/6";
+                stepTitle.textContent = "指南修了！";
+                stepInstr.textContent = "見事です！基本をマスターしました。「指南を修了してメニューへ」を押してください。";
+                break;
+        }
+
+        renderBattleBoard();
+        renderPlayerHand();
+        updatePhaseUI();
+    }
+
+    function quitTutorialPrompt() {
+        const confirmed = confirm("実戦指南を中断してホームメニューに戻りますか？");
+        if (confirmed) {
+            isTutorialMode = false;
+            switchScreen('home');
+        }
+    }
+
     function startBattlePreparation() {
+        isTutorialMode = false;
+        const tutBar = document.getElementById('tutorialGuideBar');
+        if (tutBar) tutBar.classList.add('hidden');
+
         playerDrawPile = shuffleArray([...playerDeckIds]);
         playerHand = playerDrawPile.splice(0, 4);
 
@@ -2121,7 +2224,6 @@
         startBattleSession();
     }
 
-    /* ================= バトル盤面初期化 ================= */
     function initBattleBoard() {
         battleId++;
         battleOver = false;
@@ -2204,7 +2306,6 @@
         }
     }
 
-    /* ================= フェーズ演出カットイン ================= */
     function triggerPhaseCutin(phaseType, title, subtitle, icon) {
         const overlay = document.getElementById('phaseCutinOverlay');
         const banner = document.getElementById('phaseCutinBanner');
@@ -2248,6 +2349,31 @@
         const turnInd = document.getElementById('turnIndicator');
         const orderBadge = document.getElementById('turnOrderBadge');
 
+        if (isTutorialMode) {
+            orderBadge.textContent = '指南';
+            orderBadge.className = 'text-[9px] px-1.5 py-px rounded bg-sky-950 text-sky-300 border border-sky-800 font-bold';
+            turnInd.textContent = "実践指南中";
+            turnInd.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-sky-950 text-sky-200 border border-sky-800";
+            
+            if (tutorialInteractiveStep === 3) {
+                badge.textContent = "アタックへ進む準備完了";
+                mainBtn.textContent = "アタックへ進む 👉";
+                mainBtn.className = "col-span-2 py-2.5 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs animate-pulse shadow-lg";
+                mainBtn.disabled = false;
+            } else if (tutorialInteractiveStep === 6) {
+                badge.textContent = "指南修了";
+                mainBtn.textContent = "指南を修了してメニューへ 🎉";
+                mainBtn.className = "col-span-2 py-2.5 rounded-xl border border-emerald-500 bg-emerald-800 text-emerald-100 font-black text-xs hover:brightness-110 active:scale-95 shadow-md";
+                mainBtn.disabled = false;
+            } else {
+                badge.textContent = currentPhase === 'standby' ? "スタンバイ（配置）" : "アタック（攻撃）";
+                mainBtn.textContent = currentPhase === 'standby' ? "アタックへ進む" : "ターンエンド";
+                mainBtn.className = "col-span-2 py-2.5 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs cursor-not-allowed";
+                mainBtn.disabled = (tutorialInteractiveStep !== 3 && tutorialInteractiveStep !== 6);
+            }
+            return;
+        }
+
         orderBadge.textContent = isPlayerFirst ? '先攻' : '後攻';
         orderBadge.className = isPlayerFirst 
             ? 'text-[9px] px-1.5 py-px rounded bg-rose-950 text-rose-300 border border-rose-800 font-bold' 
@@ -2285,6 +2411,28 @@
     function handleMainPhaseButtonClick() {
         if (!isPlayerTurn || battleOver || inputLocked) return;
 
+        if (isTutorialMode) {
+            if (tutorialInteractiveStep === 3) {
+                currentPhase = 'attack';
+                selectedHandIndex = null;
+                previewPlacementIndex = null;
+                triggerPhaseCutin('battle', 'バトルフェーズ', '敵討伐・直接激突の好機！', '⚔️');
+                playSound('phase_battle');
+                tutorialInteractiveStep = 4;
+                applyTutorialStepState();
+                return;
+            } else if (tutorialInteractiveStep === 6) {
+                playerRate += 20;
+                saveGame();
+                playSound('connect');
+                showToast("🎉 実践指南修了！ RATE +20 pt 獲得！");
+                isTutorialMode = false;
+                switchScreen('home');
+                return;
+            }
+            return;
+        }
+
         if (currentPhase === 'standby') {
             if (previewPlacementIndex !== null && selectedHandIndex !== null) {
                 commitPreviewPlacement();
@@ -2310,7 +2458,6 @@
         }
     }
 
-    /* ================= 盤面連結計算 & 描画 ================= */
     function calculateConnectedGroups() {
         const visited = Array(25).fill(false);
         const groups = [];
@@ -2392,6 +2539,14 @@
                 cellDiv.classList.add('item-target-candidate');
             }
 
+            // 実践チュートリアルでの特定マスハイライト
+            if (isTutorialMode) {
+                if (tutorialInteractiveStep === 1 && i === 12) cellDiv.classList.add('tut-active-target');
+                if (tutorialInteractiveStep === 2 && i === 7) cellDiv.classList.add('tut-active-target');
+                if (tutorialInteractiveStep === 4 && i === 6) cellDiv.classList.add('tut-active-target');
+                if (tutorialInteractiveStep === 5 && i === 8) cellDiv.classList.add('tut-active-target');
+            }
+
             if (cell) {
                 if (cell.type === 'monster') {
                     cellDiv.innerHTML = `
@@ -2400,7 +2555,7 @@
                             <div class="monster-power-circle">${cell.power}</div>
                         </div>
                     `;
-                    if (isPlayerTurn && !isPlayerRestrictedTurn() && canAttackTarget(i)) {
+                    if (!isTutorialMode && isPlayerTurn && !isPlayerRestrictedTurn() && canAttackTarget(i)) {
                         cellDiv.classList.add('highlight-target-monster');
                     }
                 } else {
@@ -2419,8 +2574,13 @@
                         </div>
                     `;
 
-                    if (isPlayerTurn && !isPl && !isPlayerRestrictedTurn() && canClashWithPiece(i)) {
+                    if (!isTutorialMode && isPlayerTurn && !isPl && !isPlayerRestrictedTurn() && canClashWithPiece(i)) {
                         cellDiv.classList.add('highlight-target');
+                        const clashBadge = document.createElement('div');
+                        clashBadge.className = "clash-badge";
+                        clashBadge.textContent = "激突!";
+                        cellDiv.appendChild(clashBadge);
+                    } else if (isTutorialMode && tutorialInteractiveStep >= 3 && i === 6) {
                         const clashBadge = document.createElement('div');
                         clashBadge.className = "clash-badge";
                         clashBadge.textContent = "激突!";
@@ -2530,7 +2690,6 @@
         });
     }
 
-    /* ================= 手札描画 ================= */
     function renderPlayerHand() {
         const slotsCont = document.getElementById('playerHandSlots');
         if (!slotsCont) return;
@@ -2543,6 +2702,11 @@
             const isAttackPhase = currentPhase === 'attack';
 
             slot.className = `hand-card ${isSelected ? 'selected' : ''} ${isAttackPhase ? 'disabled' : ''}`;
+
+            if (isTutorialMode) {
+                if (tutorialInteractiveStep === 1 && idx === 0) slot.classList.add('tut-active-target');
+                if (tutorialInteractiveStep === 2 && idx === 0) slot.classList.add('tut-active-target');
+            }
 
             if (p) {
                 const badgeHtml = createHandPowerBadgeHtml(p.power, p.dir);
@@ -2572,6 +2736,19 @@
             playSound('error');
             showToast("アタックフェーズ中は具材の配置はできません");
             return;
+        }
+
+        if (isTutorialMode) {
+            if (tutorialInteractiveStep === 1 && index !== 0) {
+                playSound('error');
+                showToast("【大根】をタップしてください");
+                return;
+            }
+            if (tutorialInteractiveStep === 2 && index !== 0) {
+                playSound('error');
+                showToast("【たまご】をタップしてください");
+                return;
+            }
         }
 
         selectedActiveItemId = null;
@@ -2611,6 +2788,64 @@
             return;
         }
 
+        // 実践チュートリアル中の進行分岐
+        if (isTutorialMode) {
+            if (tutorialInteractiveStep === 1) {
+                if (selectedHandIndex === null) {
+                    showToast("まず手札の【大根】をタップしてください");
+                    return;
+                }
+                if (index !== 12) {
+                    showToast("中央の光るマス（マス12）をタップしてください");
+                    return;
+                }
+                previewPlacementIndex = index;
+                commitPreviewPlacement();
+                tutorialInteractiveStep = 2;
+                applyTutorialStepState();
+                return;
+            }
+            if (tutorialInteractiveStep === 2) {
+                if (selectedHandIndex === null) {
+                    showToast("まず手札の【たまご】をタップしてください");
+                    return;
+                }
+                if (index !== 7) {
+                    showToast("大根の上（マス7）をタップしてください");
+                    return;
+                }
+                previewPlacementIndex = index;
+                commitPreviewPlacement();
+                tutorialInteractiveStep = 3;
+                applyTutorialStepState();
+                return;
+            }
+            if (tutorialInteractiveStep === 4) {
+                if (index === 6) {
+                    executeClashWithOpponent(index);
+                    tutorialInteractiveStep = 5;
+                    applyTutorialStepState();
+                    return;
+                } else {
+                    showToast("光っている相手の【ちくわ】をタップしてください");
+                    return;
+                }
+            }
+            if (tutorialInteractiveStep === 5) {
+                if (index === 8) {
+                    executeDefeatMonster(index);
+                    tutorialInteractiveStep = 6;
+                    applyTutorialStepState();
+                    return;
+                } else {
+                    showToast("光っている中立ボスをタップしてください");
+                    return;
+                }
+            }
+            return;
+        }
+
+        // 中立ボス討伐
         if (cell && cell.type === 'monster') {
             if (isPlayerRestrictedTurn()) {
                 playSound('error');
@@ -2626,6 +2861,7 @@
             return;
         }
 
+        // 相手駒への直接戦闘（激突！）
         if (cell && cell.owner === 'opponent') {
             if (cell.shieldTurns > 0) {
                 playSound('error');
@@ -2646,6 +2882,7 @@
             return;
         }
 
+        // 空きマスへの半透明プレビュー配置
         if (!cell) {
             if (currentPhase !== 'standby') {
                 playSound('error');
@@ -2679,8 +2916,8 @@
             sendNetworkEvent({
                 type: 'place',
                 pieceId: p.id,
-                dir: p.dir,
-                cellIndex: previewPlacementIndex
+                cellIndex: previewPlacementIndex,
+                dir: p.dir
             });
         }
 
@@ -2695,10 +2932,13 @@
         playSound('place');
         updateSelectedCardBrief(null);
 
+        calculateConnectedGroups();
+        renderBattleBoard();
+        renderPlayerHand();
+
         checkBattleEndCondition();
     }
 
-    /* ================= 戦闘判定 & 実行 ================= */
     function canAttackTarget(monsterIndex) {
         const monster = boardCells[monsterIndex];
         if (!monster || monster.type !== 'monster') return false;
@@ -2767,7 +3007,7 @@
     }
 
     function executeDefeatMonster(monsterIndex) {
-        if (currentPhase === 'standby') {
+        if (!isTutorialMode && currentPhase === 'standby') {
             if (previewPlacementIndex !== null && selectedHandIndex !== null) {
                 commitPreviewPlacement();
             }
@@ -2798,7 +3038,7 @@
     }
 
     function executeClashWithOpponent(oppIndex) {
-        if (currentPhase === 'standby') {
+        if (!isTutorialMode && currentPhase === 'standby') {
             if (previewPlacementIndex !== null && selectedHandIndex !== null) {
                 commitPreviewPlacement();
             }
@@ -2844,7 +3084,6 @@
         document.getElementById('totalItemCount').textContent = totalItems;
     }
 
-    /* ================= 秘伝の道具システム ================= */
     function openItemBoxModal() {
         if (selectedActiveItemId) {
             selectedActiveItemId = null;
@@ -3024,7 +3263,6 @@
         });
     }
 
-    /* ================= 手番交代 & CPU/ネットワーク同期 ================= */
     function switchTurnToOpponent() {
         if (!isPlayerTurn || battleOver) return;
         if (previewPlacementIndex !== null && selectedHandIndex !== null) {
@@ -3296,7 +3534,6 @@
         }, 800);
     }
 
-    /* ================= 終局判定 & リザルト ================= */
     function checkBattleEndCondition() {
         if (battleOver) return true;
         const isAllBossDefeated = bossRemaining <= 0;
@@ -3385,7 +3622,6 @@
         }
     }
 
-    /* ================= 設定・ルール・ヘルパー ================= */
     function openSettingsModal() {
         initAudioEngine();
         playSound('click');
@@ -3453,19 +3689,6 @@
             playSound('error');
             showToast("名前を入力してください");
         }
-    }
-
-    function openRulesModal() {
-        initAudioEngine();
-        playSound('click');
-        document.getElementById('rulesModal').classList.remove('hidden');
-        document.getElementById('rulesModal').classList.add('flex');
-    }
-
-    function closeRulesModal() {
-        playSound('click');
-        document.getElementById('rulesModal').classList.remove('flex');
-        document.getElementById('rulesModal').classList.add('hidden');
     }
 
     function showSelectedPieceDetailModal() {
