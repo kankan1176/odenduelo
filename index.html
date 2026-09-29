@@ -10,14 +10,25 @@
     <meta property="og:description" content="おでんの具材を並べて連結パワーを競う、5×5盤面のブラウザ対戦ゲーム。">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🍢%3C/text%3E%3C/svg%3E">
     <title>おでん道 鍋の陣 - ODEN DUELLO</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { theme: { extend: { fontFamily: { serif: ['"Shippori Mincho"', 'serif'] } } } };
     </script>
+    
+    <!-- Tone.js 音響ライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <!-- Firebase Realtime Database SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
     <style>
         * {
             box-sizing: border-box;
@@ -421,10 +432,6 @@
             *, *::before, *::after { animation: none !important; transition: none !important; }
         }
 
-        .tut-focus { outline: 3px solid #fde047 !important; outline-offset: 2px; border-radius: 8px; }
-        .tut-panel-top { top: calc(env(safe-area-inset-top, 0px) + 3.25rem); bottom: auto; }
-        .tut-panel-bottom { bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem); top: auto; }
-
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: #3b3531; border-radius: 4px; }
     </style>
@@ -478,17 +485,6 @@
 
             <!-- メニュー 4行式リスト（縦並びで余白を最適化） -->
             <div class="flex flex-col gap-2.5 my-auto py-2">
-                <button onclick="startTutorial()" class="w-full p-3 sm:p-3.5 rounded-2xl border border-emerald-950/80 bg-gradient-to-r from-[#0f1a14] via-[#0c130f] to-[#0a100c] hover:border-emerald-700/80 active:scale-98 transition shadow-lg group flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <span class="text-2xl sm:text-3xl group-hover:scale-110 transition shrink-0">📖</span>
-                        <div class="text-left">
-                            <div class="font-bold text-sm sm:text-base text-stone-100 font-serif">チュートリアル</div>
-                            <div class="text-[10px] sm:text-xs text-stone-400 mt-0.5">操作とルールを順番に学ぶ</div>
-                        </div>
-                    </div>
-                    <span class="text-[10px] px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-800/80 font-bold shrink-0">はじめて</span>
-                </button>
-
                 <button onclick="openCpuSelectModal()" class="w-full p-3 sm:p-3.5 rounded-2xl border border-rose-950/80 bg-gradient-to-r from-[#1c1214] via-[#140e10] to-[#120c0e] hover:border-rose-700/80 active:scale-98 transition shadow-lg group flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <span class="text-2xl sm:text-3xl group-hover:scale-110 transition shrink-0">⚔️</span>
@@ -505,10 +501,10 @@
                         <span class="text-2xl sm:text-3xl group-hover:scale-110 transition shrink-0">🛜</span>
                         <div class="text-left">
                             <div class="font-bold text-sm sm:text-base text-stone-100 font-serif">友達と遊ぶ【オンライン対戦】</div>
-                            <div class="text-[10px] sm:text-xs text-stone-400 mt-0.5">個別合言葉対局（URL共有）</div>
+                            <div class="text-[10px] sm:text-xs text-stone-400 mt-0.5">個別合言葉対局（リアルタイム同期）</div>
                         </div>
                     </div>
-                    <span class="text-[10px] px-2.5 py-1 rounded-lg bg-amber-950 text-amber-300 border border-amber-800/80 font-bold shrink-0">URL共有</span>
+                    <span class="text-[10px] px-2.5 py-1 rounded-lg bg-amber-950 text-amber-300 border border-amber-800/80 font-bold shrink-0">合言葉対局</span>
                 </button>
 
                 <button onclick="switchScreen('deck')" class="w-full p-3 sm:p-3.5 rounded-2xl border border-[#232f38] bg-gradient-to-r from-[#111920] via-[#0d131a] to-[#0a0f14] hover:border-cyan-700/80 active:scale-98 transition shadow-lg group flex items-center justify-between">
@@ -553,7 +549,7 @@
             <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-2 shrink-0 space-y-1">
                 <div class="flex items-center justify-between text-xs">
                     <div class="flex items-center gap-1.5 text-stone-300 font-bold">
-                        <span class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_6px_#38bdf8]"></span>
+                        <span id="networkStatusDot" class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_6px_#38bdf8]"></span>
                         <span id="opponentNameDisplay" class="truncate max-w-[110px]">相手（CPU・竹）</span>
                     </div>
 
@@ -594,13 +590,12 @@
                 </div>
             </div>
 
-            <!-- 中央：5×5 盤面（連結線SVGは駒の下レイヤー z-[4] に配置） -->
+            <!-- 中央：5×5 盤面（隙間限定コネクタ線SVGは背面 z-[4] に配置） -->
             <div class="my-auto py-1 flex items-center justify-center">
                 <div class="board-container">
                     <div id="battleBoardGrid" class="w-full h-full grid grid-cols-5 grid-rows-5 gap-1 p-1 bg-[#100d0c] border border-[#2b2420] rounded-xl relative shadow-2xl z-0">
                         <!-- JSで25マスを生成 -->
                     </div>
-                    <!-- 連結線を駒カード（z-10）の背面（z-[4]）に配置 -->
                     <svg id="linkSvgOverlay" class="absolute inset-0 w-full h-full pointer-events-none z-[4]"></svg>
                 </div>
             </div>
@@ -784,25 +779,25 @@
         </div>
     </div>
 
-    <!-- オンライン対戦合言葉モーダル -->
+    <!-- オンライン対戦合言葉モーダル（Firebase Realtime Database対応） -->
     <div id="onlineMatchModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
         <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm p-4 space-y-3 shadow-2xl">
             <div class="flex items-center justify-between pb-2 border-b border-stone-800">
                 <div class="flex items-center gap-2">
                     <span class="text-xl">🛜</span>
-                    <span class="font-bold text-sm text-amber-100 font-serif">オンライン個別合言葉対戦</span>
+                    <span class="font-bold text-sm text-amber-100 font-serif">オンライン合言葉対戦</span>
                 </div>
                 <button onclick="closeOnlineMatchModal()" class="text-stone-400 hover:text-stone-200 text-lg">✕</button>
             </div>
             
             <p class="text-xs text-stone-300 leading-relaxed">
-                合言葉（ルーム番号）を入力して部屋を作成・入室します。<br>
-                同じ合言葉同士で対戦を開始できます。
+                合言葉（ルーム名）を入力して対局室を作成または合流します。<br>
+                同じ合言葉で通信同期（Firebase）してリアルタイムに対戦できます。
             </p>
 
             <div>
-                <label class="block text-stone-400 text-[11px] mb-1">対局合言葉（英数字）</label>
-                <input type="text" id="onlineRoomCodeInput" value="oden777" maxlength="12" class="w-full px-3 py-2 bg-stone-950 border border-stone-700 rounded-lg text-amber-300 font-mono text-sm focus:outline-none focus:border-amber-500">
+                <label class="block text-stone-400 text-[11px] mb-1">対局合言葉（半角英数）</label>
+                <input type="text" id="onlineRoomCodeInput" value="oden777" maxlength="16" class="w-full px-3 py-2 bg-stone-950 border border-stone-700 rounded-lg text-amber-300 font-mono text-sm focus:outline-none focus:border-amber-500">
             </div>
 
             <div class="pt-1 flex gap-2">
@@ -810,8 +805,25 @@
                     📋 招待URLコピー
                 </button>
                 <button onclick="startOnlineRoomMatch()" class="flex-1 py-2 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs hover:brightness-110">
-                    入室・対局開始
+                    部屋を作成・入室
                 </button>
+            </div>
+
+            <!-- Firebase 接続情報（シンガポールリージョン設定済み） -->
+            <div class="pt-2 border-t border-stone-800 text-[10px] text-stone-400">
+                <div class="flex items-center justify-between">
+                    <span>📡 通信状態: <span id="firebaseStatusIndicator" class="text-amber-400">未接続</span></span>
+                    <button onclick="toggleFirebaseConfigBox()" class="underline text-stone-400 hover:text-amber-300">⚙️ 接続キー設定</button>
+                </div>
+                <div id="firebaseConfigBox" class="mt-2 p-2 bg-stone-950 rounded-lg border border-stone-800 hidden space-y-1">
+                    <div>
+                        <span class="text-[9px] text-stone-400">Database URL (シンガポール)</span>
+                        <input type="text" id="customDbUrlInput" class="w-full px-2 py-1 bg-stone-900 text-stone-200 rounded text-[10px] border border-stone-700" value="https://oden-duello-default-rtdb.asia-southeast1.firebasedatabase.app">
+                    </div>
+                    <div class="pt-1 flex justify-end">
+                        <button onclick="saveCustomFirebaseConfig()" class="px-2 py-0.5 bg-amber-800 text-amber-100 rounded text-[9px] font-bold">更新保存</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1009,20 +1021,6 @@
     </div>
 
     <!-- 汎用トーストメッセージ -->
-    <div id="tutorialPanel" class="hidden fixed left-1/2 z-40 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 rounded-2xl border border-amber-600/80 bg-[#161311]/95 p-3 shadow-2xl backdrop-blur-sm tut-panel-bottom">
-        <div class="flex items-center justify-between text-[10px] text-amber-400 font-mono">
-            <span>📖 チュートリアル <span id="tutStepNo">1</span> / <span id="tutStepTotal">1</span></span>
-            <button onclick="toggleTutorialPanelPos()" class="px-1.5 py-0.5 rounded border border-stone-700 text-stone-300 hover:bg-stone-800">↕ 位置</button>
-        </div>
-        <div id="tutTitle" class="mt-1 font-bold text-sm text-amber-100 font-serif"></div>
-        <p id="tutText" class="mt-1 text-xs leading-relaxed text-stone-200"></p>
-        <div class="mt-2.5 grid grid-cols-3 gap-2">
-            <button id="tutPrevBtn" onclick="tutorialStep(-1)" class="py-2 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs hover:bg-stone-800 active:scale-95 disabled:opacity-40">◀ 前へ</button>
-            <button onclick="exitTutorial()" class="py-2 rounded-xl border border-stone-700 bg-stone-950 text-stone-400 font-bold text-xs hover:bg-stone-800 active:scale-95">終了</button>
-            <button id="tutNextBtn" onclick="tutorialStep(1)" class="py-2 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs hover:brightness-110 active:scale-95">次へ ▶</button>
-        </div>
-    </div>
-
     <div id="gameToast" role="status" aria-live="polite" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none px-3.5 py-1.5 rounded-full bg-stone-950/95 border border-amber-600/80 text-amber-200 text-xs font-serif shadow-2xl opacity-0 transition-opacity duration-300">
         メッセージ
     </div>
@@ -1067,8 +1065,24 @@
         spice: { id: "spice", name: "伝説の調味料", icon: "🧂", count: 1, minTurn: 4, target: "global", desc: "盤面の自軍具材すべてにパワー+4を全体付与" }
     };
 
+    /* ===== Firebase 接続設定（シンガポールリージョン） ===== */
+    const currentFirebaseConfig = {
+        apiKey: "AIzaSyCesauanOuqVL2ysqqfug9CvqqIaCAWLV8",
+        authDomain: "oden-duello.firebaseapp.com",
+        databaseURL: "https://oden-duello-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "oden-duello",
+        storageBucket: "oden-duello.firebasestorage.app",
+        messagingSenderId: "877649012126",
+        appId: "1:877649012126:web:56c3eeceecff133250628f"
+    };
+
+    let firebaseDb = null;
+    let roomRef = null;
+    let currentRoomCode = null;
+    let onlinePlayerRole = 'host'; // 'host' (先攻/赤) または 'guest' (後攻/青)
+
     let currentScreen = 'home';
-    let currentBattleMode = 'cpu';
+    let currentBattleMode = 'cpu'; // 'cpu' または 'online'
     let cpuDifficulty = 'take';
 
     let playerName = "名無しの出汁";
@@ -1103,10 +1117,10 @@
     let previewPlacementIndex = null;
     let selectedActiveItemId = null;
     let cutinTimer = null;
-    let dangerTargetCells = []; // 中立敵強襲の警告対象マス配列
-    let battleId = 0;        // 対局ごとに増加。古いタイマーを無効化する
-    let battleOver = false;  // 終局処理の二重実行防止
-    let inputLocked = false; // ターンエンド連打・ボス強襲中の操作ロック
+    let dangerTargetCells = [];
+    let battleId = 0;
+    let battleOver = false;
+    let inputLocked = false;
     const SAVE_KEY = 'odenDuello.v1';
 
     let bgmVolume = 0.3;
@@ -1124,139 +1138,16 @@
     let defeatSynth = null;
     let clashSynth = null;
 
-    /* ================= チュートリアル（前へ／次へで進む解説モード） ================= */
-    let tutorialActive = false;
-    let tutIndex = 0;
-
-    const TUT_STEPS = (() => {
-        const P = (id, o) => { const d = ALL_PIECES_DATA.find(x => x.id === id); return { ...d, dir: [...d.dir], owner: o, currentPower: d.power, shieldTurns: 0 }; };
-        const M = (n, ic, p) => ({ type: 'monster', id: 'm' + p, name: n, icon: ic, power: p, basePower: p, owner: 'neutral', dir: [] });
-        const bs = dead => ({ ...(dead ? {} : { 2: M('焦げ魔', '👹', 8) }), 20: M('煮崩れ鬼', '👺', 11), 24: M('出汁啜り', '👻', 13) });
-        const ch = () => ({ 7: P(2, 'player'), 12: P(1, 'player'), 17: P(5, 'player') });
-        const H2 = [1, 5, 3, 6], H4 = [3, 6, 7, 4];
-        return [
-            { t: 'ようこそ、鍋の陣へ', x: '盤面の見方から配置・連結・攻撃・道具・ボス強襲・勝敗までを、前へ／次へで順番に確認できます。まず画面上部のスコア表示です。赤があなた、青が相手の得点、「ボス残」は中立ボスの残り数です。', b: () => bs(), f: ['playerScoreDisplay', 'opponentScoreDisplay', 'bossRemainingCount'] },
-            { t: '中立ボス', x: '紫の駒は中立ボスです。円の数字がパワーで、これを上回る連結パワーを隣接させると討伐でき、そのパワーぶんの得点を得ます。ボスは相手にも倒されます。', b: () => bs(), c: [2, 20, 24] },
-            { t: '手札の見方', x: '手札は4枚。上段は★（レア度）と連結タイプ、中央が具材、下の数字が基本パワーです。数字の周りの▲は矢印の向きで、その方向にだけ連結できます。山札の残り枚数は右上に出ます。', b: () => bs(), f: ['playerHandSlots'], top: 1 },
-            { t: '具材を選ぶ', x: '手札をタップして選びます。下の説明バーに名前・方向・効果が出て、「詳細」で全文を確認できます。もう一度タップすると選択を解除します。', b: () => bs(), s: 0, f: ['playerHandSlots', 'selectedCardBrief'], top: 1 },
-            { t: '空きマスに置く', x: '選択中に空きマスをタップすると半透明のプレビューが出ます。別の空きマスをタップすれば置き直せます。ここではボスの真下に置いています。', b: () => bs(), s: 0, v: 7, c: [7] },
-            { t: '配置の確定', x: 'プレビューは「アタックへ進む」を押すと確定し、山札から1枚補充されます。具材を置けるのは1ターンに1枚です。ターンエンドを押しても確定します。', b: () => ({ ...bs(), 7: P(2, 'player') }), h: H2, f: ['mainPhaseActionBtn'], top: 1 },
-            { t: '相手の手番', x: 'あなたのターンを終えると、相手（CPU）が具材を置き、条件が合えば攻撃してきます。相手の具材は青色です。なお後攻の1ターン目は攻撃できません。', b: () => ({ ...bs(), 7: P(2, 'player'), 22: P(1, 'opponent') }), h: H2, o: 1 },
-            { t: '連結の条件', x: '2ターン目。たまごの↓と、置こうとしている大根の↑が向き合うと「連結」します。矢印が向き合った同じ持ち主の具材だけが連結します。', b: () => ({ ...bs(), 7: P(2, 'player'), 22: P(1, 'opponent') }), h: H2, n: 2, s: 0, v: 12, c: [7, 12] },
-            { t: '連結パワー', x: '連結した具材は光る線で結ばれ、盤面の数字は連結全体の合計（3+4=7）になります。ボス焦げ魔のパワー8にはまだ届きません。', b: () => ({ ...bs(), 7: P(2, 'player'), 12: P(1, 'player'), 22: P(1, 'opponent') }), h: [5, 3, 6, 7], n: 2, c: [7, 12] },
-            { t: '攻撃できるマス', x: 'しらたきを加えた3枚連結の合計は9。ボス（8）を上回ったので紫に光り、討伐できます。さらに、しらたきの↓と相手の大根の↑が向き合い、9が相手の4を上回るので「激突!」も可能です。', b: () => ({ ...bs(), ...ch(), 22: P(1, 'opponent') }), h: H4, n: 2, c: [2, 22] },
-            { t: 'アタックフェーズ', x: '「アタックへ進む」で戦闘に移ると配置ができなくなり、光ったマスをタップして攻撃します。攻撃は何度でもでき、終わったら「ターンエンド」を押します。', b: () => ({ ...bs(), ...ch(), 22: P(1, 'opponent') }), h: H4, n: 2, a: 1, c: [2, 22] },
-            { t: 'ボスを討伐', x: '光ったボスをタップして討伐します。ボスのパワー8がそのまま得点（+8）になり、ボス残りが減ります。', b: () => ({ ...bs(1), ...ch(), 22: P(1, 'opponent') }), h: H4, n: 2, a: 1, ps: 8, br: 2 },
-            { t: '相手に激突', x: '相手の具材を撃破すると、その具材のパワー（4）が相手の得点から引かれます（0未満にはなりません）。同じ条件で、相手もあなたの具材を攻撃してきます。撃破されるとあなたの得点が減ります。', b: () => ({ ...bs(1), ...ch() }), h: H4, n: 2, a: 1, ps: 8, br: 2 },
-            { t: '秘伝の道具', x: '「道具」から使えます。鍋蓋は2ターン自軍1体を攻撃から守り、日本酒・割り箸・土鍋・お皿は矢印を1つ追加します。黄金トング（相手の攻撃を3ターン封殺）と伝説の調味料（自軍全体のパワー+4）は4ターン目から使えます。回数には限りがあります。', b: () => ({ ...bs(1), ...ch() }), h: H4, n: 2, a: 1, ps: 8, br: 2, f: ['openItemBoxBtn'], top: 1 },
-            { t: 'ボス強襲', x: '3の倍数のターンの開始時、ボスが残っていると強襲が起きます。ピンクに点滅する3〜5マスの具材は、敵味方を問わず破壊されます。ここでは真ん中の大根が狙われています。', b: () => ({ ...bs(1), ...ch() }), h: H4, n: 3, ps: 8, br: 2, lost: 0, d: [3, 12, 21] },
-            { t: '連結が切れると', x: '大根が破壊され、連結が切れました。たまごとしらたきは単独に戻り、パワーは3と2に下がります。強襲は避けられないので、連結を一本に頼りすぎないのがコツです。', b: () => { const o = { ...bs(1), ...ch() }; delete o[12]; return o; }, h: H4, n: 3, ps: 8, br: 2, lost: 1 },
-            { t: '勝敗とレート', x: '終局は、①ボスを全員倒す ②盤面が埋まる ③互いの手札が尽きる、のいずれかです。得点が多い方が勝ちで、勝つとレートが上がり、負けると下がります。「完了」を押して、CPU対戦に挑戦しましょう！', b: () => { const o = { ...bs(1), ...ch() }; delete o[12]; return o; }, h: H4, n: 3, ps: 8, br: 2, lost: 1 }
-        ];
-    })();
-
-    function tutorialNudge() {
-        if (tutorialActive) showToast('説明の「次へ」ボタンで進みます');
-    }
-
-    function startTutorial() {
-        initAudioEngine();
-        battleId++;
-        battleOver = false;
-        inputLocked = true;      // 盤面は説明専用（操作は前へ／次へのみ）
-        tutorialActive = true;
-        isPlayerFirst = true;
-        tutIndex = 0;
-        playerItemStocks = JSON.parse(JSON.stringify(INITIAL_ITEM_STOCKS));
-        document.getElementById('opponentNameDisplay').textContent = 'チュートリアル相手';
-        switchScreen('battle');
-        document.getElementById('globalBackBtn').innerHTML = '◀ 終了';
-        document.getElementById('tutStepTotal').textContent = TUT_STEPS.length;
-        document.getElementById('tutorialPanel').classList.remove('hidden');
-        renderTutorialStep();
-    }
-
-    function renderTutorialStep() {
-        const st = TUT_STEPS[tutIndex];
-        boardCells = Array(25).fill(null);
-        Object.entries(st.b()).forEach(([k, v]) => { boardCells[+k] = v; });
-        playerHand = [...(st.h || [2, 1, 5, 3])];
-        const placed = boardCells.filter(c => c && c.owner === 'player').length;
-        playerDrawPile = Array(Math.max(0, 6 - placed - (st.lost || 0))).fill(0);
-        playerScore = st.ps || 0;
-        opponentScore = st.os || 0;
-        bossRemaining = st.br ?? 3;
-        turnCount = st.n || 1;
-        isPlayerTurn = !st.o;
-        currentPhase = st.a ? 'attack' : 'standby';
-        selectedHandIndex = st.s ?? null;
-        previewPlacementIndex = st.v ?? null;
-        selectedActiveItemId = null;
-        dangerTargetCells = st.d || [];
-
-        updateBattleStatusHeader();
-        updatePhaseUI();
-        renderPlayerHand();
-        renderBattleBoard();
-        updateSelectedCardBrief(st.s != null ? ALL_PIECES_DATA.find(x => x.id === playerHand[st.s]) : null);
-
-        document.querySelectorAll('.tut-focus').forEach(e => e.classList.remove('tut-focus'));
-        (st.f || []).forEach(id => document.getElementById(id)?.classList.add('tut-focus'));
-        const cells = document.getElementById('battleBoardGrid').children;
-        (st.c || []).forEach(i => cells[i]?.classList.add('tut-focus'));
-
-        const panel = document.getElementById('tutorialPanel');
-        panel.classList.toggle('tut-panel-top', !!st.top);
-        panel.classList.toggle('tut-panel-bottom', !st.top);
-        document.getElementById('tutStepNo').textContent = tutIndex + 1;
-        document.getElementById('tutTitle').textContent = st.t;
-        document.getElementById('tutText').textContent = st.x;
-        document.getElementById('tutPrevBtn').disabled = tutIndex === 0;
-        document.getElementById('tutNextBtn').textContent = tutIndex === TUT_STEPS.length - 1 ? '完了 ✓' : '次へ ▶';
-    }
-
-    function tutorialStep(d) {
-        if (!tutorialActive) return;
-        playSound('click');
-        const next = tutIndex + d;
-        if (next < 0) return;
-        if (next >= TUT_STEPS.length) { exitTutorial(); return; }
-        tutIndex = next;
-        renderTutorialStep();
-    }
-
-    function toggleTutorialPanelPos() {
-        const panel = document.getElementById('tutorialPanel');
-        panel.classList.toggle('tut-panel-top');
-        panel.classList.toggle('tut-panel-bottom');
-    }
-
-    function exitTutorial() {
-        tutorialActive = false;
-        inputLocked = false;
-        battleOver = true;
-        battleId++;
-        dangerTargetCells = [];
-        selectedHandIndex = null;
-        previewPlacementIndex = null;
-        boardCells = Array(25).fill(null);
-        document.getElementById('tutorialPanel').classList.add('hidden');
-        document.querySelectorAll('.tut-focus').forEach(e => e.classList.remove('tut-focus'));
-        switchScreen('home');
-    }
-
-    /* ================= 共通ヘルパー（タイマー・制限・保存・音声解禁） ================= */
+    /* ================= 共通ヘルパー（タイマー・保存・音声解禁） ================= */
     function later(fn, ms) {
         const id = battleId;
         setTimeout(() => { if (id === battleId) fn(); }, ms);
     }
 
-    // 後攻プレイヤーの最初の手番（後攻の1ターン目）は攻撃不可
     function isPlayerRestrictedTurn() {
         return !isPlayerFirst && turnCount === 2;
     }
 
-    // 隣り合う2マスが互いに矢印を向け合っているか（連結ビーム描画用）
     function areFacing(a, b) {
         const pa = boardCells[a], pb = boardCells[b];
         if (!pa || !pb || !pa.dir || !pb.dir) return false;
@@ -1269,7 +1160,8 @@
     function saveGame() {
         try {
             localStorage.setItem(SAVE_KEY, JSON.stringify({
-                playerName, playerRate, playerWins, playerLosses, playerDeckIds, bgmVolume, seVolume, isMuted
+                playerName, playerRate, playerWins, playerLosses, playerDeckIds, bgmVolume, seVolume, isMuted,
+                customDbUrl: currentFirebaseConfig.databaseURL
             }));
         } catch (e) {}
     }
@@ -1289,6 +1181,12 @@
             const bv = num(d.bgmVolume, 0, 1); if (bv !== null) bgmVolume = bv;
             const sv = num(d.seVolume, 0, 1); if (sv !== null) seVolume = sv;
 
+            if (typeof d.customDbUrl === 'string' && d.customDbUrl.trim()) {
+                currentFirebaseConfig.databaseURL = d.customDbUrl.trim();
+                const dbInput = document.getElementById('customDbUrlInput');
+                if (dbInput) dbInput.value = currentFirebaseConfig.databaseURL;
+            }
+
             if (Array.isArray(d.playerDeckIds) && d.playerDeckIds.length === 10) {
                 const ids = d.playerDeckIds;
                 const known = ids.every(id => ALL_PIECES_DATA.some(p => p.id === id));
@@ -1301,7 +1199,6 @@
         } catch (e) {}
     }
 
-    // ブラウザの自動再生制限対策：ユーザー操作の中で AudioContext を起動してから初期化する
     async function unlockAudio() {
         if (typeof Tone === 'undefined') return;
         try { await Tone.start(); } catch (e) {}
@@ -1317,7 +1214,6 @@
         return dirs.map(d => glyphMap[d] || '').join(' ');
     }
 
-    // 手札用：数字バッジの周りに各方向の▲を配置するHTML生成
     function createHandPowerBadgeHtml(power, dirs) {
         const trianglesHtml = dirs.map(d => `<div class="badge-tri badge-tri-${d}"></div>`).join('');
         return `
@@ -1333,9 +1229,8 @@
     /* ================= 音響エンジン (Tone.js 雀魂風メジャー調) ================= */
     function initAudioEngine() {
         if (isAudioStarted || typeof Tone === 'undefined') return;
-        if (Tone.context.state !== 'running') return; // ユーザー操作前は初期化しない
+        if (Tone.context.state !== 'running') return;
         try {
-
             bgmGain = new Tone.Gain(isMuted ? 0 : bgmVolume * 0.4).toDestination();
             seGain = new Tone.Gain(isMuted ? 0 : seVolume).toDestination();
 
@@ -1407,41 +1302,17 @@
         const now = Tone.now();
         try {
             switch (type) {
-                case 'click':
-                    clickSynth?.triggerAttackRelease("C3", "32n", now);
-                    break;
-                case 'place':
-                    placeSynth?.triggerAttackRelease(["E5", "G5"], "16n", now);
-                    break;
-                case 'connect':
-                    connectSynth?.triggerAttackRelease(["C5", "E5", "G5", "B5"], "8n", now);
-                    break;
-                case 'defeat':
-                    defeatSynth?.triggerAttackRelease("C2", "8n", now);
-                    placeSynth?.triggerAttackRelease("G5", "16n", now + 0.05);
-                    break;
-                case 'boss_strike':
-                    defeatSynth?.triggerAttackRelease("A1", "4n", now);
-                    clashSynth?.triggerAttackRelease("8n", now + 0.05);
-                    break;
-                case 'phase_standby':
-                    connectSynth?.triggerAttackRelease(["E5", "B5"], "16n", now);
-                    break;
-                case 'phase_battle':
-                    defeatSynth?.triggerAttackRelease("G2", "16n", now);
-                    break;
-                case 'phase_turnend':
-                    clickSynth?.triggerAttackRelease("D4", "16n", now);
-                    break;
-                case 'clash':
-                    clashSynth?.triggerAttackRelease("16n", now);
-                    break;
-                case 'item':
-                    connectSynth?.triggerAttackRelease(["A5", "C6"], "16n", now);
-                    break;
-                case 'error':
-                    clickSynth?.triggerAttackRelease("F2", "16n", now);
-                    break;
+                case 'click': clickSynth?.triggerAttackRelease("C3", "32n", now); break;
+                case 'place': placeSynth?.triggerAttackRelease(["E5", "G5"], "16n", now); break;
+                case 'connect': connectSynth?.triggerAttackRelease(["C5", "E5", "G5", "B5"], "8n", now); break;
+                case 'defeat': defeatSynth?.triggerAttackRelease("C2", "8n", now); placeSynth?.triggerAttackRelease("G5", "16n", now + 0.05); break;
+                case 'boss_strike': defeatSynth?.triggerAttackRelease("A1", "4n", now); clashSynth?.triggerAttackRelease("8n", now + 0.05); break;
+                case 'phase_standby': connectSynth?.triggerAttackRelease(["E5", "B5"], "16n", now); break;
+                case 'phase_battle': defeatSynth?.triggerAttackRelease("G2", "16n", now); break;
+                case 'phase_turnend': clickSynth?.triggerAttackRelease("D4", "16n", now); break;
+                case 'clash': clashSynth?.triggerAttackRelease("16n", now); break;
+                case 'item': connectSynth?.triggerAttackRelease(["A5", "C6"], "16n", now); break;
+                case 'error': clickSynth?.triggerAttackRelease("F2", "16n", now); break;
             }
         } catch (e) {}
     }
@@ -1454,17 +1325,13 @@
     function updateBgmVolume(val) {
         bgmVolume = val / 100;
         document.getElementById('bgmVolumeVal').textContent = `${val}%`;
-        if (bgmGain) {
-            bgmGain.gain.rampTo(isMuted ? 0 : bgmVolume * 0.4, 0.05);
-        }
+        if (bgmGain) bgmGain.gain.rampTo(isMuted ? 0 : bgmVolume * 0.4, 0.05);
     }
 
     function updateSeVolume(val) {
         seVolume = val / 100;
         document.getElementById('seVolumeVal').textContent = `${val}%`;
-        if (seGain) {
-            seGain.gain.rampTo(isMuted ? 0 : seVolume, 0.05);
-        }
+        if (seGain) seGain.gain.rampTo(isMuted ? 0 : seVolume, 0.05);
     }
 
     function toggleMute() {
@@ -1524,7 +1391,6 @@
     }
 
     function handleGlobalBackClick() {
-        if (tutorialActive) { exitTutorial(); return; }
         if (currentScreen === 'battle') {
             openSurrenderModal();
         } else if (currentScreen === 'deck') {
@@ -1548,11 +1414,20 @@
     function confirmSurrenderAndQuit() {
         closeSurrenderModal();
         const alreadyOver = battleOver;
-        battleId++;              // 予約済みタイマーをすべて無効化
+        battleId++;
         battleOver = true;
         inputLocked = false;
         dangerTargetCells = [];
         document.getElementById('phaseCutinOverlay')?.classList.remove('active');
+
+        if (currentBattleMode === 'online' && roomRef) {
+            roomRef.child('events').push({
+                type: 'surrender',
+                by: onlinePlayerRole,
+                timestamp: Date.now()
+            });
+        }
+
         if (!alreadyOver) {
             playerLosses++;
             playerRate = Math.max(1000, playerRate - 15);
@@ -1620,7 +1495,6 @@
         ALL_PIECES_DATA.forEach(p => {
             const isSelected = tempEditingDeckIds.includes(p.id);
             const card = document.createElement('div');
-            
             card.className = `p-1.5 rounded-xl border flex items-center justify-between cursor-pointer transition select-none ${
                 isSelected 
                     ? 'border-amber-600/90 bg-gradient-to-r from-amber-950/60 to-[#221610] shadow-sm' 
@@ -1628,7 +1502,6 @@
             }`;
 
             const badgeHtml = createHandPowerBadgeHtml(p.power, p.dir);
-
             card.innerHTML = `
                 <div class="flex items-center gap-1.5 min-w-0 flex-1">
                     <span class="text-xl shrink-0">${p.icon}</span>
@@ -1748,7 +1621,7 @@
         switchScreen('home');
     }
 
-    /* ================= 対戦モード選択 & 準備 ================= */
+    /* ================= CPU 難易度選択 ================= */
     function openCpuSelectModal() {
         initAudioEngine();
         playSound('click');
@@ -1770,9 +1643,30 @@
         startBattlePreparation();
     }
 
+    /* ================= Firebase オンライン対戦機能 ================= */
+    function initFirebaseClient() {
+        if (firebaseDb) return true;
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(currentFirebaseConfig);
+            }
+            firebaseDb = firebase.database();
+            document.getElementById('firebaseStatusIndicator').textContent = "接続可能";
+            document.getElementById('firebaseStatusIndicator').className = "text-emerald-400 font-bold";
+            return true;
+        } catch (e) {
+            console.error("Firebase init error:", e);
+            document.getElementById('firebaseStatusIndicator').textContent = "接続エラー";
+            document.getElementById('firebaseStatusIndicator').className = "text-rose-400 font-bold";
+            showToast("Firebaseの初期化に失敗しました。URLをご確認ください");
+            return false;
+        }
+    }
+
     function openOnlineMatchModal() {
         initAudioEngine();
         playSound('click');
+        initFirebaseClient();
         document.getElementById('onlineMatchModal').classList.remove('hidden');
         document.getElementById('onlineMatchModal').classList.add('flex');
     }
@@ -1783,13 +1677,36 @@
         document.getElementById('onlineMatchModal').classList.add('hidden');
     }
 
+    function toggleFirebaseConfigBox() {
+        const box = document.getElementById('firebaseConfigBox');
+        box.classList.toggle('hidden');
+    }
+
+    function saveCustomFirebaseConfig() {
+        const url = document.getElementById('customDbUrlInput').value.trim();
+        if (url) {
+            currentFirebaseConfig.databaseURL = url;
+            saveGame();
+            try {
+                if (firebase.apps.length) {
+                    firebase.app().delete();
+                }
+                firebaseDb = null;
+                initFirebaseClient();
+                showToast("Firebase接続先を更新しました");
+            } catch (e) {
+                showToast("再初期化中にエラーが発生しました");
+            }
+        }
+    }
+
     function copyOnlineShareUrl() {
         playSound('click');
         const code = document.getElementById('onlineRoomCodeInput').value.trim() || 'oden777';
         const url = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(code)}`;
         if (navigator.clipboard) {
             navigator.clipboard.writeText(url).then(() => {
-                showToast("招待URLをクリップボードにコピーしました！");
+                showToast("招待URLをコピーしました！友達に送信してください");
             }).catch(() => {
                 prompt("以下の招待URLをコピーしてください：", url);
             });
@@ -1799,8 +1716,183 @@
     }
 
     function startOnlineRoomMatch() {
-        playSound('error');
-        showToast("オンライン対戦は準備中です。CPU対戦をお楽しみください");
+        if (!initFirebaseClient()) return;
+        const code = document.getElementById('onlineRoomCodeInput').value.trim();
+        if (!code) {
+            showToast("合言葉を入力してください");
+            return;
+        }
+
+        currentRoomCode = code;
+        currentBattleMode = 'online';
+        closeOnlineMatchModal();
+        showToast(`合言葉「${currentRoomCode}」の部屋へ接続中...`);
+
+        roomRef = firebaseDb.ref(`rooms/${currentRoomCode}`);
+        roomRef.once('value').then(snap => {
+            const data = snap.val();
+            if (!data || !data.host) {
+                // ホスト（部屋主）として部屋を生成
+                onlinePlayerRole = 'host';
+                isPlayerFirst = true; // ホストが先攻
+                isPlayerTurn = true;
+
+                // 中立ボス3体の位置と初期パワーを生成
+                const availablePositions = Array.from({ length: 25 }, (_, i) => i);
+                const shuffledPos = shuffleArray(availablePositions);
+                const monsterPos = shuffledPos.slice(0, 3);
+                const monsterIcons = ["👹", "👺", "👻"];
+                const monsterNames = ["焦げ魔", "煮崩れ鬼", "出汁啜り"];
+
+                const initialMonsters = monsterPos.map((pos, idx) => {
+                    const pVal = Math.floor(Math.random() * 8) + 8;
+                    return { pos, name: monsterNames[idx], icon: monsterIcons[idx], power: pVal };
+                });
+
+                roomRef.set({
+                    host: { name: playerName, rate: playerRate, ready: true },
+                    guest: null,
+                    status: 'waiting',
+                    monsters: initialMonsters,
+                    currentTurnRole: 'host',
+                    turnCount: 1,
+                    events: {}
+                });
+
+                showToast("相手の入室を待機中...（招待URLを共有できます）");
+                setupRoomListeners();
+                startBattlePreparation();
+            } else if (!data.guest) {
+                // ゲスト（参加者）として合流
+                onlinePlayerRole = 'guest';
+                isPlayerFirst = false; // ゲストが後攻
+                isPlayerTurn = false;
+
+                roomRef.child('guest').set({ name: playerName, rate: playerRate, ready: true });
+                roomRef.child('status').set('playing');
+
+                showToast("部屋に合流しました！対局を開始します！");
+                setupRoomListeners();
+                startBattlePreparation();
+            } else {
+                showToast("この合言葉の部屋はすでに満員です。別の合言葉をお試しください");
+                switchScreen('home');
+            }
+        }).catch(err => {
+            console.error(err);
+            showToast("通信エラーが発生しました。DBルールを確認してください");
+        });
+    }
+
+    function setupRoomListeners() {
+        if (!roomRef) return;
+
+        // 対戦相手の情報同期
+        roomRef.on('value', snap => {
+            const data = snap.val();
+            if (!data) return;
+
+            if (onlinePlayerRole === 'host') {
+                if (data.guest) {
+                    document.getElementById('opponentNameDisplay').textContent = `${data.guest.name} (LIVE)`;
+                } else {
+                    document.getElementById('opponentNameDisplay').textContent = "待機中...";
+                }
+            } else {
+                if (data.host) {
+                    document.getElementById('opponentNameDisplay').textContent = `${data.host.name} (LIVE)`;
+                }
+            }
+        });
+
+        // アクションイベント通知（具材配置・激突・討伐・道具・ターンエンド）
+        roomRef.child('events').on('child_added', snap => {
+            const ev = snap.val();
+            if (!ev || ev.by === onlinePlayerRole) return; // 自分の送信したイベントは無視
+
+            handleIncomingNetworkEvent(ev);
+        });
+    }
+
+    function sendNetworkEvent(eventPayload) {
+        if (currentBattleMode !== 'online' || !roomRef) return;
+        eventPayload.by = onlinePlayerRole;
+        eventPayload.timestamp = Date.now();
+        roomRef.child('events').push(eventPayload);
+    }
+
+    function handleIncomingNetworkEvent(ev) {
+        if (ev.type === 'place') {
+            // 相手が具材を配置
+            const p = ALL_PIECES_DATA.find(x => x.id === ev.pieceId);
+            if (p) {
+                boardCells[ev.cellIndex] = {
+                    ...p,
+                    dir: [...ev.dir],
+                    owner: 'opponent',
+                    currentPower: p.power,
+                    instanceId: `net_opp_${Date.now()}`,
+                    shieldTurns: 0
+                };
+                playSound('place');
+                calculateConnectedGroups();
+                renderBattleBoard();
+            }
+        } else if (ev.type === 'clash') {
+            // 相手がこちらの駒を激突・撃破
+            const pl = boardCells[ev.cellIndex];
+            if (pl) {
+                playerScore = Math.max(0, playerScore - pl.power);
+                boardCells[ev.cellIndex] = null;
+                playSound('clash');
+                showToast(`⚠️ 相手があなたの【${pl.name}】を激突撃破しました！`);
+                calculateConnectedGroups();
+                updateBattleStatusHeader();
+                renderBattleBoard();
+                checkBattleEndCondition();
+            }
+        } else if (ev.type === 'defeat_monster') {
+            // 相手が中立ボスを討伐
+            const monster = boardCells[ev.cellIndex];
+            if (monster) {
+                opponentScore += monster.power;
+                bossRemaining = Math.max(0, bossRemaining - 1);
+                boardCells[ev.cellIndex] = null;
+                playSound('defeat');
+                showToast(`⚠️ 相手が中立ボス【${monster.name}】を討伐しました！`);
+                updateBattleStatusHeader();
+                renderBattleBoard();
+                checkBattleEndCondition();
+            }
+        } else if (ev.type === 'item_global') {
+            // 相手が全体道具を使用
+            if (ev.itemId === 'tongs') {
+                opponentAttackDisabledTurns = 3;
+                showToast("🔱 相手が【黄金トング】を発動！3ターンの間こちらの攻撃が封殺されます！");
+            }
+        } else if (ev.type === 'item_target') {
+            // 相手が味方駒にアイテムを使用
+            const oppPiece = boardCells[ev.cellIndex];
+            if (oppPiece) {
+                if (ev.itemId === 'shield') oppPiece.shieldTurns = 2;
+                if (ev.addDir && !oppPiece.dir.includes(ev.addDir)) oppPiece.dir.push(ev.addDir);
+                playSound('item');
+                renderBattleBoard();
+            }
+        } else if (ev.type === 'turn_end') {
+            // 相手がターンエンド ➔ 自分の手番開始
+            switchTurnToPlayer();
+        } else if (ev.type === 'boss_strike') {
+            // ホスト主導のボス強襲破壊マス通知
+            if (onlinePlayerRole === 'guest') {
+                applyBossStrikeTargetCells(ev.targetCells);
+            }
+        } else if (ev.type === 'surrender') {
+            // 相手が降参
+            showToast("相手が対局を降参しました！あなたの不戦勝です！");
+            playerScore += 50;
+            checkBattleEndCondition();
+        }
     }
 
     /* ================= 初手確認 & 先攻後攻選択 ================= */
@@ -1819,7 +1911,6 @@
             el.className = "flex flex-col items-center justify-between bg-[#191514] border border-[#2e2622] rounded-lg p-1 relative overflow-visible";
 
             const badgeHtml = createHandPowerBadgeHtml(p.power, p.dir);
-
             el.innerHTML = `
                 <div class="flex items-center justify-between w-full px-0.5">
                     <span class="text-[8px] text-amber-400 font-serif leading-none">${p.stars}</span>
@@ -1832,8 +1923,13 @@
             handGrid.appendChild(el);
         });
 
-        document.getElementById('turnOrderSelectModal').classList.remove('hidden');
-        document.getElementById('turnOrderSelectModal').classList.add('flex');
+        if (currentBattleMode === 'online') {
+            // オンライン対戦時はホストが先攻、ゲストが後攻に自動確定
+            selectBattleTurnOrder(onlinePlayerRole === 'host');
+        } else {
+            document.getElementById('turnOrderSelectModal').classList.remove('hidden');
+            document.getElementById('turnOrderSelectModal').classList.add('flex');
+        }
     }
 
     function selectBattleTurnOrder(isFirst) {
@@ -1867,31 +1963,50 @@
         playerItemStocks = JSON.parse(JSON.stringify(INITIAL_ITEM_STOCKS));
         opponentItemStocks = JSON.parse(JSON.stringify(INITIAL_ITEM_STOCKS));
 
-        const diffLabel = cpuDifficulty === 'matsu' ? '松' : (cpuDifficulty === 'ume' ? '梅' : '竹');
-        document.getElementById('opponentNameDisplay').textContent = currentBattleMode === 'online' 
-            ? '相手（合言葉対局）' 
-            : `相手（CPU・${diffLabel}）`;
+        if (currentBattleMode === 'cpu') {
+            const diffLabel = cpuDifficulty === 'matsu' ? '松' : (cpuDifficulty === 'ume' ? '梅' : '竹');
+            document.getElementById('opponentNameDisplay').textContent = `相手（CPU・${diffLabel}）`;
 
-        const availablePositions = Array.from({ length: 25 }, (_, i) => i);
-        const shuffledPos = shuffleArray(availablePositions);
+            const availablePositions = Array.from({ length: 25 }, (_, i) => i);
+            const shuffledPos = shuffleArray(availablePositions);
+            const monsterPos = shuffledPos.slice(0, 3);
+            const monsterIcons = ["👹", "👺", "👻"];
+            const monsterNames = ["焦げ魔", "煮崩れ鬼", "出汁啜り"];
 
-        const monsterPos = shuffledPos.slice(0, 3);
-        const monsterIcons = ["👹", "👺", "👻"];
-        const monsterNames = ["焦げ魔", "煮崩れ鬼", "出汁啜り"];
-
-        monsterPos.forEach((pos, idx) => {
-            const pVal = Math.floor(Math.random() * 8) + 8; // 8〜15
-            boardCells[pos] = {
-                type: 'monster',
-                id: `monster_${idx}`,
-                name: monsterNames[idx],
-                icon: monsterIcons[idx],
-                power: pVal,
-                basePower: pVal,
-                owner: 'neutral',
-                dir: []
-            };
-        });
+            monsterPos.forEach((pos, idx) => {
+                const pVal = Math.floor(Math.random() * 8) + 8;
+                boardCells[pos] = {
+                    type: 'monster',
+                    id: `monster_${idx}`,
+                    name: monsterNames[idx],
+                    icon: monsterIcons[idx],
+                    power: pVal,
+                    basePower: pVal,
+                    owner: 'neutral',
+                    dir: []
+                };
+            });
+        } else if (currentBattleMode === 'online' && roomRef) {
+            // オンライン同期：ホストが部屋に書き込んだ中立ボスを読み込む
+            roomRef.child('monsters').once('value').then(snap => {
+                const list = snap.val();
+                if (list) {
+                    list.forEach((m, idx) => {
+                        boardCells[m.pos] = {
+                            type: 'monster',
+                            id: `monster_${idx}`,
+                            name: m.name,
+                            icon: m.icon,
+                            power: m.power,
+                            basePower: m.power,
+                            owner: 'neutral',
+                            dir: []
+                        };
+                    });
+                    renderBattleBoard();
+                }
+            });
+        }
 
         updateBattleStatusHeader();
     }
@@ -1911,7 +2026,10 @@
             updatePhaseUI();
             renderPlayerHand();
             renderBattleBoard();
-            later(executeCpuTurn, 1000);
+
+            if (currentBattleMode === 'cpu') {
+                later(executeCpuTurn, 1000);
+            }
         }
     }
 
@@ -1994,7 +2112,7 @@
     }
 
     function handleMainPhaseButtonClick() {
-        if (!isPlayerTurn || battleOver || inputLocked) { tutorialNudge(); return; }
+        if (!isPlayerTurn || battleOver || inputLocked) return;
 
         if (currentPhase === 'standby') {
             if (previewPlacementIndex !== null && selectedHandIndex !== null) {
@@ -2015,7 +2133,7 @@
                 showToast("【アタックフェーズ】激突可能な箇所がある限り何度でも攻撃できます！");
             }
         } else {
-            inputLocked = true; // 連打による二重実行を防止
+            inputLocked = true;
             triggerPhaseCutin('turnend', 'ターンエンド', '手番交代・次の手を待つ', '⏳');
             later(switchTurnToOpponent, 350);
         }
@@ -2095,7 +2213,6 @@
             cellDiv.className = "grid-cell";
             cellDiv.dataset.index = i;
 
-            // 中立ボスの強襲ターゲットマス警告表示
             if (dangerTargetCells.includes(i)) {
                 cellDiv.classList.add('cell-danger-target');
             }
@@ -2279,7 +2396,7 @@
     }
 
     function selectHandPiece(index) {
-        if (!isPlayerTurn || battleOver || inputLocked) { tutorialNudge(); return; }
+        if (!isPlayerTurn || battleOver || inputLocked) return;
         if (currentPhase !== 'standby') {
             playSound('error');
             showToast("アタックフェーズ中は具材の配置はできません");
@@ -2315,7 +2432,7 @@
     }
 
     function handleCellClick(index) {
-        if (!isPlayerTurn || battleOver || inputLocked) { tutorialNudge(); return; }
+        if (!isPlayerTurn || battleOver || inputLocked) return;
         const cell = boardCells[index];
 
         if (selectedActiveItemId) {
@@ -2390,6 +2507,15 @@
             shieldTurns: 0
         };
 
+        if (currentBattleMode === 'online') {
+            sendNetworkEvent({
+                type: 'place',
+                pieceId: p.id,
+                dir: p.dir,
+                cellIndex: previewPlacementIndex
+            });
+        }
+
         playerHand.splice(selectedHandIndex, 1);
         if (playerDrawPile.length > 0) {
             playerHand.push(playerDrawPile.shift());
@@ -2438,7 +2564,6 @@
         const ox = oppIndex % 5;
         const oy = Math.floor(oppIndex / 5);
 
-        // 4方向の厳密な向き合い判定
         const clashVectors = [
             { dx: 0, dy: -1, oppNeedDir: 'up',    plNeedDir: 'down' },
             { dx: 0, dy: 1,  oppNeedDir: 'down',  plNeedDir: 'up' },
@@ -2489,6 +2614,13 @@
         bossRemaining = Math.max(0, bossRemaining - 1);
         boardCells[monsterIndex] = null;
 
+        if (currentBattleMode === 'online') {
+            sendNetworkEvent({
+                type: 'defeat_monster',
+                cellIndex: monsterIndex
+            });
+        }
+
         playSound('defeat');
         showToast(`💥 ${monster.name}を討伐！ +${gainScore}点獲得！`);
 
@@ -2511,6 +2643,13 @@
         const deductScore = opp.power;
         opponentScore = Math.max(0, opponentScore - deductScore);
         boardCells[oppIndex] = null;
+
+        if (currentBattleMode === 'online') {
+            sendNetworkEvent({
+                type: 'clash',
+                cellIndex: oppIndex
+            });
+        }
 
         playSound('clash');
 
@@ -2546,7 +2685,7 @@
             return;
         }
         if (!isPlayerTurn || battleOver || inputLocked) {
-            showToast(tutorialActive ? '説明の「次へ」ボタンで進みます' : '今は道具を使えません');
+            showToast('今は道具を使えません');
             return;
         }
         initAudioEngine();
@@ -2604,7 +2743,7 @@
     }
 
     function activateItem(itemId) {
-        if (!isPlayerTurn || battleOver || inputLocked) { tutorialNudge(); return; }
+        if (!isPlayerTurn || battleOver || inputLocked) return;
         const item = playerItemStocks[itemId];
         if (!item || item.count <= 0) return;
         if (item.minTurn && turnCount < item.minTurn) {
@@ -2613,7 +2752,6 @@
             return;
         }
 
-        // 全体即時発動アイテム
         if (item.target === 'global') {
             closeItemBoxModal();
             item.count--;
@@ -2622,6 +2760,9 @@
                 opponentAttackDisabledTurns = 3;
                 playSound('item');
                 showToast("🔱 【黄金トング】発動！3ターンの間、相手のすべての攻撃を封殺！");
+                if (currentBattleMode === 'online') {
+                    sendNetworkEvent({ type: 'item_global', itemId: 'tongs' });
+                }
             } else if (itemId === 'spice') {
                 let buffCount = 0;
                 boardCells.forEach(cell => {
@@ -2692,6 +2833,15 @@
             showToast(`🍽️ 【${cell.name}】に下（↓）の矢印を追加！`);
         }
 
+        if (currentBattleMode === 'online') {
+            sendNetworkEvent({
+                type: 'item_target',
+                itemId: selectedActiveItemId,
+                cellIndex: index,
+                addDir: addDir || null
+            });
+        }
+
         item.count--;
         selectedActiveItemId = null;
         updateBattleStatusHeader();
@@ -2706,7 +2856,7 @@
         });
     }
 
-    /* ================= CPU 手番思考ロジック ================= */
+    /* ================= 手番交代 & CPU/ネットワーク同期 ================= */
     function switchTurnToOpponent() {
         if (!isPlayerTurn || battleOver) return;
         if (previewPlacementIndex !== null && selectedHandIndex !== null) {
@@ -2725,7 +2875,11 @@
         renderBattleBoard();
         renderPlayerHand();
 
-        later(executeCpuTurn, 1000);
+        if (currentBattleMode === 'cpu') {
+            later(executeCpuTurn, 1000);
+        } else if (currentBattleMode === 'online') {
+            sendNetworkEvent({ type: 'turn_end' });
+        }
     }
 
     function switchTurnToPlayer() {
@@ -2736,20 +2890,23 @@
         isPlayerTurn = true;
         hasPlacedPieceThisTurn = false;
         currentPhase = 'standby';
-        inputLocked = (turnCount % 3 === 0 && bossRemaining > 0); // 強襲演出中は操作ロック
+        inputLocked = (turnCount % 3 === 0 && bossRemaining > 0);
 
         updateBattleStatusHeader();
         updatePhaseUI();
 
-        // 3の倍数ターンかつ中立ボスが1体以上生存している場合、ボス強襲イベントを発生
         if (turnCount % 3 === 0 && bossRemaining > 0) {
-            triggerBossRandomStrike(() => {
-                inputLocked = false;
-                triggerPhaseCutin('standby', 'スタンバイフェーズ', `TURN ${turnCount} あなたの手番`, '🍱');
-                showToast(`TURN ${turnCount}: あなたの手番です`);
-                renderBattleBoard();
-                renderPlayerHand();
-            });
+            if (currentBattleMode === 'online' && onlinePlayerRole === 'guest') {
+                // ゲスト側はホストからのボス強襲イベント受信を待機
+            } else {
+                triggerBossRandomStrike(() => {
+                    inputLocked = false;
+                    triggerPhaseCutin('standby', 'スタンバイフェーズ', `TURN ${turnCount} あなたの手番`, '🍱');
+                    showToast(`TURN ${turnCount}: あなたの手番です`);
+                    renderBattleBoard();
+                    renderPlayerHand();
+                });
+            }
         } else {
             triggerPhaseCutin('standby', 'スタンバイフェーズ', `TURN ${turnCount} あなたの手番`, '🍱');
             showToast(`TURN ${turnCount}: あなたの手番です`);
@@ -2759,7 +2916,6 @@
     }
 
     function triggerBossRandomStrike(callback) {
-        // 中立ボスがいるマスを除外した候補マス（0〜24）を抽出
         const eligibleCells = [];
         for (let i = 0; i < 25; i++) {
             if (!boardCells[i] || boardCells[i].type !== 'monster') {
@@ -2772,16 +2928,20 @@
             return;
         }
 
-        // 3〜5マスをランダムに決定
-        const numTargets = Math.min(eligibleCells.length, Math.floor(Math.random() * 3) + 3); // 3, 4, または 5
+        const numTargets = Math.min(eligibleCells.length, Math.floor(Math.random() * 3) + 3);
         const shuffled = shuffleArray(eligibleCells);
         dangerTargetCells = shuffled.slice(0, numTargets);
 
-        // ボス強襲カットイン発動
+        if (currentBattleMode === 'online' && onlinePlayerRole === 'host') {
+            sendNetworkEvent({
+                type: 'boss_strike',
+                targetCells: dangerTargetCells
+            });
+        }
+
         triggerPhaseCutin('boss_strike', '⚠️ ボス強襲！', `煮えたぎる出汁が${numTargets}マスを襲撃！`, '🔥');
         renderBattleBoard();
 
-        // 警告演出後にマス内のカードを粉砕
         later(() => {
             playSound('boss_strike');
             let destroyedPlayerCount = 0;
@@ -2792,7 +2952,7 @@
                 if (targetPiece) {
                     if (targetPiece.owner === 'player') destroyedPlayerCount++;
                     if (targetPiece.owner === 'opponent') destroyedOpponentCount++;
-                    boardCells[idx] = null; // カード破壊
+                    boardCells[idx] = null;
                 }
             });
 
@@ -2811,6 +2971,24 @@
             later(() => {
                 if (callback) callback();
             }, 600);
+        }, 1100);
+    }
+
+    function applyBossStrikeTargetCells(targetCells) {
+        dangerTargetCells = targetCells;
+        triggerPhaseCutin('boss_strike', '⚠️ ボス強襲！', `煮えたぎる出汁が${dangerTargetCells.length}マスを襲撃！`, '🔥');
+        renderBattleBoard();
+
+        later(() => {
+            playSound('boss_strike');
+            dangerTargetCells.forEach(idx => {
+                boardCells[idx] = null;
+            });
+            dangerTargetCells = [];
+            calculateConnectedGroups();
+            renderBattleBoard();
+            showToast("💥 相手ホストからのボス強襲が着弾しました！");
+            checkBattleEndCondition();
         }, 1100);
     }
 
@@ -2934,7 +3112,6 @@
                 }
             }
 
-            // 相手の手番が終わってから効果ターンを消化（鍋蓋2ターン・トング3ターンを正確に）
             if (opponentAttackDisabledTurns > 0) opponentAttackDisabledTurns--;
             tickShieldTurns('player');
 
@@ -2979,7 +3156,7 @@
         oScoreEl.textContent = opponentScore;
         turnsEl.textContent = turnCount;
 
-        const rateGain = cpuDifficulty === 'matsu' ? 35 : (cpuDifficulty === 'ume' ? 15 : 25);
+        const rateGain = currentBattleMode === 'online' ? 30 : (cpuDifficulty === 'matsu' ? 35 : (cpuDifficulty === 'ume' ? 15 : 25));
 
         if (playerScore > opponentScore) {
             header.className = "py-2.5 rounded-xl border border-rose-600 bg-gradient-to-r from-rose-950 to-stone-900";
@@ -3025,7 +3202,11 @@
     function restartBattleMatch() {
         document.getElementById('resultModal').classList.remove('flex');
         document.getElementById('resultModal').classList.add('hidden');
-        startBattlePreparation();
+        if (currentBattleMode === 'online') {
+            startOnlineRoomMatch();
+        } else {
+            startBattlePreparation();
+        }
     }
 
     /* ================= 設定・ルール・ヘルパー ================= */
@@ -3150,7 +3331,6 @@
 
         ['pointerdown', 'touchend', 'click', 'keydown'].forEach(ev => window.addEventListener(ev, unlockAudio));
 
-        // タブが裏に回ったらBGMを止める
         let pausedByHidden = false;
         document.addEventListener('visibilitychange', () => {
             if (!isAudioStarted) return;
@@ -3163,12 +3343,19 @@
             }
         });
 
-        // 画面サイズ変更時に連結ビームを再計算
         const boardEl = document.getElementById('battleBoardGrid');
         if (boardEl && 'ResizeObserver' in window) {
             new ResizeObserver(() => {
                 if (currentScreen === 'battle') renderLinkBeams(calculateConnectedGroups());
             }).observe(boardEl);
+        }
+
+        // URLパラメータ（?room=xxx）で開かれた場合は自動でオンライン対戦画面を開く
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomFromUrl = urlParams.get('room');
+        if (roomFromUrl) {
+            document.getElementById('onlineRoomCodeInput').value = roomFromUrl;
+            openOnlineMatchModal();
         }
     });
     </script>
