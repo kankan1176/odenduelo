@@ -167,7 +167,7 @@
             filter: drop-shadow(0 0 2px #e11d48);
         }
 
-        /* 5×5 盤面 */
+        /* 5×5 盤面（モバイル標準） */
         .board-container {
             width: 100%;
             max-width: min(320px, 42vh);
@@ -434,6 +434,81 @@
             cursor: not-allowed;
         }
 
+        /* ================= PC版（ワイドレイアウト）専用スタイル ================= */
+        .mode-pc .app-root-container {
+            max-width: 1040px !important;
+            padding: 16px 24px !important;
+        }
+
+        /* PCモード時のホーム画面：2列グリッドでワイド配置 */
+        .mode-pc #homeMenuGrid {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 16px !important;
+        }
+
+        /* PCモード時のバトル画面：左右2カラム分割 */
+        .mode-pc #battleScreenContent {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: stretch !important;
+            gap: 20px !important;
+            flex: 1 1 0% !important;
+            overflow: hidden !important;
+        }
+        .mode-pc #battleLeftColumn {
+            flex: 1 1 0% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            position: relative !important;
+        }
+        .mode-pc #battleRightColumn {
+            width: 380px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            gap: 12px !important;
+            overflow-y: auto !important;
+        }
+        .mode-pc .board-container {
+            max-width: min(500px, 60vh) !important;
+            width: 100% !important;
+        }
+        .mode-pc #playerHandSlots {
+            height: 96px !important;
+            gap: 8px !important;
+        }
+        .mode-pc .hand-card {
+            padding: 5px 4px !important;
+        }
+
+        /* PCモード時のデッキ編成画面：左右2分割 */
+        .mode-pc #deckScreenContent {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 18px !important;
+            flex: 1 1 0% !important;
+            overflow: hidden !important;
+        }
+        .mode-pc #deckLeftColumn {
+            width: 360px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 10px !important;
+        }
+        .mode-pc #deckRightColumn {
+            flex: 1 1 0% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow: hidden !important;
+        }
+        .mode-pc #deckPiecePoolGrid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 8px !important;
+        }
+
         input { user-select: text; -webkit-user-select: text; }
         input[type="text"] { font-size: 16px !important; }
         #battleScreen { overflow-y: auto !important; }
@@ -443,16 +518,74 @@
             *, *::before, *::after { animation: none !important; transition: none !important; }
         }
 
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-thumb { background: #3b3531; border-radius: 4px; }
     </style>
 </head>
 <body class="washi-pattern flex flex-col items-center justify-between text-stone-100">
 
-    <div class="w-full max-w-md h-full flex flex-col justify-between p-2.5 sm:p-3 relative overflow-hidden">
+    <!-- 最外枠コンテナ（JSで mobile/pc の幅を切り替え） -->
+    <div id="appContainer" class="w-full max-w-md h-full flex flex-col justify-between p-2.5 sm:p-3 relative overflow-hidden transition-all duration-300 app-root-container">
         
-        <!-- ヘッダー -->
-        <header class="w-full flex items-center justify-between py-1.5 px-2 shrink-0 border-b border-stone-800/80">
+        <!-- ================= 0. トップ画面（デバイス選択 ＆ アップデート告知） ================= -->
+        <section id="deviceSelectScreen" class="flex-1 flex flex-col justify-between py-3 overflow-y-auto z-20">
+            <!-- アップデートお知らせ窓枠（トップページ最上部に設置） -->
+            <div class="mb-3 p-3 rounded-2xl border border-amber-700/70 bg-gradient-to-r from-[#20150d] via-[#16100d] to-[#20150d] shadow-xl">
+                <div class="flex items-center justify-between gap-1 mb-1.5">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-sm">📢</span>
+                        <span class="text-xs font-bold text-amber-300 font-serif">アップデート情報</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.0.0</span>
+                    </div>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/80 font-mono font-bold">NEW</span>
+                </div>
+                <div class="text-xs text-stone-200 leading-relaxed font-serif pl-5">
+                    Newゲーム開発！バグを発見した方はスクショとともにDMをお願い致します。
+                </div>
+            </div>
+
+            <!-- タイトルロゴ・ビジュアルセクション -->
+            <div class="text-center my-auto py-4 space-y-2">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-amber-950/80 via-stone-900 to-rose-950/60 border border-amber-700/60 shadow-2xl">
+                    <span class="text-5xl drop-shadow-md">🍢</span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-black text-amber-100 font-serif tracking-widest mt-2">
+                    おでん道 <span class="text-amber-500 font-normal text-lg sm:text-xl">鍋の陣</span>
+                </h1>
+                <p class="text-xs text-amber-400/90 font-mono tracking-widest">ODEN DUELLO - 5×5 TACTICAL BOARD</p>
+                <p class="text-[11px] text-stone-400 font-serif pt-1 max-w-xs mx-auto">
+                    出汁の道（連結）を繋ぎ、中立ボスや相手の具材と鎬を削る新感覚の和風盤上バトル。
+                </p>
+            </div>
+
+            <!-- デバイス選択ボタン（PC版・スマホ版） -->
+            <div class="space-y-3 pb-2">
+                <div class="text-center text-[11px] text-stone-400 font-serif">
+                    プレイ環境を選択してください
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- PC版選択ボタン -->
+                    <button onclick="selectDeviceMode('pc')" class="w-full p-4 rounded-2xl border-2 border-amber-600/80 bg-gradient-to-br from-[#1d1612] via-[#140f0c] to-[#25150c] hover:border-amber-400 hover:scale-[1.02] active:scale-98 transition shadow-xl group flex flex-col items-center justify-center text-center">
+                        <span class="text-3xl group-hover:scale-110 transition mb-1">💻</span>
+                        <div class="font-bold text-sm sm:text-base text-amber-100 font-serif">PC版で遊ぶ</div>
+                        <div class="text-[10px] text-stone-400 mt-0.5">ワイド画面・左右2カラム快適配置</div>
+                        <span class="mt-2 text-[9px] px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">大画面最適化</span>
+                    </button>
+
+                    <!-- スマホ版選択ボタン -->
+                    <button onclick="selectDeviceMode('mobile')" class="w-full p-4 rounded-2xl border-2 border-rose-900/80 bg-gradient-to-br from-[#1c1214] via-[#120d0f] to-[#250d14] hover:border-rose-500 hover:scale-[1.02] active:scale-98 transition shadow-xl group flex flex-col items-center justify-center text-center">
+                        <span class="text-3xl group-hover:scale-110 transition mb-1">📱</span>
+                        <div class="font-bold text-sm sm:text-base text-rose-100 font-serif">スマホ版で遊ぶ</div>
+                        <div class="text-[10px] text-stone-400 mt-0.5">縦長画面・片手親指タップ操作</div>
+                        <span class="mt-2 text-[9px] px-2 py-0.5 rounded bg-rose-950 border border-rose-800 text-rose-300 font-mono font-bold">モバイル最適化</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ヘッダー（トップ画面以外で常時表示） -->
+        <header id="mainAppHeader" class="w-full hidden items-center justify-between py-1.5 px-2 shrink-0 border-b border-stone-800/80">
             <div class="flex items-center gap-2">
                 <button id="globalBackBtn" onclick="handleGlobalBackClick()" class="hidden px-2.5 py-1 rounded-lg border border-stone-700 bg-stone-900/90 text-stone-300 text-xs font-bold hover:bg-stone-800 active:scale-95 transition">
                     ◀ 戻る
@@ -466,6 +599,11 @@
             </div>
             
             <div class="flex items-center gap-2">
+                <!-- デバイスモード切替ボタン（PC/スマホ即時切替） -->
+                <button id="deviceToggleBtn" onclick="toggleDeviceModeQuick()" class="px-2 py-1 rounded-lg border border-stone-700 bg-stone-900 text-stone-300 text-[11px] font-bold hover:bg-stone-800 active:scale-95 flex items-center gap-1 transition shadow-sm">
+                    <span id="deviceToggleIcon">💻</span>
+                    <span id="deviceToggleLabel">PC版</span>
+                </button>
                 <button onclick="openSettingsModal()" class="px-2.5 py-1 rounded-lg border border-amber-800/80 bg-stone-900 text-amber-300 text-xs font-bold hover:bg-stone-800 active:scale-95 flex items-center gap-1 transition shadow-sm">
                     <span>⚙️</span>
                     <span>設定</span>
@@ -474,22 +612,7 @@
         </header>
 
         <!-- ================= 1. ホーム画面 ================= -->
-        <section id="homeScreen" class="flex-1 flex flex-col justify-between py-2.5 sm:py-3 overflow-y-auto">
-            <!-- アップデートお知らせ窓枠 -->
-            <div class="mb-2.5 p-2.5 rounded-2xl border border-amber-700/60 bg-gradient-to-r from-[#20150d] via-[#16100d] to-[#20150d] shadow-lg">
-                <div class="flex items-center justify-between gap-1 mb-1">
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-xs">📢</span>
-                        <span class="text-[11px] font-bold text-amber-300 font-serif">アップデート情報</span>
-                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.0.0</span>
-                    </div>
-                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/80 font-mono font-bold">NEW</span>
-                </div>
-                <div class="text-[11px] text-stone-200 leading-relaxed font-serif pl-5">
-                    Newゲーム開発！バグを発見した方はスクショとともにDMをお願い致します。
-                </div>
-            </div>
-
+        <section id="homeScreen" class="flex-1 hidden flex-col justify-between py-2.5 sm:py-3 overflow-y-auto">
             <!-- プレイヤー情報カード -->
             <div class="bg-gradient-to-br from-[#161311] via-[#120f0e] to-[#161311] border border-[#2d2622] rounded-2xl p-3.5 sm:p-4 shadow-xl">
                 <div class="flex items-center justify-between">
@@ -510,8 +633,8 @@
                 </div>
             </div>
 
-            <!-- メニュー 4行式リスト -->
-            <div class="flex flex-col gap-2.5 my-auto py-2">
+            <!-- メニュー 4行式リスト（PCモード時は2列グリッドでワイド展開） -->
+            <div id="homeMenuGrid" class="flex flex-col gap-2.5 my-auto py-2">
                 <button onclick="openCpuSelectModal()" class="w-full p-3 sm:p-3.5 rounded-2xl border border-rose-950/80 bg-gradient-to-r from-[#1c1214] via-[#140e10] to-[#120c0e] hover:border-rose-700/80 active:scale-98 transition shadow-lg group flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <span class="text-2xl sm:text-3xl group-hover:scale-110 transition shrink-0">⚔️</span>
@@ -545,7 +668,6 @@
                     <span class="text-[10px] px-2.5 py-1 rounded-lg bg-[#0f2330] text-cyan-300 border border-cyan-800/80 font-bold shrink-0">デッキ編成</span>
                 </button>
 
-                <!-- 実践体験型インタラクティブ・チュートリアル起動ボタン -->
                 <button onclick="startInteractiveTutorial()" class="w-full p-3 sm:p-3.5 rounded-2xl border border-sky-900/60 bg-gradient-to-r from-[#0c1822] via-[#08121a] to-[#050c12] hover:border-sky-500 active:scale-98 transition shadow-lg group flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <span class="text-2xl sm:text-3xl group-hover:scale-110 transition shrink-0">🔰</span>
@@ -557,9 +679,17 @@
                     <span class="text-[10px] px-2.5 py-1 rounded-lg bg-sky-950 text-sky-300 border border-sky-800/80 font-bold shrink-0">実戦指南</span>
                 </button>
             </div>
+
+            <!-- トップ画面へ戻るボタン -->
+            <div class="pt-2 text-center shrink-0">
+                <button onclick="returnToDeviceLanding()" class="text-xs text-stone-400 hover:text-amber-300 transition underline flex items-center justify-center gap-1 mx-auto">
+                    <span>🏠</span>
+                    <span>トップ（環境選択）へ戻る</span>
+                </button>
+            </div>
         </section>
 
-        <!-- ================= 2. バトル画面 ================= -->
+        <!-- ================= 2. バトル画面（PC時は左右2カラム） ================= -->
         <section id="battleScreen" class="flex-1 hidden flex-col justify-between overflow-hidden" style="display: none;">
             
             <!-- 実践チュートリアル専用ガイダンスバナー -->
@@ -592,131 +722,143 @@
                 </div>
             </div>
 
-            <!-- 上部：対戦ステータスバー -->
-            <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-2 shrink-0 space-y-1">
-                <div class="flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-1.5 text-stone-300 font-bold">
-                        <span id="networkStatusDot" class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_6px_#38bdf8]"></span>
-                        <span id="opponentNameDisplay" class="truncate max-w-[110px]">相手（CPU・竹）</span>
+            <!-- PCモード用・スマホモード用のラッパー構造 -->
+            <div id="battleScreenContent" class="flex-1 flex flex-col justify-between overflow-hidden">
+                
+                <!-- PCモード左カラム：盤面 ＆ 連結ビーム（スマホモード時は中央） -->
+                <div id="battleLeftColumn" class="my-auto py-1 flex items-center justify-center">
+                    <div class="board-container">
+                        <div id="battleBoardGrid" class="w-full h-full grid grid-cols-5 grid-rows-5 gap-1 p-1 bg-[#100d0c] border border-[#2b2420] rounded-xl relative shadow-2xl z-0">
+                            <!-- JSで25マスを生成 -->
+                        </div>
+                        <svg id="linkSvgOverlay" class="absolute inset-0 w-full h-full pointer-events-none z-[4]"></svg>
+                    </div>
+                </div>
+
+                <!-- PCモード右カラム：ステータスバー ＆ 手札 ＆ アクション（スマホモード時は上下） -->
+                <div id="battleRightColumn" class="flex flex-col justify-between gap-1.5 shrink-0">
+                    <!-- 上部：対戦ステータスバー -->
+                    <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-2 shrink-0 space-y-1">
+                        <div class="flex items-center justify-between text-xs">
+                            <div class="flex items-center gap-1.5 text-stone-300 font-bold">
+                                <span id="networkStatusDot" class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_6px_#38bdf8]"></span>
+                                <span id="opponentNameDisplay" class="truncate max-w-[110px]">相手（CPU・竹）</span>
+                            </div>
+
+                            <div class="flex items-center gap-1 font-mono text-[11px]">
+                                <span class="text-stone-400">YOU</span>
+                                <span id="playerScoreDisplay" class="text-rose-400 font-bold text-sm">0</span>
+                                <span class="text-stone-600 text-[10px]">VS</span>
+                                <span id="opponentScoreDisplay" class="text-sky-400 font-bold text-sm">0</span>
+                                <span class="text-stone-400">RIVAL</span>
+                            </div>
+
+                            <div class="flex items-center gap-1">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#3b0764] text-purple-200 border border-purple-800">
+                                    ボス残: <span id="bossRemainingCount">3</span>
+                                </span>
+                                <div id="turnIndicator" class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-200 border border-rose-800">
+                                    あなたの手番
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-[11px] pt-0.5">
+                            <div class="flex items-center gap-1.5">
+                                <span id="turnOrderBadge" class="text-[9px] px-1.5 py-px rounded bg-rose-950 text-rose-300 border border-rose-800 font-bold">先攻</span>
+                                <span class="text-stone-400 font-mono text-xs">TURN <span id="turnNumber" class="text-amber-400 font-bold">1</span></span>
+                            </div>
+
+                            <div class="flex items-center gap-1 text-[10px]">
+                                <span class="text-stone-400">現在フェーズ:</span>
+                                <span id="currentPhaseBadge" class="px-2 py-0.5 rounded font-bold bg-rose-950 text-rose-300 border border-rose-800">
+                                    スタンバイ（具材配置）
+                                </span>
+                            </div>
+
+                            <div id="attackNoticeBadge" class="text-[9px] text-amber-400/90 font-bold hidden">
+                                ※攻撃後は具材配置不可
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="flex items-center gap-1 font-mono text-[11px]">
-                        <span class="text-stone-400">YOU</span>
-                        <span id="playerScoreDisplay" class="text-rose-400 font-bold text-sm">0</span>
-                        <span class="text-stone-600 text-[10px]">VS</span>
-                        <span id="opponentScoreDisplay" class="text-sky-400 font-bold text-sm">0</span>
-                        <span class="text-stone-400">RIVAL</span>
-                    </div>
+                    <!-- 下部：手札・アクションエリア -->
+                    <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-2 shrink-0 space-y-1.5">
+                        <div class="flex items-center justify-between text-[11px] text-stone-400">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                <span id="handAreaLabel">手札（タップして空きマスへ配置）</span>
+                            </div>
+                            <span class="text-[10px] font-mono">山札: <span id="drawPileCount" class="text-amber-400 font-bold">6</span></span>
+                        </div>
 
-                    <div class="flex items-center gap-1">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#3b0764] text-purple-200 border border-purple-800">
-                            ボス残: <span id="bossRemainingCount">3</span>
-                        </span>
-                        <div id="turnIndicator" class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-200 border border-rose-800">
-                            あなたの手番
+                        <!-- 手札スロット -->
+                        <div id="playerHandSlots" class="grid grid-cols-4 gap-1.5 h-[72px] sm:h-[82px]">
+                            <!-- JS描画 -->
+                        </div>
+
+                        <!-- 説明文バー -->
+                        <div id="selectedCardBrief" class="min-h-[28px] text-[10px] text-stone-300 bg-[#191513] px-2.5 py-1 rounded-lg border border-[#2b2522] flex items-center justify-between">
+                            <span id="selectedCardBriefText" class="truncate">具材を選択してください</span>
+                            <button id="showSelectedCardDetailBtn" onclick="showSelectedPieceDetailModal()" class="text-amber-400 underline hidden text-[9px] shrink-0 ml-1">詳細</button>
+                        </div>
+
+                        <!-- アクションボタン -->
+                        <div class="grid grid-cols-3 gap-2 pt-0.5">
+                            <button id="openItemBoxBtn" onclick="openItemBoxModal()" class="col-span-1 py-2.5 rounded-xl border border-amber-700/80 bg-gradient-to-br from-amber-950 to-[#261709] text-amber-200 font-bold text-xs hover:brightness-110 active:scale-95 flex items-center justify-center gap-1 shadow-md transition">
+                                <span>🧰</span>
+                                <span>道具 (<span id="totalItemCount">8</span>)</span>
+                            </button>
+                            <button id="mainPhaseActionBtn" onclick="handleMainPhaseButtonClick()" class="col-span-2 py-2.5 rounded-xl border border-sky-600 bg-gradient-to-r from-sky-700 to-sky-900 text-sky-100 font-bold text-xs hover:brightness-110 active:scale-95 shadow-md transition">
+                                アタックへ進む
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between text-[11px] pt-0.5">
-                    <div class="flex items-center gap-1.5">
-                        <span id="turnOrderBadge" class="text-[9px] px-1.5 py-px rounded bg-rose-950 text-rose-300 border border-rose-800 font-bold">先攻</span>
-                        <span class="text-stone-400 font-mono text-xs">TURN <span id="turnNumber" class="text-amber-400 font-bold">1</span></span>
-                    </div>
-
-                    <div class="flex items-center gap-1 text-[10px]">
-                        <span class="text-stone-400">現在フェーズ:</span>
-                        <span id="currentPhaseBadge" class="px-2 py-0.5 rounded font-bold bg-rose-950 text-rose-300 border border-rose-800">
-                            スタンバイ（具材配置）
-                        </span>
-                    </div>
-
-                    <div id="attackNoticeBadge" class="text-[9px] text-amber-400/90 font-bold hidden">
-                        ※攻撃後は具材配置不可
-                    </div>
-                </div>
-            </div>
-
-            <!-- 中央：5×5 盤面（連結線SVGは駒の下レイヤー z-[4] に配置） -->
-            <div class="my-auto py-1 flex items-center justify-center">
-                <div class="board-container">
-                    <div id="battleBoardGrid" class="w-full h-full grid grid-cols-5 grid-rows-5 gap-1 p-1 bg-[#100d0c] border border-[#2b2420] rounded-xl relative shadow-2xl z-0">
-                        <!-- JSで25マスを生成 -->
-                    </div>
-                    <svg id="linkSvgOverlay" class="absolute inset-0 w-full h-full pointer-events-none z-[4]"></svg>
-                </div>
-            </div>
-
-            <!-- 下部：手札・アクションエリア -->
-            <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-2 shrink-0 space-y-1.5">
-                <div class="flex items-center justify-between text-[11px] text-stone-400">
-                    <div class="flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                        <span id="handAreaLabel">手札（タップして空きマスへ配置）</span>
-                    </div>
-                    <span class="text-[10px] font-mono">山札: <span id="drawPileCount" class="text-amber-400 font-bold">6</span></span>
-                </div>
-
-                <!-- 手札スロット -->
-                <div id="playerHandSlots" class="grid grid-cols-4 gap-1.5 h-[72px] sm:h-[82px]">
-                    <!-- JS描画 -->
-                </div>
-
-                <!-- 説明文バー -->
-                <div id="selectedCardBrief" class="min-h-[28px] text-[10px] text-stone-300 bg-[#191513] px-2.5 py-1 rounded-lg border border-[#2b2522] flex items-center justify-between">
-                    <span id="selectedCardBriefText" class="truncate">具材を選択してください</span>
-                    <button id="showSelectedCardDetailBtn" onclick="showSelectedPieceDetailModal()" class="text-amber-400 underline hidden text-[9px] shrink-0 ml-1">詳細</button>
-                </div>
-
-                <!-- アクションボタン -->
-                <div class="grid grid-cols-3 gap-2 pt-0.5">
-                    <button id="openItemBoxBtn" onclick="openItemBoxModal()" class="col-span-1 py-2.5 rounded-xl border border-amber-700/80 bg-gradient-to-br from-amber-950 to-[#261709] text-amber-200 font-bold text-xs hover:brightness-110 active:scale-95 flex items-center justify-center gap-1 shadow-md transition">
-                        <span>🧰</span>
-                        <span>道具 (<span id="totalItemCount">8</span>)</span>
-                    </button>
-                    <button id="mainPhaseActionBtn" onclick="handleMainPhaseButtonClick()" class="col-span-2 py-2.5 rounded-xl border border-sky-600 bg-gradient-to-r from-sky-700 to-sky-900 text-sky-100 font-bold text-xs hover:brightness-110 active:scale-95 shadow-md transition">
-                        アタックへ進む
-                    </button>
-                </div>
             </div>
         </section>
 
-        <!-- ================= 3. デッキ編成画面 ================= -->
+        <!-- ================= 3. デッキ編成画面（PC時は左右分割） ================= -->
         <section id="deckScreen" class="flex-1 hidden flex-col justify-between overflow-hidden" style="display: none;">
-            <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-2 shrink-0 space-y-1">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-1.5">
-                        <span class="font-bold text-xs sm:text-sm text-stone-100 font-serif">デッキ編成</span>
-                        <span class="text-[10px] text-stone-400">10枚選抜</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="text-xs font-mono">
-                            コスト: <span id="deckCurrentCost" class="text-amber-400 font-bold">25</span> / 27
+            <div id="deckScreenContent" class="flex-1 flex flex-col justify-between overflow-hidden">
+                
+                <div id="deckLeftColumn" class="bg-[#141110] border border-[#2b2522] rounded-xl p-2 shrink-0 space-y-1">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-xs sm:text-sm text-stone-100 font-serif">デッキ編成</span>
+                            <span class="text-[10px] text-stone-400">10枚選抜</span>
                         </div>
-                        <button onclick="autoGenerateDeck()" class="px-2 py-0.5 rounded-lg border border-purple-800 bg-gradient-to-r from-purple-900 to-[#2e1065] text-purple-200 text-[10px] font-bold hover:brightness-110 active:scale-95 transition shadow flex items-center gap-0.5">
-                            <span>🎲</span>
-                            <span>おまかせ</span>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <div class="text-xs font-mono">
+                                コスト: <span id="deckCurrentCost" class="text-amber-400 font-bold">25</span> / 27
+                            </div>
+                            <button onclick="autoGenerateDeck()" class="px-2 py-0.5 rounded-lg border border-purple-800 bg-gradient-to-r from-purple-900 to-[#2e1065] text-purple-200 text-[10px] font-bold hover:brightness-110 active:scale-95 transition shadow flex items-center gap-0.5">
+                                <span>🎲</span>
+                                <span>おまかせ</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-[10px] text-stone-400 pt-0.5">
+                        <span>◆ デッキ（タップで解除）</span>
+                        <span class="font-mono text-amber-400"><span id="deckSelectedCountText">10</span>/10 選択中</span>
+                    </div>
+
+                    <div id="deckSlotsGrid" class="grid grid-cols-5 gap-1 p-1 bg-stone-950/90 rounded-lg border border-stone-800/80 min-h-[128px]">
+                        <!-- JS描画 -->
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between text-[10px] text-stone-400 pt-0.5">
-                    <span>◆ デッキ（タップで解除）</span>
-                    <span class="font-mono text-amber-400"><span id="deckSelectedCountText">10</span>/10 選択中</span>
+                <div id="deckRightColumn" class="flex-1 overflow-hidden flex flex-col pt-1.5 pb-1">
+                    <div class="text-[10px] text-stone-400 mb-1 flex items-center justify-between shrink-0 px-0.5">
+                        <span>具材一覧（全20種 / タップで選抜・解除）</span>
+                    </div>
+                    <div id="deckPiecePoolGrid" class="flex-1 overflow-y-auto pr-1 grid grid-cols-2 gap-1.5 content-start">
+                        <!-- JS描画 -->
+                    </div>
                 </div>
 
-                <div id="deckSlotsGrid" class="grid grid-cols-5 gap-1 p-1 bg-stone-950/90 rounded-lg border border-stone-800/80 min-h-[128px]">
-                    <!-- JS描画 -->
-                </div>
-            </div>
-
-            <div class="flex-1 overflow-hidden flex flex-col pt-1.5 pb-1">
-                <div class="text-[10px] text-stone-400 mb-1 flex items-center justify-between shrink-0 px-0.5">
-                    <span>具材一覧（全20種 / タップで選抜・解除）</span>
-                </div>
-                <div id="deckPiecePoolGrid" class="flex-1 overflow-y-auto pr-1 grid grid-cols-2 gap-1.5 content-start">
-                    <!-- JS描画 -->
-                </div>
             </div>
 
             <div class="pt-1.5 shrink-0 border-t border-stone-800/80 flex items-center gap-2">
@@ -809,7 +951,7 @@
         <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm p-4 space-y-3 shadow-2xl">
             <div class="flex items-center justify-between pb-2 border-b border-stone-800">
                 <div class="flex items-center gap-2">
-                    <span class="text-xl">⚔️</span>
+                    <span class="text-xl">⚔️️</span>
                     <span class="font-bold text-sm text-amber-100 font-serif">CPU対戦 難易度選択</span>
                 </div>
                 <button onclick="closeCpuSelectModal()" class="text-stone-400 hover:text-stone-200 text-lg">✕</button>
@@ -1068,7 +1210,7 @@
 
     <script>
     /* ==========================================================================
-       おでん道 - 鍋の陣 完全スクリプト
+       おでん道 - 鍋の陣 完全スクリプト（PC版＆スマホ版両対応）
        ========================================================================== */
 
     const ALL_PIECES_DATA = [
@@ -1106,6 +1248,9 @@
         spice: { id: "spice", name: "伝説の調味料", icon: "🧂", count: 1, minTurn: 4, target: "global", desc: "盤面の自軍具材すべてにパワー+4を全体付与" }
     };
 
+    /* ===== デバイスモード状態（'mobile' | 'pc'） ===== */
+    let currentDeviceMode = 'mobile';
+
     /* ===== Firebase 接続設定（シンガポールリージョン） ===== */
     const currentFirebaseConfig = {
         apiKey: "AIzaSyCesauanOuqVL2ysqqfug9CvqqIaCAWLV8",
@@ -1125,7 +1270,7 @@
     let sharedMonstersData = null;
     let isCleaningUpRoom = false;
 
-    let currentScreen = 'home';
+    let currentScreen = 'landing'; // 初期画面はトップのデバイス選択
     let currentBattleMode = 'cpu';
     let cpuDifficulty = 'take';
 
@@ -1186,6 +1331,52 @@
     let defeatSynth = null;
     let clashSynth = null;
 
+    function selectDeviceMode(mode) {
+        initAudioEngine();
+        playSound('connect');
+        currentDeviceMode = mode;
+        applyDeviceModeLayout();
+
+        showToast(mode === 'pc' ? '💻 PC版（ワイド画面）を設定しました' : '📱 スマホ版（縦画面）を設定しました');
+        switchScreen('home');
+    }
+
+    function toggleDeviceModeQuick() {
+        const nextMode = currentDeviceMode === 'pc' ? 'mobile' : 'pc';
+        currentDeviceMode = nextMode;
+        applyDeviceModeLayout();
+        showToast(nextMode === 'pc' ? '💻 PC版レイアウトに切り替えました' : '📱 スマホ版レイアウトに切り替えました');
+        if (currentScreen === 'battle') {
+            renderLinkBeams(calculateConnectedGroups());
+        }
+    }
+
+    function applyDeviceModeLayout() {
+        const root = document.getElementById('appContainer');
+        const toggleIcon = document.getElementById('deviceToggleIcon');
+        const toggleLabel = document.getElementById('deviceToggleLabel');
+
+        if (currentDeviceMode === 'pc') {
+            document.body.classList.add('mode-pc');
+            root.classList.remove('max-w-md');
+            root.classList.add('max-w-5xl');
+            if (toggleIcon) toggleIcon.textContent = '📱';
+            if (toggleLabel) toggleLabel.textContent = 'スマホ版へ';
+        } else {
+            document.body.classList.remove('mode-pc');
+            root.classList.remove('max-w-5xl');
+            root.classList.add('max-w-md');
+            if (toggleIcon) toggleIcon.textContent = '💻';
+            if (toggleLabel) toggleLabel.textContent = 'PC版へ';
+        }
+    }
+
+    function returnToDeviceLanding() {
+        initAudioEngine();
+        playSound('click');
+        switchScreen('landing');
+    }
+
     function later(fn, ms) {
         const id = battleId;
         setTimeout(() => { if (id === battleId) fn(); }, ms);
@@ -1208,7 +1399,7 @@
     function saveGame() {
         try {
             localStorage.setItem(SAVE_KEY, JSON.stringify({
-                playerName, playerRate, playerWins, playerLosses, playerDeckIds, bgmVolume, seVolume, isMuted
+                playerName, playerRate, playerWins, playerLosses, playerDeckIds, bgmVolume, seVolume, isMuted, currentDeviceMode
             }));
         } catch (e) {}
     }
@@ -1227,6 +1418,10 @@
             const l = num(d.playerLosses, 0, 999999); if (l !== null) playerLosses = Math.floor(l);
             const bv = num(d.bgmVolume, 0, 1); if (bv !== null) bgmVolume = bv;
             const sv = num(d.seVolume, 0, 1); if (sv !== null) seVolume = sv;
+
+            if (d.currentDeviceMode === 'pc' || d.currentDeviceMode === 'mobile') {
+                currentDeviceMode = d.currentDeviceMode;
+            }
 
             if (Array.isArray(d.playerDeckIds) && d.playerDeckIds.length === 10) {
                 const ids = d.playerDeckIds;
@@ -1423,30 +1618,48 @@
         playSound('click');
 
         currentScreen = target;
+        const landing = document.getElementById('deviceSelectScreen');
+        const mainHeader = document.getElementById('mainAppHeader');
         const home = document.getElementById('homeScreen');
         const battle = document.getElementById('battleScreen');
         const deck = document.getElementById('deckScreen');
         const backBtn = document.getElementById('globalBackBtn');
         const tutBar = document.getElementById('tutorialGuideBar');
 
+        landing.style.display = 'none';
+        landing.classList.add('hidden');
         home.style.display = 'none';
-        battle.style.display = 'none';
-        deck.style.display = 'none';
         home.classList.add('hidden');
+        battle.style.display = 'none';
         battle.classList.add('hidden');
+        deck.style.display = 'none';
         deck.classList.add('hidden');
 
-        if (target === 'home') {
+        if (target === 'landing') {
             isTutorialMode = false;
             if (tutBar) tutBar.classList.add('hidden');
+            mainHeader.style.display = 'none';
+            mainHeader.classList.add('hidden');
+            landing.style.display = 'flex';
+            landing.classList.remove('hidden');
+            applyDeviceModeLayout();
+        } else if (target === 'home') {
+            isTutorialMode = false;
+            if (tutBar) tutBar.classList.add('hidden');
+            mainHeader.style.display = 'flex';
+            mainHeader.classList.remove('hidden');
             home.style.display = 'flex';
             home.classList.remove('hidden');
             backBtn.classList.add('hidden');
+            applyDeviceModeLayout();
             renderHomeScreen();
         } else if (target === 'battle') {
+            mainHeader.style.display = 'flex';
+            mainHeader.classList.remove('hidden');
             battle.style.display = 'flex';
             battle.classList.remove('hidden');
             backBtn.classList.remove('hidden');
+            applyDeviceModeLayout();
             if (isTutorialMode) {
                 backBtn.innerHTML = "◀ 中断";
                 backBtn.className = "px-2.5 py-1 rounded-lg border border-sky-800 bg-sky-950/80 text-sky-300 text-xs font-bold hover:bg-sky-900 active:scale-95 transition";
@@ -1456,12 +1669,15 @@
             }
         } else if (target === 'deck') {
             isTutorialMode = false;
+            mainHeader.style.display = 'flex';
+            mainHeader.classList.remove('hidden');
             deck.style.display = 'flex';
             deck.classList.remove('hidden');
             backBtn.classList.remove('hidden');
             backBtn.innerHTML = "◀ 戻る";
             backBtn.className = "px-2.5 py-1 rounded-lg border border-stone-700 bg-stone-900/90 text-stone-300 text-xs font-bold hover:bg-stone-800 active:scale-95 transition";
             tempEditingDeckIds = [...playerDeckIds];
+            applyDeviceModeLayout();
             renderDeckScreen();
         }
     }
@@ -2027,7 +2243,7 @@
                 bossRemaining = Math.max(0, bossRemaining - 1);
                 boardCells[ev.cellIndex] = null;
                 playSound('defeat');
-                showToast(`⚠️ 相手が中立ボス【${monster.name}】を討伐しました！`);
+                showToast(`⚠️️ 相手が中立ボス【${monster.name}】を討伐しました！`);
                 updateBattleStatusHeader();
                 renderBattleBoard();
                 checkBattleEndCondition();
@@ -2064,7 +2280,6 @@
         tutorialInteractiveStep = 1;
         currentBattleMode = 'tutorial';
 
-        // 指南専用の固定初手（大根、たまご、牛すじ、はんぺん）
         playerHand = [1, 2, 7, 6];
         playerDrawPile = [3, 4, 5, 8, 9, 10];
         opponentHand = [];
@@ -2086,8 +2301,6 @@
         inputLocked = false;
         dangerTargetCells = [];
 
-        // 指南用の敵・ボス配置
-        // マス6（2行目2列）に相手のちくわ（パワー3、下向き）
         boardCells[6] = {
             ...ALL_PIECES_DATA.find(x => x.id === 3),
             dir: ['down'],
@@ -2098,7 +2311,6 @@
             shieldTurns: 0
         };
 
-        // マス8（2行目4列）に見習い中立ボス（パワー6）
         boardCells[8] = {
             type: 'monster',
             id: 'tut_monster_1',
@@ -2539,7 +2751,6 @@
                 cellDiv.classList.add('item-target-candidate');
             }
 
-            // 実践チュートリアルでの特定マスハイライト
             if (isTutorialMode) {
                 if (tutorialInteractiveStep === 1 && i === 12) cellDiv.classList.add('tut-active-target');
                 if (tutorialInteractiveStep === 2 && i === 7) cellDiv.classList.add('tut-active-target');
@@ -2788,7 +2999,6 @@
             return;
         }
 
-        // 実践チュートリアル中の進行分岐
         if (isTutorialMode) {
             if (tutorialInteractiveStep === 1) {
                 if (selectedHandIndex === null) {
@@ -2845,7 +3055,6 @@
             return;
         }
 
-        // 中立ボス討伐
         if (cell && cell.type === 'monster') {
             if (isPlayerRestrictedTurn()) {
                 playSound('error');
@@ -2861,7 +3070,6 @@
             return;
         }
 
-        // 相手駒への直接戦闘（激突！）
         if (cell && cell.owner === 'opponent') {
             if (cell.shieldTurns > 0) {
                 playSound('error');
@@ -2882,7 +3090,6 @@
             return;
         }
 
-        // 空きマスへの半透明プレビュー配置
         if (!cell) {
             if (currentPhase !== 'standby') {
                 playSound('error');
@@ -3726,7 +3933,10 @@
 
     window.addEventListener('DOMContentLoaded', () => {
         loadGame();
-        switchScreen('home');
+        applyDeviceModeLayout();
+
+        // 初期画面はトップのデバイス選択画面を表示
+        switchScreen('landing');
 
         ['pointerdown', 'touchend', 'click', 'keydown'].forEach(ev => window.addEventListener(ev, unlockAudio));
 
@@ -3759,6 +3969,12 @@
         const roomFromUrl = urlParams.get('room');
         if (roomFromUrl) {
             document.getElementById('onlineRoomCodeInput').value = roomFromUrl;
+            // 招待URL経由の場合は自動でPCかスマホか画面幅で判定して部屋へ案内
+            if (window.innerWidth >= 768) {
+                selectDeviceMode('pc');
+            } else {
+                selectDeviceMode('mobile');
+            }
             openOnlineMatchModal();
         }
     });
