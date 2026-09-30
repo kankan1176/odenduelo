@@ -730,12 +730,12 @@
                     <div class="flex items-center gap-2">
                         <span class="text-lg">📢</span>
                         <span class="text-xs sm:text-base font-bold text-amber-300 font-serif">アップデート情報</span>
-                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.3.0</span>
+                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.3.1</span>
                     </div>
                     <span class="text-[10px] sm:text-xs px-2.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/80 font-mono font-bold">NEW</span>
                 </div>
                 <div class="text-xs sm:text-sm text-stone-200 leading-relaxed font-serif pl-7">
-                    【⏪ 戻す機能】新搭載！ターンエンド前なら具材配置やアイテム使用のミスを何度でも取り消せます。新秘伝道具【🧪 弱体スプレー】参戦＆シールド強化！
+                    【✨ 連結ビーム改良】出汁の道が文字や絵文字に被らないよう、マスとマスの間の隙間のみを繋ぐ美しい架け橋表示に改良！【⏪ 戻す機能】も絶賛稼働中！
                 </div>
             </div>
 
@@ -808,7 +808,7 @@
                 <div class="flex items-center gap-2">
                     <span class="text-xl">🍢</span>
                     <span class="font-bold text-sm sm:text-lg tracking-wider text-amber-100 font-serif">おでん道</span>
-                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.3.0</span>
+                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.3.1</span>
                 </div>
             </div>
             
@@ -940,13 +940,13 @@
             <!-- PCモード / スマホモード両対応ラッパー構造 -->
             <div id="battleScreenContent" class="flex-1 flex flex-col justify-between overflow-hidden">
                 
-                <!-- 左カラム：巨大5×5盤面 ＆ 連結ビーム -->
+                <!-- 左カラム：巨大5×5盤面 ＆ 連結ビーム（マスとマスの間の隙間ジョイント） -->
                 <div id="battleLeftColumn" class="my-auto py-1 flex items-center justify-center">
                     <div class="board-container">
                         <div id="battleBoardGrid" class="w-full h-full grid grid-cols-5 grid-rows-5 gap-1 p-1 bg-[#100d0c] border border-[#2b2420] rounded-xl relative shadow-2xl z-0">
                             <!-- JS生成 -->
                         </div>
-                        <svg id="linkSvgOverlay" class="absolute inset-0 w-full h-full pointer-events-none z-[4]"></svg>
+                        <svg id="linkSvgOverlay" class="absolute inset-0 w-full h-full pointer-events-none z-20"></svg>
                     </div>
                 </div>
 
@@ -1218,7 +1218,7 @@
     <!-- 降参確認モーダル -->
     <div id="surrenderModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
         <div class="bg-[#161311] border border-rose-900/80 rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl text-center">
-            <div class="text-5xl">🏳️</div>
+            <div class="text-5xl">🏳️️</div>
             <div class="font-bold text-base sm:text-xl text-stone-100 font-serif">対局の中断・降参</div>
             <p class="text-xs sm:text-base text-stone-300 leading-relaxed">
                 対局を中断してメインメニューに戻りますか？<br>
@@ -1419,7 +1419,7 @@
         <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm sm:max-w-md p-5 sm:p-6 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-2 border-b border-stone-800">
                 <div class="flex items-center gap-2.5">
-                    <span class="text-2xl">⚙️️</span>
+                    <span class="text-2xl">⚙</span>
                     <span class="font-bold text-base sm:text-xl text-amber-100 font-serif">設定</span>
                 </div>
                 <button onclick="closeSettingsModal()" class="text-stone-400 hover:text-stone-200 text-2xl">✕</button>
@@ -1540,7 +1540,7 @@
 
     <script>
     /* ==========================================================================
-       おでん道 - 鍋の陣 完全スクリプト (Ver1.3.0 戻すUndo機能・弱体スプレー・シールドボス防御)
+       おでん道 - 鍋の陣 完全スクリプト (Ver1.3.1 隙間のみの連結ビーム描画・Undo機能・4種道具)
        ========================================================================== */
 
     const ALL_PIECES_DATA = [
@@ -2082,7 +2082,7 @@
                 backBtn.innerHTML = "◀ 中断";
                 backBtn.className = "px-3 py-1.5 rounded-lg border border-sky-800 bg-sky-950/80 text-sky-300 text-xs sm:text-sm font-bold hover:bg-sky-900 active:scale-95 transition";
             } else {
-                backBtn.innerHTML = "🏳️ 降参";
+                backBtn.innerHTML = "🏳️️ 降参";
                 backBtn.className = "px-3 py-1.5 rounded-lg border border-rose-800/80 bg-rose-950/70 text-rose-300 text-xs sm:text-sm font-bold hover:bg-rose-900 active:scale-95 transition";
             }
             requestAnimationFrame(() => renderLinkBeams(calculateConnectedGroups()));
@@ -2428,7 +2428,7 @@
             const isPlaying = currentScreen === 'battle';
 
             if (isPlaying && !pres[otherRole]) {
-                showToast("⚠️ 相手との接続が切断されました。対局を終了します");
+                showToast("⚠️️ 相手との接続が切断されました。対局を終了します");
                 later(() => {
                     battleOver = true;
                     leaveAndCleanupRoom();
@@ -3482,7 +3482,7 @@
             }
         } else if (currentPhase === 'attack') {
             if (hasAttackedThisTurn || isAttackRestricted()) {
-                showToast("⚠️ 攻撃は1ターンに1回のみ可能です");
+                showToast("⚠️️ 攻撃は1ターンに1回のみ可能です");
                 return;
             }
 
@@ -3584,6 +3584,7 @@
         return groups;
     }
 
+    /* マスとマスの隙間（境界部分）のみを繋ぐ連結ビームの描画 */
     function renderLinkBeams(groups) {
         const svg = document.getElementById('linkSvgOverlay');
         if (!svg) return;
@@ -3598,33 +3599,66 @@
                     const a = group[i];
                     const b = group[j];
                     
-                    const dx = Math.abs((a % 5) - (b % 5));
-                    const dy = Math.abs(Math.floor(a / 5) - Math.floor(b / 5));
-                    if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
+                    const dx = (b % 5) - (a % 5);
+                    const dy = Math.floor(b / 5) - Math.floor(a / 5);
+                    
+                    // 隣接しているセル同士のみ判定
+                    if ((Math.abs(dx) === 1 && dy === 0) || (dx === 0 && Math.abs(dy) === 1)) {
                         if (areFacing(a, b)) {
                             const rectA = cellEls[a].getBoundingClientRect();
                             const rectB = cellEls[b].getBoundingClientRect();
                             const svgRect = svg.getBoundingClientRect();
-                            
-                            const x1 = rectA.left + rectA.width/2 - svgRect.left;
-                            const y1 = rectA.top + rectA.height/2 - svgRect.top;
-                            const x2 = rectB.left + rectB.width/2 - svgRect.left;
-                            const y2 = rectB.top + rectB.height/2 - svgRect.top;
+
+                            let x1, y1, x2, y2;
+                            // 境界と隙間をしっかり繋ぐため、マスの縁から2px程度だけ内側に食い込ませるオフセット
+                            const overlap = 2;
+
+                            if (dy === 0) {
+                                // 横隣の連結（マスとマスの間の隙間のみ繋ぐ）
+                                const leftCell = dx > 0 ? rectA : rectB;
+                                const rightCell = dx > 0 ? rectB : rectA;
+
+                                x1 = leftCell.right - svgRect.left - overlap;
+                                x2 = rightCell.left - svgRect.left + overlap;
+                                y1 = leftCell.top + leftCell.height / 2 - svgRect.top;
+                                y2 = y1;
+                            } else {
+                                // 縦隣の連結（マスとマスの間の隙間のみ繋ぐ）
+                                const topCell = dy > 0 ? rectA : rectB;
+                                const bottomCell = dy > 0 ? rectB : rectA;
+
+                                y1 = topCell.bottom - svgRect.top - overlap;
+                                y2 = bottomCell.top - svgRect.top + overlap;
+                                x1 = topCell.left + topCell.width / 2 - svgRect.left;
+                                x2 = x1;
+                            }
                             
                             const owner = boardCells[a].owner;
                             const color = owner === 'player' ? '#f43f5e' : '#38bdf8';
+                            const glowColor = owner === 'player' ? 'rgba(244, 63, 94, 0.95)' : 'rgba(56, 189, 248, 0.95)';
                             
-                            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                            line.setAttribute('x1', x1);
-                            line.setAttribute('y1', y1);
-                            line.setAttribute('x2', x2);
-                            line.setAttribute('y2', y2);
-                            line.setAttribute('stroke', color);
-                            line.setAttribute('stroke-width', '4');
-                            line.setAttribute('stroke-linecap', 'round');
-                            line.setAttribute('style', `filter: drop-shadow(0 0 5px ${color})`);
-                            
-                            svg.appendChild(line);
+                            // 外側のネオングロー線
+                            const glowLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                            glowLine.setAttribute('x1', x1);
+                            glowLine.setAttribute('y1', y1);
+                            glowLine.setAttribute('x2', x2);
+                            glowLine.setAttribute('y2', y2);
+                            glowLine.setAttribute('stroke', glowColor);
+                            glowLine.setAttribute('stroke-width', '7');
+                            glowLine.setAttribute('stroke-linecap', 'round');
+                            glowLine.setAttribute('style', `filter: drop-shadow(0 0 6px ${color}); opacity: 0.8;`);
+                            svg.appendChild(glowLine);
+
+                            // 内側の明るいコアビーム
+                            const coreLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                            coreLine.setAttribute('x1', x1);
+                            coreLine.setAttribute('y1', y1);
+                            coreLine.setAttribute('x2', x2);
+                            coreLine.setAttribute('y2', y2);
+                            coreLine.setAttribute('stroke', '#ffffff');
+                            coreLine.setAttribute('stroke-width', '3');
+                            coreLine.setAttribute('stroke-linecap', 'round');
+                            svg.appendChild(coreLine);
                         }
                     }
                 }
@@ -3744,7 +3778,7 @@
         
         const cell = boardCells[pendingItemConfirmation.index];
         if (cell.dir.includes(dir)) {
-            showToast("⚠️️ その具材は既にその方向の矢印を持っています");
+            showToast("⚠ その具材は既にその方向の矢印を持っています");
             pendingItemConfirmation = null;
             return;
         }
@@ -4050,6 +4084,6 @@
             }
         });
     });
-</script>
+    </script>
 </body>
 </html>
