@@ -718,7 +718,7 @@
 
     <div id="appContainer" class="w-full max-w-md h-full flex flex-col justify-between p-2 sm:p-3 relative overflow-hidden transition-all duration-300 app-root-container">
         
-        <!-- ================= 0. トップ画面（環境選択 ＆ アップデート告知） ================= -->
+        <!-- ================= 0. トップ画面（ユーザー名入力 ＆ 環境選択 ＆ アップデート告知） ================= -->
         <section id="deviceSelectScreen" class="flex-1 flex flex-col justify-between py-2 sm:py-3 overflow-y-auto overflow-x-hidden z-20">
             <!-- アップデートお知らせ窓枠 -->
             <div class="mb-2 p-3 sm:p-4 rounded-2xl border border-amber-700/70 bg-gradient-to-r from-[#20150d] via-[#16100d] to-[#20150d] shadow-xl">
@@ -726,53 +726,69 @@
                     <div class="flex items-center gap-2">
                         <span class="text-lg">📢</span>
                         <span class="text-xs sm:text-base font-bold text-amber-300 font-serif">アップデート情報</span>
-                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.1.1</span>
+                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.1.2</span>
                     </div>
                     <span class="text-[10px] sm:text-xs px-2.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/80 font-mono font-bold">NEW</span>
                 </div>
                 <div class="text-xs sm:text-sm text-stone-200 leading-relaxed font-serif pl-7">
-                    アイテム使用時の合計値確認・キャンセル機能、3Tごとボスのランダム移動、付与アイコン表示、撃破マスのグレー化を実装！
+                    起動時のプレイヤー名入力に対応！ゲーム進行後は右上の【設定】からいつでも名前変更が可能です。
                 </div>
             </div>
 
             <!-- タイトルロゴ・ビジュアルセクション -->
-            <div class="text-center my-auto py-3 space-y-2">
-                <div class="inline-flex items-center justify-center w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-br from-amber-950/80 via-stone-900 to-rose-950/60 border border-amber-700/60 shadow-2xl">
-                    <span class="text-6xl sm:text-7xl drop-shadow-md">🍢</span>
+            <div class="text-center my-auto py-2 space-y-1.5">
+                <div class="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-br from-amber-950/80 via-stone-900 to-rose-950/60 border border-amber-700/60 shadow-2xl">
+                    <span class="text-5xl sm:text-6xl drop-shadow-md">🍢</span>
                 </div>
-                <h1 class="text-2xl sm:text-5xl font-black text-amber-100 font-serif tracking-widest mt-1">
-                    おでん道 <span class="text-amber-500 font-normal text-xl sm:text-3xl">鍋の陣</span>
+                <h1 class="text-2xl sm:text-4xl font-black text-amber-100 font-serif tracking-widest mt-1">
+                    おでん道 <span class="text-amber-500 font-normal text-xl sm:text-2xl">鍋の陣</span>
                 </h1>
-                <p class="text-xs sm:text-base text-amber-400/90 font-mono tracking-widest">ODEN DUELLO - 5×5 TACTICAL BOARD</p>
-                <p class="text-xs sm:text-sm text-stone-400 font-serif pt-1 max-w-md mx-auto leading-relaxed">
+                <p class="text-[11px] sm:text-sm text-amber-400/90 font-mono tracking-widest">ODEN DUELLO - 5×5 TACTICAL BOARD</p>
+                <p class="text-xs text-stone-400 font-serif max-w-md mx-auto leading-relaxed">
                     出汁の道（連結）を繋ぎ、中立ボスや相手の具材と鎬を削る新感覚の和風盤上バトル。
                 </p>
             </div>
 
-            <!-- デバイス選択ボタン -->
+            <!-- ユーザー名入力 ＆ デバイス選択セクション -->
             <div class="space-y-3 pb-2 max-w-md mx-auto w-full px-1">
-                <div class="text-center text-xs sm:text-sm text-stone-400 font-serif">
-                    プレイ環境を選択してください
+                
+                <!-- ユーザー名入力カード（トップ画面） -->
+                <div class="p-3.5 rounded-2xl border border-amber-700/70 bg-[#161210] shadow-lg space-y-2">
+                    <label for="landingPlayerNameInput" class="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-300 font-serif">
+                        <span>👤</span>
+                        <span>プレイヤー名</span>
+                    </label>
+                    <div class="relative">
+                        <input type="text" id="landingPlayerNameInput" maxlength="12" placeholder="プレイヤー名を入力" class="w-full px-3.5 py-2.5 bg-stone-950 border border-amber-800/80 rounded-xl text-amber-100 font-serif text-sm sm:text-base focus:outline-none focus:border-amber-400 placeholder:text-stone-600 transition shadow-inner">
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-stone-500 font-mono pointer-events-none">最大12文字</span>
+                    </div>
+                    <p class="text-[10px] sm:text-xs text-stone-400 leading-snug">
+                        ※対戦相手に表示されます。ゲーム開始後は画面右上の【設定】から変更できます。
+                    </p>
                 </div>
 
-                <div class="flex flex-col gap-3">
-                    <button onclick="selectDeviceMode('pc')" class="w-full p-4 rounded-2xl border-2 border-amber-600/80 bg-gradient-to-r from-[#1d1612] via-[#140f0c] to-[#25150c] hover:border-amber-400 hover:brightness-110 active:scale-98 transition shadow-lg group flex items-center justify-between text-left">
-                        <div class="flex items-center gap-3.5">
+                <div class="text-center text-xs sm:text-sm text-stone-400 font-serif pt-1">
+                    プレイ環境を選択して開始
+                </div>
+
+                <div class="flex flex-col gap-2.5">
+                    <button onclick="selectDeviceMode('pc')" class="w-full p-3.5 rounded-2xl border-2 border-amber-600/80 bg-gradient-to-r from-[#1d1612] via-[#140f0c] to-[#25150c] hover:border-amber-400 hover:brightness-110 active:scale-98 transition shadow-lg group flex items-center justify-between text-left">
+                        <div class="flex items-center gap-3">
                             <span class="text-3xl sm:text-4xl group-hover:scale-105 transition shrink-0">💻</span>
                             <div>
-                                <div class="font-bold text-sm sm:text-lg text-amber-100 font-serif">PC版で遊ぶ</div>
-                                <div class="text-xs sm:text-sm text-stone-400 mt-0.5">大画面モニター・左右フルワイド迫力配置</div>
+                                <div class="font-bold text-sm sm:text-base text-amber-100 font-serif">PC版で遊ぶ</div>
+                                <div class="text-[11px] sm:text-xs text-stone-400 mt-0.5">大画面モニター・左右フルワイド迫力配置</div>
                             </div>
                         </div>
                         <span class="text-[10px] sm:text-xs px-3 py-1 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold shrink-0">大画面</span>
                     </button>
 
-                    <button onclick="selectDeviceMode('mobile')" class="w-full p-4 rounded-2xl border-2 border-rose-900/80 bg-gradient-to-r from-[#1c1214] via-[#120d0f] to-[#250d14] hover:border-rose-500 hover:brightness-110 active:scale-98 transition shadow-lg group flex items-center justify-between text-left">
-                        <div class="flex items-center gap-3.5">
+                    <button onclick="selectDeviceMode('mobile')" class="w-full p-3.5 rounded-2xl border-2 border-rose-900/80 bg-gradient-to-r from-[#1c1214] via-[#120d0f] to-[#250d14] hover:border-rose-500 hover:brightness-110 active:scale-98 transition shadow-lg group flex items-center justify-between text-left">
+                        <div class="flex items-center gap-3">
                             <span class="text-3xl sm:text-4xl group-hover:scale-105 transition shrink-0">📱</span>
                             <div>
-                                <div class="font-bold text-sm sm:text-lg text-rose-100 font-serif">スマホ版で遊ぶ</div>
-                                <div class="text-xs sm:text-sm text-stone-400 mt-0.5">縦長画面・片手親指タップ操作</div>
+                                <div class="font-bold text-sm sm:text-base text-rose-100 font-serif">スマホ版で遊ぶ</div>
+                                <div class="text-[11px] sm:text-xs text-stone-400 mt-0.5">縦長画面・片手親指タップ操作</div>
                             </div>
                         </div>
                         <span class="text-[10px] sm:text-xs px-3 py-1 rounded bg-rose-950 border border-rose-800 text-rose-300 font-mono font-bold shrink-0">モバイル</span>
@@ -790,7 +806,7 @@
                 <div class="flex items-center gap-2">
                     <span class="text-xl">🍢</span>
                     <span class="font-bold text-sm sm:text-lg tracking-wider text-amber-100 font-serif">おでん道</span>
-                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.1.1</span>
+                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.1.2</span>
                 </div>
             </div>
             
@@ -813,16 +829,12 @@
 
         <!-- ================= 1. ホーム画面 ================= -->
         <section id="homeScreen" class="flex-1 hidden flex-col justify-between py-2.5 sm:py-3 overflow-y-auto">
-            <!-- プレイヤー情報カード -->
+            <!-- プレイヤー情報カード（名前変更は設定から行う設計へ更新） -->
             <div class="bg-gradient-to-br from-[#161311] via-[#120f0e] to-[#161311] border border-[#2d2622] rounded-2xl p-4 sm:p-6 shadow-xl">
                 <div class="flex items-center justify-between">
                     <div>
                         <div class="flex items-center gap-2.5">
                             <div id="homePlayerName" class="text-lg sm:text-3xl font-bold font-serif text-amber-100 tracking-wide">名無しの出汁</div>
-                            <button onclick="openNameChangeModal()" class="px-2.5 py-1 rounded-md border border-amber-800/80 bg-amber-950/60 text-amber-300 text-xs sm:text-sm font-bold hover:bg-amber-900 active:scale-95 transition flex items-center gap-1 shadow-sm">
-                                <span>✏</span>
-                                <span>変更</span>
-                            </button>
                         </div>
                         <div class="text-xs sm:text-base text-stone-400 mt-1.5">具材デッキ: <span class="text-amber-400 font-bold">全20種</span>（出汁選抜）</div>
                     </div>
@@ -830,6 +842,10 @@
                         <div class="text-xs sm:text-lg text-amber-400 font-bold font-mono tracking-wider">RATE <span id="homePlayerRate">1500</span></div>
                         <div class="text-xs sm:text-base text-stone-400 mt-1.5">通算戦績 <span id="homePlayerWins" class="text-stone-200 font-bold">0</span>勝 <span id="homePlayerLosses" class="text-stone-400">0</span>敗</div>
                     </div>
+                </div>
+                <div class="mt-2 pt-2 border-t border-stone-800/80 text-[11px] sm:text-xs text-stone-500 font-serif flex items-center justify-between">
+                    <span>※プレイヤー名の変更は右上の【⚙️ 設定】からいつでも行えます</span>
+                    <button onclick="openSettingsModal()" class="text-amber-400/90 underline hover:text-amber-300">設定を開く</button>
                 </div>
             </div>
 
@@ -1129,7 +1145,7 @@
                     ⬇️ 下（↓）
                 </button>
                 <button onclick="chooseDirectionForConfirm('left')" id="pickDirLeftBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
-                    ⬅️️ 左（←）
+                    ⬅ 左（←）
                 </button>
                 <button onclick="chooseDirectionForConfirm('right')" id="pickDirRightBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
                     ➡️ 右（→）
@@ -1285,34 +1301,6 @@
         </div>
     </div>
 
-    <!-- プレイヤー名変更モーダル -->
-    <div id="nameChangeModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
-        <div class="bg-[#161311] border border-amber-900/80 rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl">
-            <div class="flex items-center justify-between pb-2 border-b border-stone-800">
-                <div class="flex items-center gap-2.5">
-                    <span class="text-2xl">✏️</span>
-                    <span class="font-bold text-base sm:text-xl text-amber-100 font-serif">名前の変更</span>
-                </div>
-                <button onclick="closeNameChangeModal()" class="text-stone-400 hover:text-stone-200 text-2xl">✕</button>
-            </div>
-            
-            <p class="text-xs sm:text-base text-stone-300">新しいプレイヤー名を入力してください。</p>
-
-            <div>
-                <input type="text" id="directPlayerNameInput" maxlength="12" class="w-full px-4 py-3 bg-stone-950 border border-stone-700 rounded-xl text-amber-200 font-serif text-base focus:outline-none focus:border-amber-500">
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 pt-1">
-                <button onclick="closeNameChangeModal()" class="py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-300 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95 transition">
-                    キャンセル
-                </button>
-                <button onclick="confirmDirectNameChange()" class="py-3 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 transition">
-                    保存する
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- CPU 難易度選択モーダル -->
     <div id="cpuSelectModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
         <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl">
@@ -1423,117 +1411,133 @@
         </div>
     </div>
 
-    <!-- 設定モーダル -->
-    <div id="settingsModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
-        <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl">
-            <div class="flex items-center justify-between pb-2 border-b border-stone-800">
-                <div class="flex items-center gap-2.5">
-                    <span class="text-2xl">⚙️</span>
-                    <span class="font-bold text-base sm:text-xl text-amber-100 font-serif">設定</span>
-                </div>
-                <button onclick="closeSettingsModal()" class="text-stone-400 hover:text-stone-200 text-2xl">✕</button>
-            </div>
-
-            <div class="space-y-3.5 text-xs sm:text-base">
-                <div class="font-bold text-amber-400 flex items-center gap-2">
-                    <span>🔊</span>
-                    <span>音量調整</span>
-                </div>
-                <div>
-                    <div class="flex justify-between text-stone-400 mb-1.5">
-                        <span>BGM音量</span>
-                        <span id="bgmVolumeVal" class="font-mono text-amber-400 font-bold">30%</span>
+        <!-- 設定モーダル（名前変更・音量調整・キャッシュクリアを統合） -->
+        <div id="settingsModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
+            <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm sm:max-w-md p-5 sm:p-6 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto">
+                <div class="flex items-center justify-between pb-2 border-b border-stone-800">
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-2xl">⚙️</span>
+                        <span class="font-bold text-base sm:text-xl text-amber-100 font-serif">設定</span>
                     </div>
-                    <input type="range" id="bgmVolumeSlider" min="0" max="100" value="30" oninput="updateBgmVolume(this.value)" class="w-full accent-amber-500">
+                    <button onclick="closeSettingsModal()" class="text-stone-400 hover:text-stone-200 text-2xl">✕</button>
                 </div>
 
-                <div>
-                    <div class="flex justify-between text-stone-400 mb-1.5">
-                        <span>SE音量</span>
-                        <span id="seVolumeVal" class="font-mono text-rose-400 font-bold">70%</span>
+                <!-- 1. プレイヤー名変更セクション -->
+                <div class="space-y-2.5 pb-2 border-b border-stone-800">
+                    <div class="font-bold text-amber-400 flex items-center gap-2 text-xs sm:text-sm">
+                        <span>✏️</span>
+                        <span>プレイヤー名の変更</span>
                     </div>
-                    <input type="range" id="seVolumeSlider" min="0" max="100" value="70" oninput="updateSeVolume(this.value)" class="w-full accent-rose-500">
+                    <div>
+                        <input type="text" id="settingsPlayerNameInput" maxlength="12" class="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-700 rounded-xl text-amber-100 font-serif text-sm focus:outline-none focus:border-amber-400 transition">
+                    </div>
+                    <p class="text-[10px] sm:text-xs text-stone-400">
+                        ※名前を変更すると、ランキングや対戦相手への表示名が更新されます。
+                    </p>
                 </div>
 
-                <div class="pt-1.5 flex items-center justify-between">
-                    <button id="muteToggleBtn" onclick="toggleMute()" class="px-3.5 py-2 rounded-xl bg-stone-900 border border-stone-700 text-stone-300 font-bold text-xs hover:bg-stone-800">
-                        🔊 ミュート: OFF
+                <!-- 2. 音量調整セクション -->
+                <div class="space-y-3 text-xs sm:text-sm pb-2 border-b border-stone-800">
+                    <div class="font-bold text-amber-400 flex items-center gap-2">
+                        <span>🔊</span>
+                        <span>音量調整</span>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-stone-400 mb-1.5">
+                            <span>BGM音量</span>
+                            <span id="bgmVolumeVal" class="font-mono text-amber-400 font-bold">30%</span>
+                        </div>
+                        <input type="range" id="bgmVolumeSlider" min="0" max="100" value="30" oninput="updateBgmVolume(this.value)" class="w-full accent-amber-500">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-stone-400 mb-1.5">
+                            <span>SE音量</span>
+                            <span id="seVolumeVal" class="font-mono text-rose-400 font-bold">70%</span>
+                        </div>
+                        <input type="range" id="seVolumeSlider" min="0" max="100" value="70" oninput="updateSeVolume(this.value)" class="w-full accent-rose-500">
+                    </div>
+
+                    <div class="pt-1 flex items-center justify-between">
+                        <button id="muteToggleBtn" onclick="toggleMute()" class="px-3 py-1.5 rounded-xl bg-stone-900 border border-stone-700 text-stone-300 font-bold text-xs hover:bg-stone-800">
+                            🔊 ミュート: OFF
+                        </button>
+                        <div class="flex gap-1.5">
+                            <button onclick="playTestSe('click')" class="px-2.5 py-1 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-xs hover:bg-stone-700 active:scale-95 transition">札音</button>
+                            <button onclick="playTestSe('connect')" class="px-2.5 py-1 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-xs hover:bg-stone-700 active:scale-95 transition">連結</button>
+                            <button onclick="playTestSe('defeat')" class="px-2.5 py-1 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-xs hover:bg-stone-700 active:scale-95 transition">撃破</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. アップデート・キャッシュクリアセクション -->
+                <div class="space-y-2 text-xs sm:text-sm">
+                    <div class="font-bold text-amber-400 flex items-center gap-2">
+                        <span>🔄</span>
+                        <span>アップデート・キャッシュクリア</span>
+                    </div>
+                    <p class="text-[11px] sm:text-xs text-stone-400 leading-relaxed">
+                        最新版が反映されない場合や通信エラーが続く場合、端末キャッシュとセーブデータを初期化して最新版を強制再読込します。
+                    </p>
+                    <button onclick="openCacheClearModal()" class="w-full py-2.5 rounded-xl border border-rose-800 bg-gradient-to-r from-rose-950/80 via-[#260f14] to-rose-950/80 text-rose-200 text-xs sm:text-sm font-bold hover:brightness-110 active:scale-95 transition shadow flex items-center justify-center gap-2">
+                        <span>🧹</span>
+                        <span>キャッシュクリア＆最新版に更新</span>
                     </button>
-                    <div class="flex gap-2">
-                        <button onclick="playTestSe('click')" class="px-3 py-1.5 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-xs hover:bg-stone-700 active:scale-95 transition">札音</button>
-                        <button onclick="playTestSe('connect')" class="px-3 py-1.5 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-xs hover:bg-stone-700 active:scale-95 transition">連結</button>
-                        <button onclick="playTestSe('defeat')" class="px-3 py-1.5 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-xs hover:bg-stone-700 active:scale-95 transition">撃破</button>
-                    </div>
                 </div>
-            </div>
 
-            <div class="pt-3 border-t border-stone-800 space-y-2.5 text-xs sm:text-base">
-                <div class="font-bold text-amber-400 flex items-center gap-2">
-                    <span>🔄</span>
-                    <span>アップデート・キャッシュクリア</span>
+                <div class="pt-2">
+                    <button onclick="saveSettingsAndClose()" class="w-full py-3 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-md">
+                        設定を保存して戻る
+                    </button>
                 </div>
-                <p class="text-xs text-stone-400 leading-relaxed">
-                    最新コードが反映されない場合や通信エラーが続く場合、端末キャッシュとセーブデータを消去して最新版を強制再読込します。
-                </p>
-                <button onclick="openCacheClearModal()" class="w-full py-3 rounded-xl border border-rose-800 bg-gradient-to-r from-rose-950/80 via-[#260f14] to-rose-950/80 text-rose-200 text-xs sm:text-sm font-bold hover:brightness-110 active:scale-95 transition shadow flex items-center justify-center gap-2">
-                    <span>🧹</span>
-                    <span>キャッシュクリア＆最新版に更新</span>
-                </button>
-            </div>
-
-            <div class="pt-1.5">
-                <button onclick="saveSettingsAndClose()" class="w-full py-3 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-md">
-                    設定を保存して戻る
-                </button>
             </div>
         </div>
-    </div>
 
-    <!-- 終局リザルトモーダル -->
-    <div id="resultModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3">
-        <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl text-center">
-            <div id="resultHeaderBanner" class="py-3 rounded-xl border">
-                <div id="resultIcon" class="text-5xl mb-1.5">🏆</div>
-                <div id="resultTitle" class="text-xl sm:text-2xl font-black font-serif tracking-widest">完全勝利！</div>
-            </div>
+        <!-- 終局リザルトモーダル -->
+        <div id="resultModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3">
+            <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl text-center">
+                <div id="resultHeaderBanner" class="py-3 rounded-xl border">
+                    <div id="resultIcon" class="text-5xl mb-1.5">🏆</div>
+                    <div id="resultTitle" class="text-xl sm:text-2xl font-black font-serif tracking-widest">完全勝利！</div>
+                </div>
 
-            <div class="bg-stone-950 rounded-xl p-4 border border-stone-800 space-y-3 text-xs sm:text-base">
-                <div class="flex items-center justify-around font-mono">
-                    <div>
-                        <div class="text-xs text-stone-400">あなた</div>
-                        <div id="resultPlayerScore" class="text-3xl sm:text-4xl font-bold text-rose-400">0</div>
+                <div class="bg-stone-950 rounded-xl p-4 border border-stone-800 space-y-3 text-xs sm:text-base">
+                    <div class="flex items-center justify-around font-mono">
+                        <div>
+                            <div class="text-xs text-stone-400">あなた</div>
+                            <div id="resultPlayerScore" class="text-3xl sm:text-4xl font-bold text-rose-400">0</div>
+                        </div>
+                        <div class="text-stone-600 text-xl">vs</div>
+                        <div>
+                            <div class="text-xs text-stone-400">相手</div>
+                            <div id="resultOpponentScore" class="text-3xl sm:text-4xl font-bold text-sky-400">0</div>
+                        </div>
                     </div>
-                    <div class="text-stone-600 text-xl">vs</div>
-                    <div>
-                        <div class="text-xs text-stone-400">相手</div>
-                        <div id="resultOpponentScore" class="text-3xl sm:text-4xl font-bold text-sky-400">0</div>
+                    <div class="border-t border-stone-800 pt-3 flex items-center justify-between text-xs sm:text-sm text-stone-400">
+                        <span>レート変動: <span id="resultRateDiff" class="text-amber-400 font-bold">+25 pt</span></span>
+                        <span>総手数: <span id="resultTurnCount" class="text-stone-200 font-bold">1ターン</span></span>
                     </div>
                 </div>
-                <div class="border-t border-stone-800 pt-3 flex items-center justify-between text-xs sm:text-sm text-stone-400">
-                    <span>レート変動: <span id="resultRateDiff" class="text-amber-400 font-bold">+25 pt</span></span>
-                    <span>総手数: <span id="resultTurnCount" class="text-stone-200 font-bold">1ターン</span></span>
-                </div>
-            </div>
 
-            <div class="grid grid-cols-2 gap-3 pt-1">
-                <button onclick="restartBattleMatch()" class="py-3 rounded-xl border border-rose-600 bg-gradient-to-r from-rose-700 to-rose-900 text-rose-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-md">
-                    🔄 もう一度
-                </button>
-                <button onclick="returnToMainMenuFromResult()" class="py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95">
-                    🏠 メニューへ
-                </button>
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                    <button onclick="restartBattleMatch()" class="py-3 rounded-xl border border-rose-600 bg-gradient-to-r from-rose-700 to-rose-900 text-rose-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-md">
+                        🔄 もう一度
+                    </button>
+                    <button onclick="returnToMainMenuFromResult()" class="py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95">
+                        🏠 メニューへ
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- 汎用トーストメッセージ -->
-    <div id="gameToast" role="status" aria-live="polite" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none px-5 py-2.5 rounded-full bg-stone-950/95 border border-amber-600/80 text-amber-200 text-xs sm:text-base font-serif shadow-2xl opacity-0 transition-opacity duration-300">
-        メッセージ
-    </div>
+        <!-- 汎用トーストメッセージ -->
+        <div id="gameToast" role="status" aria-live="polite" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none px-5 py-2.5 rounded-full bg-stone-950/95 border border-amber-600/80 text-amber-200 text-xs sm:text-base font-serif shadow-2xl opacity-0 transition-opacity duration-300">
+            メッセージ
+        </div>
 
     <script>
     /* ==========================================================================
-       おでん道 - 鍋の陣 完全スクリプト (Ver1.1.1 アイテム確認・ボス移動・グレー化版)
+       おでん道 - 鍋の陣 完全スクリプト (Ver1.1.2 起動時名前入力＆設定統合版)
        ========================================================================== */
 
     const ALL_PIECES_DATA = [
@@ -1601,20 +1605,19 @@
     let playerLosses = 0;
 
     // 野球式ターン管理
-    let roundNumber = 1;        // 第〇ターン
-    let turnHalf = 'first';      // 'first'（先攻） または 'second'（後攻）
+    let roundNumber = 1;
+    let turnHalf = 'first';
     let isPlayerTurn = true;
     let isPlayerFirst = true;
     let currentPhase = 'standby';
     let hasPlacedPieceThisTurn = false;
-    let hasAttackedThisTurn = false; // 攻撃は1ターンに1回のみ
+    let hasAttackedThisTurn = false;
 
     let playerScore = 0;
     let opponentScore = 0;
     let bossRemaining = 3;
 
     let boardCells = Array(25).fill(null);
-    // 破壊されたマス（焦土・グレー・2ターン配置不可）管理
     let burnedCells = Array(25).fill(null);
 
     let playerHand = [];
@@ -1627,10 +1630,9 @@
 
     let selectedHandIndex = null;
     let previewPlacementIndex = null;
-    let selectedQuickItem = null; // 'direction' | 'shield' | 'powerup'
+    let selectedQuickItem = null;
     let pendingDirPickCellIndex = null;
 
-    // 保留中のアイテム確認用コンテキスト
     let pendingItemConfirmation = null;
 
     let cutinTimer = null;
@@ -1655,17 +1657,28 @@
     let defeatSynth = null;
     let clashSynth = null;
 
-    // ゲーム説明マニュアルのスライド管理
     let currentRulePage = 1;
     const TOTAL_RULE_PAGES = 5;
 
-    /* ================= デバイスモード設定 ================= */
+    /* ================= デバイスモード＆初期ユーザー名設定 ================= */
     function selectDeviceMode(mode) {
         initAudioEngine();
         playSound('connect');
+        
+        // トップ画面のユーザー名入力を取得・保存
+        const landingInput = document.getElementById('landingPlayerNameInput');
+        if (landingInput) {
+            const enteredName = landingInput.value.trim();
+            if (enteredName) {
+                playerName = enteredName.slice(0, 12);
+            }
+        }
+
         currentDeviceMode = mode;
         applyDeviceModeLayout();
-        showToast(mode === 'pc' ? '💻 PC版（ワイド画面）を設定しました' : '📱 スマホ版（縦画面）を設定しました');
+        saveGame();
+
+        showToast(`${mode === 'pc' ? '💻 PC版' : '📱 スマホ版'}で対局場へ入室しました（プレイヤー名: ${playerName}）`);
         switchScreen('home');
     }
 
@@ -1695,12 +1708,18 @@
             if (toggleIcon) toggleIcon.textContent = '💻';
             if (toggleLabel) toggleLabel.textContent = 'PC版へ';
         }
-        saveGame();
     }
 
     function returnToDeviceLanding() {
         initAudioEngine();
         playSound('click');
+        
+        // トップ画面の入力欄に現在の名前を反映
+        const landingInput = document.getElementById('landingPlayerNameInput');
+        if (landingInput) {
+            landingInput.value = playerName;
+        }
+
         switchScreen('landing');
     }
 
@@ -1709,7 +1728,6 @@
         setTimeout(() => { if (id === battleId) fn(); }, ms);
     }
 
-    // 1ターン目は先攻・後攻ともに攻撃不可
     function isAttackRestricted() {
         if (isTutorialMode) return false;
         return roundNumber === 1;
@@ -1876,12 +1894,12 @@
         const btn = document.getElementById('muteToggleBtn');
         if (isMuted) {
             btn.textContent = "🔇 ミュート: ON";
-            btn.className = "px-3.5 py-2 rounded-xl bg-rose-950 border border-rose-800 text-rose-300 font-bold text-xs shadow-sm";
+            btn.className = "px-3 py-1.5 rounded-xl bg-rose-950 border border-rose-800 text-rose-300 font-bold text-xs shadow-sm";
             if (bgmGain) bgmGain.gain.value = 0;
             if (seGain) seGain.gain.value = 0;
         } else {
             btn.textContent = "🔊 ミュート: OFF";
-            btn.className = "px-3.5 py-2 rounded-xl bg-stone-900 border border-stone-700 text-stone-300 font-bold text-xs hover:bg-stone-800 transition active:scale-95";
+            btn.className = "px-3 py-1.5 rounded-xl bg-stone-900 border border-stone-700 text-stone-300 font-bold text-xs hover:bg-stone-800 transition active:scale-95";
             if (bgmGain) bgmGain.gain.value = bgmVolume * 0.4;
             if (seGain) seGain.gain.value = seVolume;
         }
@@ -2205,7 +2223,6 @@
                 const monsterIcons = ["👹", "👺", "👻"];
                 const monsterNames = ["焦げ魔", "煮崩れ鬼", "出汁啜り"];
 
-                // 中立ボス：12〜20
                 const initialMonsters = monsterPos.map((pos, idx) => {
                     const pVal = Math.floor(Math.random() * 9) + 12;
                     return { pos, name: monsterNames[idx], icon: monsterIcons[idx], power: pVal };
@@ -2460,7 +2477,6 @@
         tutorialInteractiveStep = 1;
         currentBattleMode = 'tutorial';
 
-        // チュートリアル用の手札設定（大根、たまご、牛すじ、はんぺん）
         playerHand = [1, 2, 7, 6];
         playerDrawPile = [3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
         opponentHand = [];
@@ -2489,7 +2505,6 @@
         playerItemStocks = { ...DEFAULT_ITEM_STOCKS };
         opponentItemStocks = { ...DEFAULT_ITEM_STOCKS };
 
-        // マス2 (x=2, y=0) に相手のちくわ（下向き↓）を配置
         boardCells[2] = {
             ...ALL_PIECES_DATA.find(x => x.id === 3),
             dir: ['down'],
@@ -2502,7 +2517,6 @@
             tempDirs: []
         };
 
-        // マス8 (x=3, y=1) に中立ボス（たまごの右隣で討伐可能）
         boardCells[8] = {
             type: 'monster',
             id: 'tut_monster_1',
@@ -2593,7 +2607,6 @@
         const tutBar = document.getElementById('tutorialGuideBar');
         if (tutBar) tutBar.classList.add('hidden');
 
-        // 全20種すべてを山札として参戦
         playerDrawPile = shuffleArray([...ALL_PIECE_IDS]);
         playerHand = playerDrawPile.splice(0, 4);
 
@@ -2684,7 +2697,6 @@
             const monsterIcons = ["👹", "👺", "👻"];
             const monsterNames = ["焦げ魔", "煮崩れ鬼", "出汁啜り"];
 
-            // 中立ボス：12〜20の高難度
             monsterPos.forEach((pos, idx) => {
                 const pVal = Math.floor(Math.random() * 9) + 12;
                 boardCells[pos] = {
@@ -2980,7 +2992,6 @@
                 cellDiv.classList.add('cell-danger-target');
             }
 
-            // 破壊されたマス（撃破マス）：グレー仕様
             if (burned) {
                 cellDiv.classList.add('cell-burned');
                 cellDiv.innerHTML = `
@@ -2993,7 +3004,6 @@
                 cellDiv.classList.add('item-target-candidate');
             }
 
-            // チュートリアル用のターゲットハイライト
             if (isTutorialMode) {
                 if (tutorialInteractiveStep === 1 && i === 12) cellDiv.classList.add('tut-active-target');
                 if (tutorialInteractiveStep === 2 && i === 7) cellDiv.classList.add('tut-active-target');
@@ -3017,7 +3027,6 @@
                     const isShielded = !!cell.shieldActive;
                     const dispPower = cell.currentPower ?? cell.power;
 
-                    // アイテムアイコンバッジの生成
                     const itemBadges = [];
                     if (cell.tempDirs && cell.tempDirs.length > 0) itemBadges.push(`<span class="piece-item-icon-tag" title="方向付与中">🧭</span>`);
                     if (isShielded) itemBadges.push(`<span class="piece-item-icon-tag" title="シールド展開中">🛡️</span>`);
@@ -3037,7 +3046,6 @@
                         </div>
                     `;
 
-                    // 正面衝突判定
                     if (!isTutorialMode && isPlayerTurn && !isPl && !isAttackRestricted() && !hasAttackedThisTurn && canClashWithPiece(i)) {
                         cellDiv.classList.add('highlight-target');
                         const clashBadge = document.createElement('div');
@@ -3252,20 +3260,17 @@
         const cell = boardCells[index];
         const burned = burnedCells[index];
 
-        // 破壊されたマス（撃破マス）は配置不可
         if (burned) {
             playSound('error');
             showToast(`🪨 このマスは撃破により封印されています（解除まで残${burned.turnsLeft}ターン）`);
             return;
         }
 
-        // 常設道具の対象選択中（確認画面へ）
         if (selectedQuickItem) {
             initiateItemConfirmation(index);
             return;
         }
 
-        // チュートリアルの操作インターセプト
         if (isTutorialMode) {
             if (tutorialInteractiveStep === 1) {
                 if (selectedHandIndex === null) {
@@ -3322,7 +3327,6 @@
             return;
         }
 
-        // 中立ボス討伐
         if (cell && cell.type === 'monster') {
             if (isAttackRestricted()) {
                 playSound('error');
@@ -3343,11 +3347,10 @@
             return;
         }
 
-        // 相手駒への直接戦闘（激突）
         if (cell && cell.owner === 'opponent') {
             if (cell.shieldActive) {
                 playSound('error');
-                showToast(`🛡️️ 相手の【${cell.name}】はシールド発動中のため攻撃を受けません！`);
+                showToast(`🛡 相手の【${cell.name}】はシールド発動中のため攻撃を受けません！`);
                 return;
             }
             if (isAttackRestricted()) {
@@ -3369,7 +3372,6 @@
             return;
         }
 
-        // 空きマスへの配置
         if (!cell) {
             if (currentPhase !== 'standby') {
                 playSound('error');
@@ -3641,7 +3643,6 @@
         btnPower?.classList.toggle('active', selectedQuickItem === 'powerup');
     }
 
-    // アイテム対象タップ時の確認処理開始
     function initiateItemConfirmation(cellIndex) {
         const cell = boardCells[cellIndex];
         if (!cell || cell.owner !== 'player') {
@@ -3724,13 +3725,12 @@
         const oldDirs = getDirectionGlyphs(cell.dir);
         const newDirs = oldDirs + ' ' + arrowGlyph;
 
-        // 一時的に付与した場合の連結合計シミュレーション
         const origDirs = [...cell.dir];
         cell.dir.push(dir);
         const simGroups = calculateConnectedGroups();
         const newGroupPower = cell.currentPower ?? cell.power;
         cell.dir = origDirs;
-        calculateConnectedGroups(); // 元に戻す
+        calculateConnectedGroups();
         const curGroupPower = cell.currentPower ?? cell.power;
 
         prepareItemConfirmModal({
@@ -3916,7 +3916,6 @@
 
         if (isStrikeTurn) {
             triggerBossRandomStrike(() => {
-                // 攻撃後にボスが空きマスへランダム移動
                 relocateAliveBosses(() => {
                     inputLocked = false;
                     triggerPhaseCutin('standby', 'スタンバイフェーズ', `${getTurnString()} あなたの手番`, '🍱');
@@ -4021,7 +4020,6 @@
         }, 1100);
     }
 
-    /* 3ターン強襲後：生き残っている中立ボスの空きマスランダム移動 */
     function relocateAliveBosses(callback) {
         const aliveBossIndices = [];
         for (let i = 0; i < 25; i++) {
@@ -4035,7 +4033,6 @@
             return;
         }
 
-        // 空いているマス（駒がなく、撃破マスでもないマス）を抽出
         const emptyCells = [];
         for (let i = 0; i < 25; i++) {
             if (!boardCells[i] && !burnedCells[i]) {
@@ -4080,7 +4077,6 @@
     }
 
     function applyBossRelocation(bossMoves) {
-        // 退避してから移動
         const movedBosses = [];
         bossMoves.forEach(m => {
             movedBosses.push({ data: boardCells[m.oldIdx], newIdx: m.newIdx });
@@ -4152,7 +4148,6 @@
             let attacked = false;
 
             if (!isAttackRestricted()) {
-                // 中立ボス討伐チェック
                 for (let i = 0; i < 25; i++) {
                     const c = boardCells[i];
                     if (c && c.type === 'monster') {
@@ -4180,7 +4175,6 @@
                     }
                 }
 
-                // 激突チェック
                 if (!attacked) {
                     for (let i = 0; i < 25; i++) {
                         const pl = boardCells[i];
@@ -4439,13 +4433,19 @@
         renderRulePageContent();
     }
 
-    /* ================= 設定・名前変更 ================= */
+    /* ================= 設定・名前変更統合 ================= */
     function openSettingsModal() {
         initAudioEngine();
         playSound('click');
         
         if (isAudioStarted && Tone.Transport.state === "started") {
             Tone.Transport.pause();
+        }
+
+        // 設定モーダル内の名前入力欄に現在の名前をセット
+        const nameInput = document.getElementById('settingsPlayerNameInput');
+        if (nameInput) {
+            nameInput.value = playerName;
         }
 
         const bgmSlider = document.getElementById('bgmVolumeSlider');
@@ -4464,7 +4464,7 @@
     }
 
     function closeSettingsModal() {
-        saveGame();
+        saveSettingsValues();
         playSound('click');
         document.getElementById('settingsModal').classList.remove('flex');
         document.getElementById('settingsModal').classList.add('hidden');
@@ -4474,39 +4474,25 @@
         }
     }
 
-    function saveSettingsAndClose() {
-        playSound('connect');
-        showToast("設定を保存しました");
-        closeSettingsModal();
-    }
-
-    function openNameChangeModal() {
-        initAudioEngine();
-        playSound('click');
-        document.getElementById('directPlayerNameInput').value = playerName;
-        document.getElementById('nameChangeModal').classList.remove('hidden');
-        document.getElementById('nameChangeModal').classList.add('flex');
-    }
-
-    function closeNameChangeModal() {
-        playSound('click');
-        document.getElementById('nameChangeModal').classList.remove('flex');
-        document.getElementById('nameChangeModal').classList.add('hidden');
-    }
-
-    function confirmDirectNameChange() {
-        const val = document.getElementById('directPlayerNameInput').value.trim();
-        if (val) {
-            playerName = val;
-            saveGame();
-            document.getElementById('homePlayerName').textContent = playerName;
-            playSound('connect');
-            showToast(`名前を「${playerName}」に変更しました`);
-            closeNameChangeModal();
-        } else {
-            playSound('error');
-            showToast("名前を入力してください");
+    function saveSettingsValues() {
+        const nameInput = document.getElementById('settingsPlayerNameInput');
+        if (nameInput) {
+            const entered = nameInput.value.trim();
+            if (entered) {
+                playerName = entered.slice(0, 12);
+                document.getElementById('homePlayerName').textContent = playerName;
+                const landingInput = document.getElementById('landingPlayerNameInput');
+                if (landingInput) landingInput.value = playerName;
+            }
         }
+        saveGame();
+    }
+
+    function saveSettingsAndClose() {
+        saveSettingsValues();
+        playSound('connect');
+        showToast("設定（プレイヤー名・音量）を保存しました");
+        closeSettingsModal();
     }
 
     function showSelectedPieceDetailModal() {
@@ -4557,6 +4543,12 @@
     window.addEventListener('DOMContentLoaded', () => {
         loadGame();
         applyDeviceModeLayout();
+
+        // トップ画面の初期名入力欄に反映
+        const landingInput = document.getElementById('landingPlayerNameInput');
+        if (landingInput) {
+            landingInput.value = playerName;
+        }
 
         switchScreen('landing');
 
