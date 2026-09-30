@@ -215,11 +215,11 @@
             cursor: pointer;
         }
 
-        /* 破壊マス（焦土・配置不可）スタイル */
+        /* 破壊マス（撃破マス）：グレー仕様（封印中配置不可） */
         .grid-cell.cell-burned {
-            background: radial-gradient(circle, #2a0808 0%, #170404 100%) !important;
-            border: 1.5px dashed #ef4444 !important;
-            box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.5) !important;
+            background: linear-gradient(145deg, #1c1917 0%, #12100e 100%) !important;
+            border: 1.5px dashed #71717a !important;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8) !important;
             cursor: not-allowed !important;
         }
         .burned-badge {
@@ -297,6 +297,7 @@
             background: radial-gradient(circle, #2d124d 0%, #150824 100%);
             border: 1.8px solid #a855f7;
             box-shadow: 0 0 14px rgba(168, 85, 247, 0.55), inset 0 0 8px rgba(168, 85, 247, 0.2);
+            transition: all 0.35s ease;
         }
 
         .piece-preview-ghost {
@@ -320,6 +321,27 @@
         @keyframes pulse-shield {
             0% { filter: drop-shadow(0 0 2px #facc15); }
             100% { filter: drop-shadow(0 0 8px #fde047); }
+        }
+
+        /* アイテム付与中バッジコンテナ */
+        .piece-items-badge-container {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            z-index: 20;
+            pointer-events: none;
+        }
+        .piece-item-icon-tag {
+            font-size: 9px;
+            line-height: 1;
+            padding: 1px 2px;
+            border-radius: 3px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 0.5px solid rgba(255, 255, 255, 0.3);
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8));
         }
 
         /* 方向インジケーター */
@@ -426,6 +448,11 @@
             border-top: 2px solid #f472b6;
             border-bottom: 2px solid #f472b6;
         }
+        .cutin-boss-warp {
+            background: linear-gradient(90deg, transparent 0%, rgba(67, 24, 117, 0.96) 20%, rgba(109, 40, 217, 0.98) 50%, rgba(67, 24, 117, 0.96) 80%, transparent 100%);
+            border-top: 2px solid #c084fc;
+            border-bottom: 2px solid #c084fc;
+        }
 
         /* 手札カード */
         .hand-card {
@@ -487,7 +514,6 @@
             max-width: 100vw !important;
             width: 100vw !important;
             height: 100vh !important;
-            height: 100dvh !important;
             padding: 12px 32px 16px 32px !important;
         }
 
@@ -556,7 +582,6 @@
         .mode-pc #battleScreen:not(.hidden) {
             display: flex !important;
             height: calc(100vh - 85px) !important;
-            height: calc(100dvh - 85px) !important;
             overflow: hidden !important;
         }
         .mode-pc #battleScreenContent {
@@ -565,8 +590,7 @@
             align-items: center !important;
             justify-content: center !important;
             gap: 50px !important;
-            flex: 1 1 0 !important;
-            min-height: 0 !important;
+            height: 100% !important;
             width: 100% !important;
             padding: 6px 24px !important;
         }
@@ -582,11 +606,6 @@
             width: min(76vh, 700px) !important;
             max-width: min(76vh, 700px) !important;
             height: min(76vh, 700px) !important;
-        }
-        .mode-pc.tut-on .board-container {
-            width: min(62vh, 640px) !important;
-            max-width: min(62vh, 640px) !important;
-            height: min(62vh, 640px) !important;
         }
         .mode-pc #battleBoardGrid {
             gap: 10px !important;
@@ -604,7 +623,7 @@
             border-radius: 12px !important;
             border-width: 2.5px !important;
         }
-        .mode-pc .piece-card > span:not(.absolute) {
+        .mode-pc .piece-card span {
             font-size: 40px !important;
         }
         .mode-pc .power-diamond {
@@ -631,6 +650,11 @@
             bottom: -6px !important;
             right: -6px !important;
             border-width: 2px !important;
+        }
+
+        .mode-pc .piece-item-icon-tag {
+            font-size: 14px !important;
+            padding: 2px 4px !important;
         }
 
         .mode-pc #battleRightColumn {
@@ -702,12 +726,12 @@
                     <div class="flex items-center gap-2">
                         <span class="text-lg">📢</span>
                         <span class="text-xs sm:text-base font-bold text-amber-300 font-serif">アップデート情報</span>
-                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.1.0</span>
+                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.1.1</span>
                     </div>
                     <span class="text-[10px] sm:text-xs px-2.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/80 font-mono font-bold">NEW</span>
                 </div>
                 <div class="text-xs sm:text-sm text-stone-200 leading-relaxed font-serif pl-7">
-                    新ルール実装！「攻撃1ターン1回」「破壊マスの2ターン封印」「常設道具3種（方向付与・シールド・パワーUP）」を搭載！
+                    アイテム使用時の合計値確認・キャンセル機能、3Tごとボスのランダム移動、付与アイコン表示、撃破マスのグレー化を実装！
                 </div>
             </div>
 
@@ -766,7 +790,7 @@
                 <div class="flex items-center gap-2">
                     <span class="text-xl">🍢</span>
                     <span class="font-bold text-sm sm:text-lg tracking-wider text-amber-100 font-serif">おでん道</span>
-                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.1.0</span>
+                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.1.1</span>
                 </div>
             </div>
             
@@ -915,10 +939,10 @@
                 <div id="battleRightColumn" class="flex flex-col justify-between gap-1.5 shrink-0">
                     <!-- 上部：対戦ステータスバー -->
                     <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-2.5 shrink-0 space-y-1.5">
-                        <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs sm:text-sm">
+                        <div class="flex items-center justify-between text-xs sm:text-sm">
                             <div class="flex items-center gap-2 text-stone-300 font-bold">
                                 <span id="networkStatusDot" class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]"></span>
-                                <span id="opponentNameDisplay" class="truncate max-w-[110px] sm:max-w-[170px]">相手（CPU・竹）</span>
+                                <span id="opponentNameDisplay" class="truncate max-w-[170px]">相手（CPU・竹）</span>
                             </div>
 
                             <div class="flex items-center gap-2 font-mono text-xs sm:text-sm">
@@ -973,7 +997,7 @@
                             <!-- JS描画 -->
                         </div>
 
-                        <!-- 常設アイテムボタングリッド（道具箱を開かずに即時使用可能） -->
+                        <!-- 常設アイテムボタングリッド -->
                         <div class="grid grid-cols-3 gap-1.5 pt-0.5">
                             <button id="quickItemDirBtn" onclick="handleQuickItemSelect('direction')" class="item-quick-btn group">
                                 <div class="flex items-center gap-1.5">
@@ -1045,6 +1069,49 @@
 
     <!-- ================= モーダル群 ================= -->
 
+    <!-- アイテム使用確認モーダル（合計値確認 ＆ やっぱ使わない対応） -->
+    <div id="itemConfirmModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-5">
+        <div class="bg-[#161311] border border-amber-600/90 rounded-2xl w-full max-w-sm sm:max-w-md p-5 sm:p-6 space-y-4 shadow-2xl text-center animate-fade-in">
+            <div class="flex items-center justify-center gap-2.5">
+                <span id="confirmItemIcon" class="text-3xl sm:text-4xl">⚡</span>
+                <span id="confirmItemTitle" class="font-bold text-base sm:text-xl text-amber-100 font-serif">アイテム使用の確認</span>
+            </div>
+
+            <div class="bg-stone-950 p-3 sm:p-4 rounded-xl border border-stone-800 text-left space-y-2 text-xs sm:text-sm">
+                <div class="flex justify-between items-center border-b border-stone-800/80 pb-1.5">
+                    <span class="text-stone-400">対象具材</span>
+                    <span id="confirmTargetPieceName" class="font-bold text-stone-100 font-serif">大根</span>
+                </div>
+                <div class="flex justify-between items-center border-b border-stone-800/80 pb-1.5">
+                    <span class="text-stone-400">効果内容</span>
+                    <span id="confirmItemEffectDesc" class="font-bold text-amber-300">攻撃力 +4</span>
+                </div>
+                <div class="flex justify-between items-center border-b border-stone-800/80 pb-1.5">
+                    <span class="text-stone-400">具材パワー変化</span>
+                    <span id="confirmPiecePowerChange" class="font-mono font-bold text-rose-400">4 ➔ 8</span>
+                </div>
+                <div class="flex justify-between items-center pt-0.5">
+                    <span class="text-stone-400">連結グループ合計値</span>
+                    <span id="confirmGroupPowerChange" class="font-mono font-bold text-amber-400">7 ➔ 11 (+4)</span>
+                </div>
+            </div>
+
+            <p class="text-xs text-stone-400 leading-tight">
+                この効果を付与しますか？<br>
+                <span class="text-stone-300 text-[11px]">※キャンセルした場合、アイテムは消費されません。</span>
+            </p>
+
+            <div class="grid grid-cols-2 gap-3 pt-1">
+                <button onclick="cancelItemConfirmation()" class="py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-300 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95 transition">
+                    やっぱりやめる
+                </button>
+                <button onclick="commitItemConfirmation()" class="py-3 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 transition shadow-md">
+                    付与を確定する
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- 方向選択ミニポップアップ（方向付与道具使用時） -->
     <div id="directionPickModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
         <div class="bg-[#161311] border border-amber-600/90 rounded-2xl w-full max-w-xs p-5 space-y-4 shadow-2xl text-center">
@@ -1055,16 +1122,16 @@
             </p>
 
             <div class="grid grid-cols-2 gap-2.5">
-                <button onclick="confirmDirectionPick('up')" id="pickDirUpBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
+                <button onclick="chooseDirectionForConfirm('up')" id="pickDirUpBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
                     ⬆️ 上（↑）
                 </button>
-                <button onclick="confirmDirectionPick('down')" id="pickDirDownBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
+                <button onclick="chooseDirectionForConfirm('down')" id="pickDirDownBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
                     ⬇️ 下（↓）
                 </button>
-                <button onclick="confirmDirectionPick('left')" id="pickDirLeftBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
-                    ⬅️ 左（←）
+                <button onclick="chooseDirectionForConfirm('left')" id="pickDirLeftBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
+                    ⬅️️ 左（←）
                 </button>
-                <button onclick="confirmDirectionPick('right')" id="pickDirRightBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
+                <button onclick="chooseDirectionForConfirm('right')" id="pickDirRightBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
                     ➡️ 右（→）
                 </button>
             </div>
@@ -1113,7 +1180,7 @@
             <div>
                 <div class="font-bold text-base sm:text-xl text-amber-100 font-serif">対戦相手を待っています...</div>
                 <p class="text-xs sm:text-base text-stone-300 mt-2 leading-relaxed">
-                    合言葉: <span id="waitingRoomCodeBadge" class="font-mono text-amber-400 font-bold px-2.5 py-1 bg-stone-950 rounded-lg border border-stone-800 text-sm sm:text-lg">------</span>
+                    合言葉: <span id="waitingRoomCodeBadge" class="font-mono text-amber-400 font-bold px-2.5 py-1 bg-stone-950 rounded-lg border border-stone-800 text-sm sm:text-lg">oden777</span>
                 </p>
                 <p class="text-xs text-stone-400 mt-2">相手が入室すると自動で対局が始まります。<br>招待URLを友達に共有してください。</p>
             </div>
@@ -1263,7 +1330,7 @@
                 <button onclick="confirmCpuDifficulty('ume')" class="w-full p-4 rounded-xl border border-emerald-900/80 bg-gradient-to-r from-[#0d1e16] to-[#08130e] hover:border-emerald-500 active:scale-98 flex items-center justify-between text-left transition">
                     <div>
                         <div class="font-bold text-sm sm:text-base text-emerald-200 font-serif">🌸 梅（初級）</div>
-                        <div class="text-xs sm:text-sm text-stone-400 mt-0.5">ランダムに具材を置く穏やかな修行相手</div>
+                        <div class="text-xs sm:text-sm text-stone-400 mt-0.5">基本的な配置を行う穏やかな修行相手</div>
                     </div>
                     <span class="text-xs sm:text-sm bg-emerald-950 text-emerald-300 border border-emerald-800 px-2.5 py-1 rounded font-mono">RATE +15</span>
                 </button>
@@ -1271,7 +1338,7 @@
                 <button onclick="confirmCpuDifficulty('take')" class="w-full p-4 rounded-xl border border-sky-900/80 bg-gradient-to-r from-[#0d1822] to-[#081017] hover:border-sky-500 active:scale-98 flex items-center justify-between text-left transition">
                     <div>
                         <div class="font-bold text-sm sm:text-base text-sky-200 font-serif">🎋 竹（中級）</div>
-                        <div class="text-xs sm:text-sm text-stone-400 mt-0.5">盤面上段から配置し、隙あらば激突・ボス討伐を狙う本番仕様</div>
+                        <div class="text-xs sm:text-sm text-stone-400 mt-0.5">連結を狙い、隙あらば激突・討伐を狙う本番仕様</div>
                     </div>
                     <span class="text-xs sm:text-sm bg-sky-950 text-sky-300 border border-sky-800 px-2.5 py-1 rounded font-mono">RATE +25</span>
                 </button>
@@ -1279,7 +1346,7 @@
                 <button onclick="confirmCpuDifficulty('matsu')" class="w-full p-4 rounded-xl border border-amber-900/80 bg-gradient-to-r from-[#20150a] to-[#140c06] hover:border-amber-500 active:scale-98 flex items-center justify-between text-left transition">
                     <div>
                         <div class="font-bold text-sm sm:text-base text-amber-200 font-serif">🌲 松（上級）</div>
-                        <div class="text-xs sm:text-sm text-stone-400 mt-0.5">あなたの具材の隣を塞いで連結を妨害する達人</div>
+                        <div class="text-xs sm:text-sm text-stone-400 mt-0.5">プレイヤーの連結分断や道具も使いこなす達人</div>
                     </div>
                     <span class="text-xs sm:text-sm bg-amber-950 text-amber-300 border border-amber-800 px-2.5 py-1 rounded font-mono">RATE +35</span>
                 </button>
@@ -1304,8 +1371,8 @@
             </p>
 
             <div>
-                <label class="block text-stone-400 text-xs sm:text-sm mb-1.5">対局合言葉（半角英数・-_・16文字まで）</label>
-                <input type="text" id="onlineRoomCodeInput" value="" placeholder="例: oden-abc123" maxlength="16" autocomplete="off" autocapitalize="off" spellcheck="false" class="w-full px-4 py-3 bg-stone-950 border border-stone-700 rounded-xl text-amber-300 font-mono text-base focus:outline-none focus:border-amber-500">
+                <label class="block text-stone-400 text-xs sm:text-sm mb-1.5">対局合言葉（半角英数）</label>
+                <input type="text" id="onlineRoomCodeInput" value="oden777" maxlength="16" class="w-full px-4 py-3 bg-stone-950 border border-stone-700 rounded-xl text-amber-300 font-mono text-base focus:outline-none focus:border-amber-500">
             </div>
 
             <div class="pt-1 flex gap-3">
@@ -1449,10 +1516,10 @@
             </div>
 
             <div class="grid grid-cols-2 gap-3 pt-1">
-                <button id="resultRestartBtn" onclick="restartBattleMatch()" class="py-3 rounded-xl border border-rose-600 bg-gradient-to-r from-rose-700 to-rose-900 text-rose-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-md">
+                <button onclick="restartBattleMatch()" class="py-3 rounded-xl border border-rose-600 bg-gradient-to-r from-rose-700 to-rose-900 text-rose-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-md">
                     🔄 もう一度
                 </button>
-                <button id="resultMenuBtn" onclick="returnToMainMenuFromResult()" class="py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95">
+                <button onclick="returnToMainMenuFromResult()" class="py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95">
                     🏠 メニューへ
                 </button>
             </div>
@@ -1460,13 +1527,13 @@
     </div>
 
     <!-- 汎用トーストメッセージ -->
-    <div id="gameToast" role="status" aria-live="polite" style="top: calc(env(safe-area-inset-top, 0px) + 1.25rem);" class="fixed left-1/2 -translate-x-1/2 z-[60] pointer-events-none w-max max-w-[90vw] text-center leading-snug px-5 py-2.5 rounded-2xl bg-stone-950/95 border border-amber-600/80 text-amber-200 text-xs sm:text-base font-serif shadow-2xl opacity-0 transition-opacity duration-300">
+    <div id="gameToast" role="status" aria-live="polite" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none px-5 py-2.5 rounded-full bg-stone-950/95 border border-amber-600/80 text-amber-200 text-xs sm:text-base font-serif shadow-2xl opacity-0 transition-opacity duration-300">
         メッセージ
     </div>
 
     <script>
     /* ==========================================================================
-       おでん道 - 鍋の陣 完全スクリプト (Ver1.1.0 攻撃1回・焦土・道具常設改訂版)
+       おでん道 - 鍋の陣 完全スクリプト (Ver1.1.1 アイテム確認・ボス移動・グレー化版)
        ========================================================================== */
 
     const ALL_PIECES_DATA = [
@@ -1547,7 +1614,7 @@
     let bossRemaining = 3;
 
     let boardCells = Array(25).fill(null);
-    // 破壊されたマス（焦土・2ターン配置不可）管理
+    // 破壊されたマス（焦土・グレー・2ターン配置不可）管理
     let burnedCells = Array(25).fill(null);
 
     let playerHand = [];
@@ -1563,26 +1630,15 @@
     let selectedQuickItem = null; // 'direction' | 'shield' | 'powerup'
     let pendingDirPickCellIndex = null;
 
+    // 保留中のアイテム確認用コンテキスト
+    let pendingItemConfirmation = null;
+
     let cutinTimer = null;
     let dangerTargetCells = [];
     let battleId = 0;
     let battleOver = false;
     let inputLocked = false;
     const SAVE_KEY = 'odenDuello.v1';
-    const ROOM_CODE_RE = /^[a-z0-9_-]{1,16}$/;
-    // 1ターンに置ける具材を1枚に制限（無制限にしたい場合は false）
-    const LIMIT_ONE_PLACEMENT_PER_TURN = true;
-
-    function normalizeRoomCode(raw) {
-        const c = String(raw || '').trim().toLowerCase();
-        return ROOM_CODE_RE.test(c) ? c : null;
-    }
-    function generateRoomCode() {
-        return 'oden-' + Math.random().toString(36).slice(2, 8);
-    }
-    function placementLimitReached() {
-        return LIMIT_ONE_PLACEMENT_PER_TURN && !isTutorialMode && hasPlacedPieceThisTurn;
-    }
 
     let bgmVolume = 0.3;
     let seVolume = 0.7;
@@ -1889,7 +1945,6 @@
         playSound('click');
 
         currentScreen = target;
-        document.body.classList.toggle('tut-on', isTutorialMode && target === 'battle');
         const landing = document.getElementById('deviceSelectScreen');
         const mainHeader = document.getElementById('mainAppHeader');
         const home = document.getElementById('homeScreen');
@@ -2087,8 +2142,6 @@
         initAudioEngine();
         playSound('click');
         initFirebaseClient();
-        const roomInput = document.getElementById('onlineRoomCodeInput');
-        if (roomInput && !roomInput.value.trim()) roomInput.value = generateRoomCode();
         document.getElementById('onlineMatchModal').classList.remove('hidden');
         document.getElementById('onlineMatchModal').classList.add('flex');
     }
@@ -2101,43 +2154,26 @@
 
     function copyOnlineShareUrl() {
         playSound('click');
-        const code = normalizeRoomCode(currentRoomCode || document.getElementById('onlineRoomCodeInput').value);
-        if (!code) {
-            showToast("先に有効な合言葉（半角英数・-_）を入力してください");
-            return;
-        }
+        const code = currentRoomCode || document.getElementById('onlineRoomCodeInput').value.trim() || 'oden777';
         const url = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(code)}`;
-        const onOk = () => showToast("招待URLをコピーしました！友達に送信してください");
-        const onFail = () => showToast("URLコピーに失敗しました");
-        const legacyCopy = () => {
-            try {
-                const tempInput = document.createElement("input");
-                tempInput.value = url;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                const ok = document.execCommand('copy');
-                document.body.removeChild(tempInput);
-                ok ? onOk() : onFail();
-            } catch (err) {
-                onFail();
-            }
-        };
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(url).then(onOk, legacyCopy);
-        } else {
-            legacyCopy();
+        try {
+            const tempInput = document.createElement("input");
+            tempInput.value = url;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast("招待URLをコピーしました！友達に送信してください");
+        } catch (err) {
+            showToast("URLコピーに失敗しました");
         }
     }
 
     function startOnlineRoomMatch() {
         if (!initFirebaseClient()) return;
-        const code = normalizeRoomCode(document.getElementById('onlineRoomCodeInput').value);
+        const code = document.getElementById('onlineRoomCodeInput').value.trim().toLowerCase();
         if (!code) {
-            showToast("合言葉は半角英数字・「-」「_」のみ、16文字以内で入力してください");
-            return;
-        }
-        if (roomRef) {
-            showToast("通信を終了処理中です。数秒後にもう一度お試しください");
+            showToast("合言葉を入力してください");
             return;
         }
 
@@ -2194,12 +2230,6 @@
 
                     showOnlineWaitingModal(currentRoomCode);
                     setupRoomListeners();
-                }).catch(err => {
-                    console.error("Firebase write error:", err);
-                    showToast("部屋の作成に失敗しました。通信環境をご確認ください");
-                    roomRef = null;
-                    currentRoomCode = null;
-                    currentBattleMode = 'cpu';
                 });
 
             } else if (!data.guest || data.status === 'waiting') {
@@ -2211,6 +2241,7 @@
                 sharedMonstersData = data.monsters || [];
 
                 roomRef.onDisconnect().cancel();
+                roomRef.child('presence/host').onDisconnect().remove();
                 roomRef.child('presence/guest').onDisconnect().remove();
 
                 roomRef.child('guest').set({ name: playerName, rate: playerRate, ready: true });
@@ -2224,17 +2255,11 @@
 
             } else {
                 showToast("この部屋は満員または対局中です。別の合言葉をお試しください");
-                roomRef = null;
-                currentRoomCode = null;
-                currentBattleMode = 'cpu';
                 switchScreen('home');
             }
         }).catch(err => {
             console.error("Firebase access error:", err);
             showToast("通信エラーが発生しました。設定をご確認ください");
-            roomRef = null;
-            currentRoomCode = null;
-            currentBattleMode = 'cpu';
         });
     }
 
@@ -2263,10 +2288,6 @@
         const currentRef = roomRef;
         const role = onlinePlayerRole;
 
-        try {
-            currentRef.onDisconnect().cancel();
-            currentRef.child(`presence/${role}`).onDisconnect().cancel();
-        } catch (e) {}
         currentRef.child(`presence/${role}`).remove();
         currentRef.child('presence').once('value').then(snap => {
             const pres = snap.val() || {};
@@ -2274,7 +2295,7 @@
             if (Object.keys(pres).length === 0) {
                 currentRef.remove();
             }
-        }).catch(() => {}).finally(() => {
+        }).finally(() => {
             currentRef.off();
             roomRef = null;
             currentRoomCode = null;
@@ -2311,7 +2332,8 @@
 
         roomRef.child('presence').on('value', snap => {
             if (isCleaningUpRoom || battleOver) return;
-            const pres = snap.val() || {};
+            const pres = snap.val();
+            if (!pres) return;
 
             const otherRole = onlinePlayerRole === 'host' ? 'guest' : 'host';
             const isPlaying = currentScreen === 'battle';
@@ -2319,7 +2341,6 @@
             if (isPlaying && !pres[otherRole]) {
                 showToast("⚠️ 相手との接続が切断されました。対局を終了します");
                 later(() => {
-                    if (battleOver) return;
                     battleOver = true;
                     leaveAndCleanupRoom();
                     switchScreen('home');
@@ -2330,6 +2351,7 @@
         roomRef.child('events').on('child_added', snap => {
             const ev = snap.val();
             if (!ev || ev.by === onlinePlayerRole) return;
+            if (ev.timestamp && ev.timestamp < matchStartTime - 5000) return;
 
             handleIncomingNetworkEvent(ev);
         });
@@ -2344,19 +2366,12 @@
     }
 
     function handleIncomingNetworkEvent(ev) {
-        if (battleOver || !ev || typeof ev !== 'object') return;
-        if (ev.cellIndex !== undefined && !(Number.isInteger(ev.cellIndex) && ev.cellIndex >= 0 && ev.cellIndex < 25)) return;
-        if (ev.type === 'boss_strike' && !(Array.isArray(ev.targetCells) && ev.targetCells.length <= 25 && ev.targetCells.every(c => Number.isInteger(c) && c >= 0 && c < 25))) return;
-        if (ev.type === 'turn_end' && !(Number.isInteger(ev.nextRound) && (ev.nextHalf === 'first' || ev.nextHalf === 'second'))) return;
-        if (ev.type === 'item_direction' && !['up', 'down', 'left', 'right'].includes(ev.direction)) return;
-        if (ev.type === 'place' && (boardCells[ev.cellIndex] || !Array.isArray(ev.dir))) return;
-
         if (ev.type === 'place') {
             const p = ALL_PIECES_DATA.find(x => x.id === ev.pieceId);
             if (p) {
                 boardCells[ev.cellIndex] = {
                     ...p,
-                    dir: ev.dir.filter(d => ['up', 'down', 'left', 'right'].includes(d)),
+                    dir: [...ev.dir],
                     owner: 'opponent',
                     currentPower: p.power,
                     instanceId: `net_opp_${Date.now()}`,
@@ -2364,15 +2379,9 @@
                     bonusPower: 0,
                     tempDirs: []
                 };
-                // 相手の手札・山札を1枚消費（オンラインでも枚数切れ終局を正しく判定）
-                if (opponentHand.length > 0) {
-                    opponentHand.shift();
-                    if (opponentDrawPile.length > 0) opponentHand.push(opponentDrawPile.shift());
-                }
                 playSound('place');
                 calculateConnectedGroups();
                 renderBattleBoard();
-                checkBattleEndCondition();
             }
         } else if (ev.type === 'clash') {
             const pl = boardCells[ev.cellIndex];
@@ -2434,12 +2443,12 @@
             switchTurnToPlayer();
         } else if (ev.type === 'boss_strike') {
             applyBossStrikeTargetCells(ev.targetCells);
+        } else if (ev.type === 'boss_relocate') {
+            applyBossRelocation(ev.bossMoves);
         } else if (ev.type === 'surrender') {
             showToast("相手が対局を降参しました！あなたの不戦勝です！");
-            playerScore = Math.max(playerScore + 50, opponentScore + 1);
-            updateBattleStatusHeader();
-            battleOver = true;
-            later(showBattleResultModal, 600);
+            playerScore += 50;
+            checkBattleEndCondition();
         }
     }
 
@@ -2447,12 +2456,9 @@
     function startInteractiveTutorial() {
         initAudioEngine();
         playSound('connect');
-        battleId++;
         isTutorialMode = true;
         tutorialInteractiveStep = 1;
         currentBattleMode = 'tutorial';
-        pendingDirPickCellIndex = null;
-        updateSelectedCardBrief(null);
 
         // チュートリアル用の手札設定（大根、たまご、牛すじ、はんぺん）
         playerHand = [1, 2, 7, 6];
@@ -2475,6 +2481,7 @@
         selectedHandIndex = null;
         previewPlacementIndex = null;
         selectedQuickItem = null;
+        pendingItemConfirmation = null;
         battleOver = false;
         inputLocked = false;
         dangerTargetCells = [];
@@ -2482,8 +2489,7 @@
         playerItemStocks = { ...DEFAULT_ITEM_STOCKS };
         opponentItemStocks = { ...DEFAULT_ITEM_STOCKS };
 
-        // ★修正点：マス2 (x=2, y=0) に相手のちくわ（下向き↓）を配置！
-        // Step 2でたまご（マス7, x=2, y=1）が置かれると、たまごの「上向き↑」とちくわの「下向き↓」が完全に双方向で向き合います！
+        // マス2 (x=2, y=0) に相手のちくわ（下向き↓）を配置
         boardCells[2] = {
             ...ALL_PIECES_DATA.find(x => x.id === 3),
             dir: ['down'],
@@ -2650,6 +2656,7 @@
         selectedHandIndex = null;
         previewPlacementIndex = null;
         selectedQuickItem = null;
+        pendingItemConfirmation = null;
 
         playerItemStocks = { ...DEFAULT_ITEM_STOCKS };
         opponentItemStocks = { ...DEFAULT_ITEM_STOCKS };
@@ -2751,6 +2758,9 @@
         } else if (phaseType === 'boss_strike') {
             banner.classList.add('cutin-boss-strike');
             playSound('boss_strike');
+        } else if (phaseType === 'boss_warp') {
+            banner.classList.add('cutin-boss-warp');
+            playSound('connect');
         }
 
         titleEl.textContent = title;
@@ -2780,9 +2790,6 @@
             orderBadge.textContent = '指南';
             orderBadge.className = 'text-xs px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 font-bold';
             turnInd.textContent = "実践指南中";
-            attackNotice.classList.add('hidden');
-            handLabel.textContent = currentPhase === 'standby' ? "手札（タップして空きマスへ配置）" : "手札（アタックフェーズ中は配置不可）";
-            badge.className = "px-2.5 py-0.5 rounded font-bold bg-sky-950 text-sky-300 border border-sky-800";
             turnInd.className = "px-2.5 py-1 rounded text-xs font-bold bg-sky-950 text-sky-200 border border-sky-800";
             
             if (tutorialInteractiveStep === 3) {
@@ -2839,7 +2846,6 @@
             turnInd.className = "px-2.5 py-1 rounded text-xs font-bold bg-sky-950 text-sky-200 border border-sky-800 animate-pulse";
             mainBtn.disabled = true;
             mainBtn.textContent = "相手の行動中";
-            attackNotice.classList.add('hidden');
             mainBtn.className = "w-full py-2.5 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
         }
     }
@@ -2974,20 +2980,20 @@
                 cellDiv.classList.add('cell-danger-target');
             }
 
-            // 破壊されたマス（焦土・配置不可）
+            // 破壊されたマス（撃破マス）：グレー仕様
             if (burned) {
                 cellDiv.classList.add('cell-burned');
                 cellDiv.innerHTML = `
                     <div class="burned-badge">
-                        <span class="text-sm sm:text-lg animate-pulse">🔥</span>
-                        <span class="text-[8px] sm:text-[10px] text-rose-400 font-mono font-bold leading-none mt-0.5">封印 ${burned.turnsLeft}T</span>
+                        <span class="text-sm sm:text-base text-stone-400">🪨</span>
+                        <span class="text-[8px] sm:text-[10px] text-stone-300 font-mono font-bold leading-none mt-0.5">封印 ${burned.turnsLeft}T</span>
                     </div>
                 `;
             } else if (selectedQuickItem && cell && cell.owner === 'player') {
                 cellDiv.classList.add('item-target-candidate');
             }
 
-            // チュートリアル用のターゲットハイライト（Step 4はマス2）
+            // チュートリアル用のターゲットハイライト
             if (isTutorialMode) {
                 if (tutorialInteractiveStep === 1 && i === 12) cellDiv.classList.add('tut-active-target');
                 if (tutorialInteractiveStep === 2 && i === 7) cellDiv.classList.add('tut-active-target');
@@ -3011,8 +3017,15 @@
                     const isShielded = !!cell.shieldActive;
                     const dispPower = cell.currentPower ?? cell.power;
 
+                    // アイテムアイコンバッジの生成
+                    const itemBadges = [];
+                    if (cell.tempDirs && cell.tempDirs.length > 0) itemBadges.push(`<span class="piece-item-icon-tag" title="方向付与中">🧭</span>`);
+                    if (isShielded) itemBadges.push(`<span class="piece-item-icon-tag" title="シールド展開中">🛡️</span>`);
+                    if (cell.bonusPower && cell.bonusPower > 0) itemBadges.push(`<span class="piece-item-icon-tag font-bold text-amber-300" title="パワーUP中">⚡+${cell.bonusPower}</span>`);
+
                     cellDiv.innerHTML = `
                         <div class="piece-card ${isPl ? 'piece-player' : 'piece-opponent'} ${isShielded ? 'piece-shielded' : ''}">
+                            <div class="piece-items-badge-container">${itemBadges.join('')}</div>
                             ${cell.dir.map(d => {
                                 const isTemp = cell.tempDirs && cell.tempDirs.includes(d);
                                 return `<div class="dir-arrow ${isPl ? 'dir-player' : 'dir-opponent'} ${isTemp ? 'dir-temp' : ''} dir-${d}"></div>`;
@@ -3021,7 +3034,6 @@
                             <div class="power-diamond ${isPl ? 'diamond-player' : 'diamond-opponent'}">
                                 <span class="power-diamond-text">${dispPower}</span>
                             </div>
-                            ${isShielded ? `<span class="absolute top-0 right-0 text-[10px] bg-yellow-500 text-black px-1.5 rounded-bl font-bold">🛡️シールド</span>` : ''}
                         </div>
                     `;
 
@@ -3033,7 +3045,6 @@
                         clashBadge.textContent = "激突!";
                         cellDiv.appendChild(clashBadge);
                     } else if (isTutorialMode && tutorialInteractiveStep >= 3 && i === 2) {
-                        // チュートリアルStep 4（マス2のちくわ）
                         cellDiv.classList.add('highlight-target');
                         const clashBadge = document.createElement('div');
                         clashBadge.className = "clash-badge";
@@ -3192,11 +3203,6 @@
             showToast("アタックフェーズ中は具材の配置はできません");
             return;
         }
-        if (placementLimitReached()) {
-            playSound('error');
-            showToast("具材の配置は1ターンに1枚までです。「アタックへ進む」を押してください");
-            return;
-        }
 
         if (isTutorialMode) {
             if (tutorialInteractiveStep === 1 && index !== 0) {
@@ -3246,16 +3252,16 @@
         const cell = boardCells[index];
         const burned = burnedCells[index];
 
-        // 破壊されたマス（焦土）は配置不可
+        // 破壊されたマス（撃破マス）は配置不可
         if (burned) {
             playSound('error');
-            showToast(`🔥 このマスは破壊により封印されています（解除まで残${burned.turnsLeft}ターン）`);
+            showToast(`🪨 このマスは撃破により封印されています（解除まで残${burned.turnsLeft}ターン）`);
             return;
         }
 
-        // 常設道具の対象選択中
+        // 常設道具の対象選択中（確認画面へ）
         if (selectedQuickItem) {
-            applyQuickItemToTargetCell(index);
+            initiateItemConfirmation(index);
             return;
         }
 
@@ -3292,7 +3298,6 @@
                 return;
             }
             if (tutorialInteractiveStep === 4) {
-                // ★修正点：マス2（たまごの真上、ちくわ）が正面衝突対象
                 if (index === 2) {
                     executeClashWithOpponent(index);
                     tutorialInteractiveStep = 5;
@@ -3342,7 +3347,7 @@
         if (cell && cell.owner === 'opponent') {
             if (cell.shieldActive) {
                 playSound('error');
-                showToast(`🛡️ 相手の【${cell.name}】はシールド発動中のため攻撃を受けません！`);
+                showToast(`🛡️️ 相手の【${cell.name}】はシールド発動中のため攻撃を受けません！`);
                 return;
             }
             if (isAttackRestricted()) {
@@ -3369,11 +3374,6 @@
             if (currentPhase !== 'standby') {
                 playSound('error');
                 showToast("アタックフェーズ中は具材の配置はできません");
-                return;
-            }
-            if (placementLimitReached()) {
-                playSound('error');
-                showToast("具材の配置は1ターンに1枚までです。「アタックへ進む」を押してください");
                 return;
             }
             if (selectedHandIndex !== null) {
@@ -3578,7 +3578,7 @@
         }
     }
 
-    /* ================= 新・常設道具システム ================= */
+    /* ================= アイテム使用 ＆ 確認モーダル ================= */
     function updateItemStockUI() {
         const dirEl = document.getElementById('itemStockDirText');
         const shieldEl = document.getElementById('itemStockShieldText');
@@ -3594,11 +3594,6 @@
     }
 
     function handleQuickItemSelect(itemType) {
-        if (isTutorialMode) {
-            playSound('error');
-            showToast("実践指南中は道具を使用できません");
-            return;
-        }
         if (!isPlayerTurn || battleOver || inputLocked) {
             showToast("今は道具を使用できません");
             return;
@@ -3629,7 +3624,7 @@
         } else if (itemType === 'shield') {
             showToast("🛡️ 【シールド】対象の味方具材をタップしてください");
         } else if (itemType === 'powerup') {
-            showToast("⚡ 【パワーUP】対象の味方具材をタップしてください（攻撃力+4）");
+            showToast("⚡ 【パワーUP】対象の味方具材をタップしてください");
         }
 
         renderPlayerHand();
@@ -3646,7 +3641,8 @@
         btnPower?.classList.toggle('active', selectedQuickItem === 'powerup');
     }
 
-    function applyQuickItemToTargetCell(cellIndex) {
+    // アイテム対象タップ時の確認処理開始
+    function initiateItemConfirmation(cellIndex) {
         const cell = boardCells[cellIndex];
         if (!cell || cell.owner !== 'player') {
             playSound('error');
@@ -3666,38 +3662,33 @@
                 showToast("すでにシールドが付与されています");
                 return;
             }
-            cell.shieldActive = true;
-            playerItemStocks.shield--;
-            selectedQuickItem = null;
-            updateItemQuickButtonsState();
-            updateItemStockUI();
-            playSound('item');
-            showToast(`🛡️ 【${cell.name}】にシールドを付与！（次の自ターンまで無敵）`);
-
-            if (currentBattleMode === 'online') {
-                sendNetworkEvent({ type: 'item_shield', cellIndex });
-            }
-
-            renderBattleBoard();
+            prepareItemConfirmModal({
+                itemType: 'shield',
+                cellIndex: cellIndex,
+                icon: '🛡️',
+                title: 'シールド付与の確認',
+                effectDesc: '次の自ターンまで無敵化（攻撃無効）',
+                piecePowerChange: `${cell.power} ➔ ${cell.power} (不変)`,
+                groupPowerChange: `${cell.currentPower ?? cell.power} ➔ ${cell.currentPower ?? cell.power} (不変)`
+            });
             return;
         }
 
         if (selectedQuickItem === 'powerup') {
-            cell.bonusPower = (cell.bonusPower || 0) + 4;
-            cell.power += 4;
-            playerItemStocks.powerup--;
-            selectedQuickItem = null;
-            updateItemQuickButtonsState();
-            updateItemStockUI();
-            playSound('item');
-            showToast(`⚡ 【${cell.name}】の攻撃力を+4強化しました！（連結合計も+4）`);
+            const curPiecePower = cell.power;
+            const newPiecePower = curPiecePower + 4;
+            const curGroupPower = cell.currentPower ?? cell.power;
+            const newGroupPower = curGroupPower + 4;
 
-            if (currentBattleMode === 'online') {
-                sendNetworkEvent({ type: 'item_powerup', cellIndex });
-            }
-
-            calculateConnectedGroups();
-            renderBattleBoard();
+            prepareItemConfirmModal({
+                itemType: 'powerup',
+                cellIndex: cellIndex,
+                icon: '⚡',
+                title: 'パワーUP付与の確認',
+                effectDesc: '攻撃力 +4（連結全体も+4）',
+                piecePowerChange: `${curPiecePower} ➔ ${newPiecePower} (+4)`,
+                groupPowerChange: `${curGroupPower} ➔ ${newGroupPower} (+4)`
+            });
             return;
         }
     }
@@ -3721,7 +3712,7 @@
         renderBattleBoard();
     }
 
-    function confirmDirectionPick(dir) {
+    function chooseDirectionForConfirm(dir) {
         if (pendingDirPickCellIndex === null) return;
         const cell = boardCells[pendingDirPickCellIndex];
         if (!cell || cell.owner !== 'player') return;
@@ -3729,27 +3720,110 @@
         document.getElementById('directionPickModal').classList.remove('flex');
         document.getElementById('directionPickModal').classList.add('hidden');
 
-        if (!cell.dir.includes(dir)) {
-            cell.dir.push(dir);
-            if (!cell.tempDirs) cell.tempDirs = [];
-            cell.tempDirs.push(dir);
+        const arrowGlyph = { up: '↑', down: '↓', left: '←', right: '→' }[dir];
+        const oldDirs = getDirectionGlyphs(cell.dir);
+        const newDirs = oldDirs + ' ' + arrowGlyph;
+
+        // 一時的に付与した場合の連結合計シミュレーション
+        const origDirs = [...cell.dir];
+        cell.dir.push(dir);
+        const simGroups = calculateConnectedGroups();
+        const newGroupPower = cell.currentPower ?? cell.power;
+        cell.dir = origDirs;
+        calculateConnectedGroups(); // 元に戻す
+        const curGroupPower = cell.currentPower ?? cell.power;
+
+        prepareItemConfirmModal({
+            itemType: 'direction',
+            cellIndex: pendingDirPickCellIndex,
+            chosenDir: dir,
+            icon: '🧭',
+            title: '方向付与の確認',
+            effectDesc: `方向「${arrowGlyph}」を追加（次の自ターンまで有効）`,
+            piecePowerChange: `方向: ${oldDirs} ➔ ${newDirs}`,
+            groupPowerChange: `${curGroupPower} ➔ ${newGroupPower} (${newGroupPower > curGroupPower ? '+' + (newGroupPower - curGroupPower) : '変化なし'})`
+        });
+    }
+
+    function prepareItemConfirmModal(data) {
+        pendingItemConfirmation = data;
+        const cell = boardCells[data.cellIndex];
+
+        document.getElementById('confirmItemIcon').textContent = data.icon;
+        document.getElementById('confirmItemTitle').textContent = data.title;
+        document.getElementById('confirmTargetPieceName').textContent = `【${cell.name}】`;
+        document.getElementById('confirmItemEffectDesc').textContent = data.effectDesc;
+        document.getElementById('confirmPiecePowerChange').textContent = data.piecePowerChange;
+        document.getElementById('confirmGroupPowerChange').textContent = data.groupPowerChange;
+
+        document.getElementById('itemConfirmModal').classList.remove('hidden');
+        document.getElementById('itemConfirmModal').classList.add('flex');
+    }
+
+    function cancelItemConfirmation() {
+        document.getElementById('itemConfirmModal').classList.remove('flex');
+        document.getElementById('itemConfirmModal').classList.add('hidden');
+        pendingItemConfirmation = null;
+        pendingDirPickCellIndex = null;
+        selectedQuickItem = null;
+        updateItemQuickButtonsState();
+        showToast("アイテムの使用をやめました（ストックは消費されません）");
+        renderBattleBoard();
+    }
+
+    function commitItemConfirmation() {
+        if (!pendingItemConfirmation) return;
+        const { itemType, cellIndex, chosenDir } = pendingItemConfirmation;
+        const cell = boardCells[cellIndex];
+
+        document.getElementById('itemConfirmModal').classList.remove('flex');
+        document.getElementById('itemConfirmModal').classList.add('hidden');
+
+        if (!cell || cell.owner !== 'player') {
+            cancelItemConfirmation();
+            return;
         }
 
-        playerItemStocks.direction--;
-        const cellIdx = pendingDirPickCellIndex;
+        if (itemType === 'direction') {
+            if (!cell.dir.includes(chosenDir)) {
+                cell.dir.push(chosenDir);
+                if (!cell.tempDirs) cell.tempDirs = [];
+                cell.tempDirs.push(chosenDir);
+            }
+            playerItemStocks.direction--;
+            playSound('item');
+            const arrowGlyph = { up: '↑', down: '↓', left: '←', right: '→' }[chosenDir];
+            showToast(`🧭 【${cell.name}】に方向「${arrowGlyph}」を付与しました！`);
+
+            if (currentBattleMode === 'online') {
+                sendNetworkEvent({ type: 'item_direction', cellIndex, direction: chosenDir });
+            }
+        } else if (itemType === 'shield') {
+            cell.shieldActive = true;
+            playerItemStocks.shield--;
+            playSound('item');
+            showToast(`🛡️ 【${cell.name}】にシールドを付与！（次の自ターンまで無敵）`);
+
+            if (currentBattleMode === 'online') {
+                sendNetworkEvent({ type: 'item_shield', cellIndex });
+            }
+        } else if (itemType === 'powerup') {
+            cell.bonusPower = (cell.bonusPower || 0) + 4;
+            cell.power += 4;
+            playerItemStocks.powerup--;
+            playSound('item');
+            showToast(`⚡ 【${cell.name}】の攻撃力を+4強化しました！（連結合計も+4）`);
+
+            if (currentBattleMode === 'online') {
+                sendNetworkEvent({ type: 'item_powerup', cellIndex });
+            }
+        }
+
+        pendingItemConfirmation = null;
         pendingDirPickCellIndex = null;
         selectedQuickItem = null;
         updateItemQuickButtonsState();
         updateItemStockUI();
-
-        playSound('item');
-        const arrowGlyph = { up: '↑', down: '↓', left: '←', right: '→' }[dir];
-        showToast(`🧭 【${cell.name}】に方向「${arrowGlyph}」を追加付与しました！（次の自ターンまで有効）`);
-
-        if (currentBattleMode === 'online') {
-            sendNetworkEvent({ type: 'item_direction', cellIndex: cellIdx, direction: dir });
-        }
-
         calculateConnectedGroups();
         renderBattleBoard();
     }
@@ -3773,13 +3847,13 @@
                 burned.turnsLeft--;
                 if (burned.turnsLeft <= 0) {
                     burnedCells[i] = null;
-                    showToast(`♨️ 破壊マスの焦土が冷め、再び具材を置けるようになりました！`);
+                    showToast(`♨️ 撃破マスが冷め、再び具材を置けるようになりました！`);
                 }
             }
         }
     }
 
-    /* ================= ターン遷移 ＆ ボス強襲 ================= */
+    /* ================= ターン遷移 ＆ ボス強襲・移動 ================= */
     function switchTurnToOpponent() {
         if (!isPlayerTurn || battleOver) return;
         if (previewPlacementIndex !== null && selectedHandIndex !== null) {
@@ -3794,6 +3868,7 @@
         selectedHandIndex = null;
         previewPlacementIndex = null;
         selectedQuickItem = null;
+        pendingItemConfirmation = null;
         updateItemQuickButtonsState();
 
         if (turnHalf === 'first') {
@@ -3841,11 +3916,14 @@
 
         if (isStrikeTurn) {
             triggerBossRandomStrike(() => {
-                inputLocked = false;
-                triggerPhaseCutin('standby', 'スタンバイフェーズ', `${getTurnString()} あなたの手番`, '🍱');
-                showToast(`${getTurnString()}: あなたの手番です`);
-                renderBattleBoard();
-                renderPlayerHand();
+                // 攻撃後にボスが空きマスへランダム移動
+                relocateAliveBosses(() => {
+                    inputLocked = false;
+                    triggerPhaseCutin('standby', 'スタンバイフェーズ', `${getTurnString()} あなたの手番`, '🍱');
+                    showToast(`${getTurnString()}: あなたの手番です`);
+                    renderBattleBoard();
+                    renderPlayerHand();
+                });
             });
         } else {
             triggerPhaseCutin('standby', 'スタンバイフェーズ', `${getTurnString()} あなたの手番`, '🍱');
@@ -3907,7 +3985,7 @@
             renderBattleBoard();
 
             if (destroyedPlayerCount > 0 || destroyedOpponentCount > 0) {
-                showToast(`💥 強襲被弾！味方${destroyedPlayerCount}枚・敵${destroyedOpponentCount}枚が破壊され焦土となりました！`);
+                showToast(`💥 強襲被弾！味方${destroyedPlayerCount}枚・敵${destroyedOpponentCount}枚が破壊され撃破マスとなりました！`);
             } else {
                 showToast(`♨️ 強襲は空マスに着弾！損害はありませんでした！`);
             }
@@ -3943,19 +4021,84 @@
         }, 1100);
     }
 
-    /* ================= CPU思考ルーチン ================= */
-    function executeCpuTurn() {
-        if (currentScreen !== 'battle' || battleOver) return;
+    /* 3ターン強襲後：生き残っている中立ボスの空きマスランダム移動 */
+    function relocateAliveBosses(callback) {
+        const aliveBossIndices = [];
+        for (let i = 0; i < 25; i++) {
+            if (boardCells[i] && boardCells[i].type === 'monster') {
+                aliveBossIndices.push(i);
+            }
+        }
 
-        // プレイヤーが後攻のとき、ラウンド先頭の手番はCPU。強襲はその開始時に発動する
-        if (turnHalf === 'first' && roundNumber % 3 === 0 && bossRemaining > 0) {
-            triggerBossRandomStrike(() => executeCpuTurnMain());
+        if (aliveBossIndices.length === 0) {
+            if (callback) callback();
             return;
         }
-        executeCpuTurnMain();
+
+        // 空いているマス（駒がなく、撃破マスでもないマス）を抽出
+        const emptyCells = [];
+        for (let i = 0; i < 25; i++) {
+            if (!boardCells[i] && !burnedCells[i]) {
+                emptyCells.push(i);
+            }
+        }
+
+        if (emptyCells.length === 0) {
+            if (callback) callback();
+            return;
+        }
+
+        const shuffledEmpty = shuffleArray(emptyCells);
+        const bossMoves = [];
+
+        aliveBossIndices.forEach((oldIdx, i) => {
+            if (shuffledEmpty[i] !== undefined) {
+                const newIdx = shuffledEmpty[i];
+                bossMoves.push({ oldIdx, newIdx });
+            }
+        });
+
+        if (bossMoves.length === 0) {
+            if (callback) callback();
+            return;
+        }
+
+        if (currentBattleMode === 'online') {
+            sendNetworkEvent({
+                type: 'boss_relocate',
+                bossMoves: bossMoves
+            });
+        }
+
+        triggerPhaseCutin('boss_warp', '🌀 ボス移動！', '生き残った鬼たちが別のマスへ蠢く…！', '👺');
+
+        later(() => {
+            applyBossRelocation(bossMoves);
+            showToast("🌀 中立ボスたちが空きマスへと移動しました！");
+            if (callback) callback();
+        }, 900);
     }
 
-    function executeCpuTurnMain() {
+    function applyBossRelocation(bossMoves) {
+        // 退避してから移動
+        const movedBosses = [];
+        bossMoves.forEach(m => {
+            movedBosses.push({ data: boardCells[m.oldIdx], newIdx: m.newIdx });
+            boardCells[m.oldIdx] = null;
+        });
+
+        movedBosses.forEach(mb => {
+            if (mb.data) {
+                boardCells[mb.newIdx] = mb.data;
+            }
+        });
+
+        calculateConnectedGroups();
+        renderBattleBoard();
+    }
+
+    /* ================= CPU思考ルーチン ================= */
+    function executeCpuTurn() {
         if (currentScreen !== 'battle' || battleOver) return;
 
         const emptyIndices = [];
@@ -4063,7 +4206,7 @@
                                                 boardCells[i] = null;
                                                 attacked = true;
                                                 playSound('clash');
-                                                showToast(`⚠️ 相手があなたの【${pl.name}】を撃破！ -${pl.power}点（マス封印）`);
+                                                showToast(`⚠️ 相手があなたの【${pl.name}】を撃破！ -${pl.power}点（撃破マス封印）`);
                                                 break;
                                             }
                                         }
@@ -4095,7 +4238,6 @@
 
     /* ================= 終局判定 & リザルト ================= */
     function checkBattleEndCondition() {
-        if (isTutorialMode) return false;
         if (battleOver) return true;
         const isAllBossDefeated = bossRemaining <= 0;
         const isBoardFull = boardCells.every(c => c !== null);
@@ -4125,10 +4267,6 @@
         pScoreEl.textContent = playerScore;
         oScoreEl.textContent = opponentScore;
         turnsEl.textContent = `${roundNumber}ターン`;
-
-        const isOnlineResult = currentBattleMode === 'online';
-        document.getElementById('resultRestartBtn').classList.toggle('hidden', isOnlineResult);
-        document.getElementById('resultMenuBtn').classList.toggle('col-span-2', isOnlineResult);
 
         const rateGain = currentBattleMode === 'online' ? 30 : (cpuDifficulty === 'matsu' ? 35 : (cpuDifficulty === 'ume' ? 15 : 25));
 
@@ -4181,14 +4319,13 @@
         document.getElementById('resultModal').classList.add('hidden');
         if (currentBattleMode === 'online') {
             leaveAndCleanupRoom();
-            showToast("オンライン対戦は、合言葉を入力して再度入室してください");
-            switchScreen('home');
-            return;
+            startOnlineRoomMatch();
+        } else {
+            startBattlePreparation();
         }
-        startBattlePreparation();
     }
 
-    /* ================= ゲーム説明（複数ページスライド式マニュアル） ================= */
+    /* ================= ゲーム説明（スライドマニュアル） ================= */
     const RULE_PAGES_DATA = [
         {
             title: "1. 盤面構成と勝利条件",
@@ -4213,8 +4350,6 @@
                     第1ターン（1ターン目先攻・後攻）は、互いに具材の配置や道具の使用のみ可能で、攻撃（激突・討伐）はできません。</p>
                     <p class="leading-relaxed"><strong class="text-amber-400 font-bold">【攻撃は1ターンに1回のみ！】</strong><br>
                     第2ターン以降のバトルフェーズでは、<strong class="text-rose-300">「相手駒への激突」または「ボス討伐」のいずれか1回のみ</strong>攻撃を行えます。攻撃後はターンエンドへ進みます。</p>
-                    <p class="leading-relaxed"><strong class="text-sky-300 font-bold">【具材の配置は1ターンに1枚】</strong><br>
-                    スタンバイフェーズで置ける具材は1ターンにつき1枚までです。置いたら「アタックへ進む」を押しましょう。</p>
                 </div>
             `
         },
@@ -4230,28 +4365,29 @@
             `
         },
         {
-            title: "4. 破壊マスの焦土封印（2ターン制限）",
+            title: "4. 撃破マスの封印（2ターン制限）",
             content: `
                 <div class="space-y-3">
-                    <p class="leading-relaxed"><strong class="text-rose-400 font-bold">【破壊されたマスは焦土化！】</strong><br>
-                    直接激突やボス強襲によってカードが破壊されたマスは、炎が渦巻く<strong class="text-amber-300">「焦土マス（封印）」</strong>となります。</p>
+                    <p class="leading-relaxed"><strong class="text-rose-400 font-bold">【破壊されたマスはグレー封印！】</strong><br>
+                    直接激突やボス強襲によってカードが破壊されたマスは、<strong class="text-stone-300">「撃破マス（グレー・封印）」</strong>となります。</p>
                     <p class="leading-relaxed"><strong class="text-amber-300 font-bold">【2ターンの間、両者配置不可】</strong><br>
                     破壊されたマスには、2ターンの間両プレイヤーともに具材を置くことができません。</p>
                     <p class="leading-relaxed"><strong class="text-emerald-400 font-bold">【破壊された側のフェーズで復活】</strong><br>
-                    2ターン経過後の「破壊されたプレイヤーのスタンバイフェーズ」開始時に焦土が冷め、再び具材が配置できるようになります。</p>
+                    2ターン経過後の「破壊されたプレイヤーのスタンバイフェーズ」開始時に封印が解け、再び具材が配置できるようになります。</p>
                 </div>
             `
         },
         {
-            title: "5. 秘伝の道具と天災（ボス強襲）",
+            title: "5. 常設道具と天災（ボス強襲・移動）",
             content: `
                 <div class="space-y-2.5">
-                    <p class="leading-relaxed"><strong class="text-amber-300 font-bold">【常設された3種の秘伝道具】</strong>（戦闘画面下に常時表示）<br>
-                    ・<strong class="text-amber-400">🧭 方向付与 (残3)</strong>: 選択した味方に好きな方向矢印を1つ追加（次の自ターンまで有効）。<br>
-                    ・<strong class="text-sky-400">🛡️ シールド (残3)</strong>: 選択した味方に攻撃無効シールド付与（次の自ターンまで有効）。<br>
-                    ・<strong class="text-rose-400">⚡ パワーUP (残2)</strong>: 選択した味方の攻撃力を+4強化！連結合計にも+4合算されます（破壊されるまで維持）。</p>
-                    <p class="leading-relaxed"><strong class="text-purple-400 font-bold">【天災：中立ボスの強襲】</strong><br>
-                    3ターン目、6ターン目…の開始時、生き残っているボスが暴走！完全ランダムに3〜5マスを猛熱で襲撃し、巻き込まれたカードを即時粉砕（マスは焦土化）します。</p>
+                    <p class="leading-relaxed"><strong class="text-amber-300 font-bold">【常設された3種の秘伝道具】</strong>（確認・キャンセル付き）<br>
+                    ・<strong class="text-amber-400">🧭 方向付与 (残3)</strong>: 選択した味方に好きな方向矢印を1つ追加。<br>
+                    ・<strong class="text-sky-400">🛡️ シールド (残3)</strong>: 選択した味方に攻撃無効シールド付与。<br>
+                    ・<strong class="text-rose-400">⚡ パワーUP (残2)</strong>: 選択した味方の攻撃力を+4強化！連結合計にも+4合算。<br>
+                    ※付与された具材にはアイコンが灯り、いつでも確認ダイアログで合計値を確認してキャンセル可能です。</p>
+                    <p class="leading-relaxed"><strong class="text-purple-400 font-bold">【天災：ボスの強襲 ＆ ランダム移動】</strong><br>
+                    3の倍数ターン開始時、生き残っているボスが3〜5マスを強襲！さらに攻撃後、<strong class="text-purple-300">空いているマスへランダムに移動</strong>します。</p>
                 </div>
             `
         }
@@ -4459,9 +4595,8 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const roomFromUrl = urlParams.get('room');
-        const roomCodeFromUrl = normalizeRoomCode(roomFromUrl);
-        if (roomCodeFromUrl) {
-            document.getElementById('onlineRoomCodeInput').value = roomCodeFromUrl;
+        if (roomFromUrl) {
+            document.getElementById('onlineRoomCodeInput').value = roomFromUrl;
             if (window.innerWidth >= 768) {
                 selectDeviceMode('pc');
             } else {
