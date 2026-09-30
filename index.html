@@ -185,12 +185,6 @@
             background: rgba(136, 19, 55, 0.22);
             animation: pulse-border-red 1.3s infinite;
         }
-        .grid-cell.highlight-target-monster {
-            border-color: #c084fc !important;
-            box-shadow: 0 0 16px rgba(192, 132, 252, 0.85) !important;
-            background: rgba(88, 28, 135, 0.3) !important;
-            animation: pulse-border-purple 1.3s infinite !important;
-        }
         .grid-cell.item-target-candidate {
             border-color: #facc15;
             box-shadow: 0 0 14px rgba(250, 204, 21, 0.7);
@@ -236,18 +230,6 @@
             100% { transform: scale(1.05); filter: brightness(1.6); }
         }
 
-        .grid-cell.cell-danger-target {
-            border-color: #ec4899 !important;
-            background: rgba(236, 72, 153, 0.35) !important;
-            box-shadow: 0 0 20px rgba(244, 63, 94, 0.95), inset 0 0 12px rgba(236, 72, 153, 0.6) !important;
-            animation: pulse-danger 0.5s infinite alternate !important;
-            z-index: 25;
-        }
-        @keyframes pulse-danger {
-            0% { transform: scale(0.96); filter: brightness(1.2); }
-            100% { transform: scale(1.04); filter: brightness(1.8); }
-        }
-
         @keyframes pulse-border-red {
             0%, 100% { border-color: #f43f5e; box-shadow: 0 0 8px rgba(244, 63, 94, 0.5); }
             50% { border-color: #fb7185; box-shadow: 0 0 18px rgba(244, 63, 94, 0.9); }
@@ -289,19 +271,6 @@
             border: 1.8px solid #a855f7;
             box-shadow: 0 0 14px rgba(168, 85, 247, 0.55), inset 0 0 8px rgba(168, 85, 247, 0.2);
             transition: all 0.35s ease;
-        }
-
-        .piece-preview-ghost {
-            opacity: 0.65;
-            border-style: dashed !important;
-            border-color: #fb7185 !important;
-            background: linear-gradient(145deg, rgba(31, 27, 25, 0.8), rgba(225, 29, 72, 0.35)) !important;
-            animation: pulse-ghost 1.2s infinite ease-in-out;
-            cursor: pointer;
-        }
-        @keyframes pulse-ghost {
-            0%, 100% { opacity: 0.55; transform: scale(0.96); }
-            50% { opacity: 0.85; transform: scale(1.02); }
         }
 
         .piece-shielded {
@@ -443,11 +412,6 @@
             background: linear-gradient(90deg, transparent 0%, rgba(112, 26, 117, 0.96) 20%, rgba(147, 51, 234, 0.98) 50%, rgba(112, 26, 117, 0.96) 80%, transparent 100%);
             border-top: 2px solid #f472b6;
             border-bottom: 2px solid #f472b6;
-        }
-        .cutin-boss-warp {
-            background: linear-gradient(90deg, transparent 0%, rgba(67, 24, 117, 0.96) 20%, rgba(109, 40, 217, 0.98) 50%, rgba(67, 24, 117, 0.96) 80%, transparent 100%);
-            border-top: 2px solid #c084fc;
-            border-bottom: 2px solid #c084fc;
         }
 
         /* 手札カード */
@@ -766,12 +730,12 @@
                     <div class="flex items-center gap-2">
                         <span class="text-lg">📢</span>
                         <span class="text-xs sm:text-base font-bold text-amber-300 font-serif">アップデート情報</span>
-                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.2.0</span>
+                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.3.0</span>
                     </div>
                     <span class="text-[10px] sm:text-xs px-2.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/80 font-mono font-bold">NEW</span>
                 </div>
                 <div class="text-xs sm:text-sm text-stone-200 leading-relaxed font-serif pl-7">
-                    新秘伝道具【🧪 弱体スプレー】参戦！相手駒の攻撃力を-5（2T継続）。さらに【🛡️ シールド】が中立ボスの強襲も防ぐように大幅強化！
+                    【⏪ 戻す機能】新搭載！ターンエンド前なら具材配置やアイテム使用のミスを何度でも取り消せます。新秘伝道具【🧪 弱体スプレー】参戦＆シールド強化！
                 </div>
             </div>
 
@@ -844,7 +808,7 @@
                 <div class="flex items-center gap-2">
                     <span class="text-xl">🍢</span>
                     <span class="font-bold text-sm sm:text-lg tracking-wider text-amber-100 font-serif">おでん道</span>
-                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.2.0</span>
+                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.3.0</span>
                 </div>
             </div>
             
@@ -1081,10 +1045,16 @@
                             <button id="showSelectedCardDetailBtn" onclick="showSelectedPieceDetailModal()" class="text-amber-400 underline hidden text-xs shrink-0 ml-2">詳細</button>
                         </div>
 
-                        <!-- アクションボタン -->
-                        <button id="mainPhaseActionBtn" onclick="handleMainPhaseButtonClick()" class="w-full py-2.5 rounded-xl border border-sky-600 bg-gradient-to-r from-sky-700 to-sky-900 text-sky-100 font-bold text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md transition">
-                            アタックへ進む
-                        </button>
+                        <!-- アクションボタンエリア（戻すボタン ＆ メイン進行ボタン） -->
+                        <div class="flex items-center gap-2">
+                            <button id="undoActionBtn" onclick="handleUndoClick()" disabled class="w-1/3 py-2.5 rounded-xl border border-stone-700 bg-stone-900 text-stone-400 font-bold text-xs sm:text-sm hover:border-amber-600 hover:text-amber-200 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center justify-center gap-1 shadow-sm">
+                                <span>⏪</span>
+                                <span>戻す</span>
+                            </button>
+                            <button id="mainPhaseActionBtn" onclick="handleMainPhaseButtonClick()" class="w-2/3 py-2.5 rounded-xl border border-sky-600 bg-gradient-to-r from-sky-700 to-sky-900 text-sky-100 font-bold text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md transition">
+                                アタックへ進む
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -1449,7 +1419,7 @@
         <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm sm:max-w-md p-5 sm:p-6 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-2 border-b border-stone-800">
                 <div class="flex items-center gap-2.5">
-                    <span class="text-2xl">⚙️</span>
+                    <span class="text-2xl">⚙️️</span>
                     <span class="font-bold text-base sm:text-xl text-amber-100 font-serif">設定</span>
                 </div>
                 <button onclick="closeSettingsModal()" class="text-stone-400 hover:text-stone-200 text-2xl">✕</button>
@@ -1570,7 +1540,7 @@
 
     <script>
     /* ==========================================================================
-       おでん道 - 鍋の陣 完全スクリプト (Ver1.2.0 新道具「弱体スプレー」＆シールドボス防御対応)
+       おでん道 - 鍋の陣 完全スクリプト (Ver1.3.0 戻すUndo機能・弱体スプレー・シールドボス防御)
        ========================================================================== */
 
     const ALL_PIECES_DATA = [
@@ -1662,6 +1632,9 @@
     let playerItemStocks = { ...DEFAULT_ITEM_STOCKS };
     let opponentItemStocks = { ...DEFAULT_ITEM_STOCKS };
 
+    // 操作巻き戻し（アンドゥ）スタック
+    let turnActionHistory = [];
+
     let selectedHandIndex = null;
     let previewPlacementIndex = null;
     let selectedQuickItem = null;
@@ -1693,7 +1666,77 @@
     let currentRulePage = 1;
     const TOTAL_RULE_PAGES = 5;
 
-    /* ================= デバイスモード＆初期ユーザー名設定 ================= */
+    function recordActionSnapshot() {
+        if (!isPlayerTurn || battleOver) return;
+        const snapshot = {
+            boardCells: JSON.parse(JSON.stringify(boardCells)),
+            burnedCells: JSON.parse(JSON.stringify(burnedCells)),
+            playerScore,
+            opponentScore,
+            bossRemaining,
+            playerHand: [...playerHand],
+            playerDrawPile: [...playerDrawPile],
+            playerItemStocks: { ...playerItemStocks },
+            currentPhase,
+            hasPlacedPieceThisTurn,
+            hasAttackedThisTurn
+        };
+        turnActionHistory.push(snapshot);
+        updateUndoButtonState();
+    }
+
+    function handleUndoClick() {
+        if (!isPlayerTurn || inputLocked || battleOver || turnActionHistory.length === 0) return;
+        playSound('click');
+
+        const prevSnapshot = turnActionHistory.pop();
+        if (!prevSnapshot) return;
+
+        boardCells = prevSnapshot.boardCells;
+        burnedCells = prevSnapshot.burnedCells;
+        playerScore = prevSnapshot.playerScore;
+        opponentScore = prevSnapshot.opponentScore;
+        bossRemaining = prevSnapshot.bossRemaining;
+        playerHand = prevSnapshot.playerHand;
+        playerDrawPile = prevSnapshot.playerDrawPile;
+        playerItemStocks = prevSnapshot.playerItemStocks;
+        currentPhase = prevSnapshot.currentPhase;
+        hasPlacedPieceThisTurn = prevSnapshot.hasPlacedPieceThisTurn;
+        hasAttackedThisTurn = prevSnapshot.hasAttackedThisTurn;
+
+        selectedHandIndex = null;
+        selectedQuickItem = null;
+        document.querySelectorAll('.item-quick-btn').forEach(b => b.classList.remove('active', 'active-debuff'));
+        document.getElementById('selectedCardBriefText').textContent = "操作を取り消しました";
+        document.getElementById('showSelectedCardDetailBtn').classList.add('hidden');
+
+        calculateConnectedGroups();
+        updateBattleStatusHeader();
+        updateItemStockUI();
+        updatePhaseUI();
+        renderPlayerHand();
+        renderBattleBoard();
+        updateUndoButtonState();
+
+        if (currentBattleMode === 'online') {
+            sendNetworkEvent({
+                type: 'undo_sync',
+                boardCells,
+                burnedCells,
+                playerScore,
+                opponentScore,
+                bossRemaining
+            });
+        }
+        showToast("⏪ 1手前の操作に戻しました");
+    }
+
+    function updateUndoButtonState() {
+        const undoBtn = document.getElementById('undoActionBtn');
+        if (!undoBtn) return;
+        undoBtn.disabled = !isPlayerTurn || battleOver || turnActionHistory.length === 0;
+    }
+
     function selectDeviceMode(mode) {
         initAudioEngine();
         playSound('connect');
@@ -2089,6 +2132,7 @@
         battleOver = true;
         inputLocked = false;
         dangerTargetCells = [];
+        turnActionHistory = [];
         document.getElementById('phaseCutinOverlay')?.classList.remove('active');
 
         if (currentBattleMode === 'online' && roomRef) {
@@ -2494,14 +2538,22 @@
                 calculateConnectedGroups();
                 renderBattleBoard();
             }
+        } else if (ev.type === 'undo_sync') {
+            boardCells = ev.boardCells;
+            burnedCells = ev.burnedCells;
+            playerScore = ev.playerScore;
+            opponentScore = ev.opponentScore;
+            bossRemaining = ev.bossRemaining;
+            calculateConnectedGroups();
+            updateBattleStatusHeader();
+            renderBattleBoard();
+            showToast("⏪ 相手が操作を取り消しました");
         } else if (ev.type === 'turn_end') {
             roundNumber = ev.nextRound;
             turnHalf = ev.nextHalf;
             switchTurnToPlayer();
         } else if (ev.type === 'boss_strike') {
             applyBossStrikeTargetCells(ev.targetCells);
-        } else if (ev.type === 'boss_relocate') {
-            applyBossRelocation(ev.bossMoves);
         } else if (ev.type === 'surrender') {
             showToast("相手が対局を降参しました！あなたの不戦勝です！");
             playerScore += 50;
@@ -2533,6 +2585,7 @@
         currentPhase = 'standby';
         hasPlacedPieceThisTurn = false;
         hasAttackedThisTurn = false;
+        turnActionHistory = [];
         selectedHandIndex = null;
         previewPlacementIndex = null;
         selectedQuickItem = null;
@@ -2572,6 +2625,7 @@
         document.getElementById('opponentNameDisplay').textContent = "師範代（指南）";
         updateBattleStatusHeader();
         updateItemStockUI();
+        updateUndoButtonState();
 
         switchScreen('battle');
 
@@ -2624,6 +2678,7 @@
         renderBattleBoard();
         renderPlayerHand();
         updatePhaseUI();
+        updateUndoButtonState();
     }
 
     function quitTutorialPrompt() {
@@ -2706,6 +2761,7 @@
         bossRemaining = 3;
         hasPlacedPieceThisTurn = false;
         hasAttackedThisTurn = false;
+        turnActionHistory = [];
         selectedHandIndex = null;
         previewPlacementIndex = null;
         selectedQuickItem = null;
@@ -2754,6 +2810,7 @@
 
         updateBattleStatusHeader();
         updateItemStockUI();
+        updateUndoButtonState();
     }
 
     function startBattleSession() {
@@ -2762,19 +2819,23 @@
             turnHalf = 'first';
             currentPhase = 'standby';
             hasAttackedThisTurn = false;
+            turnActionHistory = [];
             triggerPhaseCutin('standby', 'スタンバイフェーズ', `${getTurnString()} 具材配置`, '🍱');
             updatePhaseUI();
             renderPlayerHand();
             renderBattleBoard();
+            updateUndoButtonState();
         } else {
             isPlayerTurn = false;
             turnHalf = 'first';
             currentPhase = 'standby';
             hasAttackedThisTurn = false;
+            turnActionHistory = [];
             triggerPhaseCutin('standby', '相手のスタンバイ', `${getTurnString()} 相手の手番`, '🛡️');
             updatePhaseUI();
             renderPlayerHand();
             renderBattleBoard();
+            updateUndoButtonState();
 
             if (currentBattleMode === 'cpu') {
                 later(executeCpuTurn, 1000);
@@ -2810,9 +2871,6 @@
         } else if (phaseType === 'boss_strike') {
             banner.classList.add('cutin-boss-strike');
             playSound('boss_strike');
-        } else if (phaseType === 'boss_warp') {
-            banner.classList.add('cutin-boss-warp');
-            playSound('connect');
         }
 
         titleEl.textContent = title;
@@ -2847,17 +2905,17 @@
             if (tutorialInteractiveStep === 3) {
                 badge.textContent = "アタックへ進む準備完了";
                 mainBtn.textContent = "アタックへ進む 👉";
-                mainBtn.className = "w-full py-2.5 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
+                mainBtn.className = "w-2/3 py-2.5 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
                 mainBtn.disabled = false;
             } else if (tutorialInteractiveStep === 6) {
                 badge.textContent = "指南修了";
                 mainBtn.textContent = "指南を修了してメニューへ 🎉";
-                mainBtn.className = "w-full py-2.5 rounded-xl border border-emerald-500 bg-emerald-800 text-emerald-100 font-black text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md";
+                mainBtn.className = "w-2/3 py-2.5 rounded-xl border border-emerald-500 bg-emerald-800 text-emerald-100 font-black text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md";
                 mainBtn.disabled = false;
             } else {
                 badge.textContent = currentPhase === 'standby' ? "スタンバイ（配置）" : "アタック（攻撃）";
                 mainBtn.textContent = currentPhase === 'standby' ? "アタックへ進む" : "ターンエンド";
-                mainBtn.className = "w-full py-2.5 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
+                mainBtn.className = "w-2/3 py-2.5 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
                 mainBtn.disabled = (tutorialInteractiveStep !== 3 && tutorialInteractiveStep !== 6);
             }
             return;
@@ -2877,7 +2935,7 @@
                 badge.textContent = "スタンバイ（配置）";
                 badge.className = "px-2.5 py-0.5 rounded font-bold bg-rose-950/80 text-rose-300 border border-rose-800";
                 mainBtn.textContent = "アタックへ進む";
-                mainBtn.className = "w-full py-2.5 rounded-xl border border-sky-600 bg-gradient-to-r from-sky-700 to-sky-900 text-sky-100 font-bold text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md transition";
+                mainBtn.className = "w-2/3 py-2.5 rounded-xl border border-sky-600 bg-gradient-to-r from-sky-700 to-sky-900 text-sky-100 font-bold text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md transition";
                 attackNotice.classList.add('hidden');
                 handLabel.textContent = "手札（タップして空きマスへ配置）";
             } else {
@@ -2889,7 +2947,7 @@
                     badge.className = "px-2.5 py-0.5 rounded font-bold bg-rose-950 text-rose-300 border border-rose-800";
                 }
                 mainBtn.textContent = "ターンエンド";
-                mainBtn.className = "w-full py-2.5 rounded-xl border border-rose-600 bg-gradient-to-r from-rose-700 to-rose-900 text-rose-100 font-bold text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md transition";
+                mainBtn.className = "w-2/3 py-2.5 rounded-xl border border-rose-600 bg-gradient-to-r from-rose-700 to-rose-900 text-rose-100 font-bold text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md transition";
                 attackNotice.classList.remove('hidden');
                 handLabel.textContent = "手札（アタックフェーズ中は配置不可）";
             }
@@ -2898,8 +2956,9 @@
             turnInd.className = "px-2.5 py-1 rounded text-xs font-bold bg-sky-950 text-sky-200 border border-sky-800 animate-pulse";
             mainBtn.disabled = true;
             mainBtn.textContent = "相手の行動中";
-            mainBtn.className = "w-full py-2.5 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
+            mainBtn.className = "w-2/3 py-2.5 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
         }
+        updateUndoButtonState();
     }
 
     function handleMainPhaseButtonClick() {
@@ -2923,6 +2982,7 @@
         }
 
         if (currentPhase === 'standby') {
+            recordActionSnapshot();
             currentPhase = 'attack';
             selectedHandIndex = null;
             previewPlacementIndex = null;
@@ -2938,6 +2998,8 @@
     function endPlayerTurn() {
         triggerPhaseCutin('turnend', 'ターン終了', '', '🏁');
         inputLocked = true;
+        turnActionHistory = [];
+        updateUndoButtonState();
         
         later(() => {
             let nextRound = roundNumber;
@@ -2968,6 +3030,7 @@
         hasPlacedPieceThisTurn = false;
         hasAttackedThisTurn = false;
         currentPhase = 'standby';
+        turnActionHistory = [];
         
         updateBurnedCells();
 
@@ -2978,7 +3041,7 @@
                     if (cell.debuffTurns <= 0) cell.debuffPower = 0;
                 }
                 if (cell.shieldActive) {
-                    cell.shieldActive = false; // Simple 1-turn expiration for opponent shields
+                    cell.shieldActive = false;
                 }
             }
         });
@@ -3017,6 +3080,7 @@
         hasPlacedPieceThisTurn = false;
         hasAttackedThisTurn = false;
         currentPhase = 'standby';
+        turnActionHistory = [];
         
         updateBurnedCells();
 
@@ -3042,6 +3106,7 @@
         renderPlayerHand();
         calculateConnectedGroups();
         renderBattleBoard();
+        updateUndoButtonState();
     }
 
     function executeCpuTurn() {
@@ -3057,7 +3122,6 @@
                 if (emptyCells.length > 0 && opponentHand.length > 0) {
                     let targetCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
                     
-                    // Simple AI: Prefer positions adjacent to own pieces (bamboo/matsu)
                     if (cpuDifficulty === 'take' || cpuDifficulty === 'matsu') {
                         let adjCells = emptyCells.filter(c => {
                             let isAdj = false;
@@ -3169,7 +3233,7 @@
             let targets = [];
             for (let i = 0; i < 25; i++) {
                 if (boardCells[i] && boardCells[i].owner !== 'neutral') {
-                    if (Math.random() > 0.4) targets.push(i); // 60% chance to target pieces
+                    if (Math.random() > 0.4) targets.push(i);
                 }
             }
 
@@ -3192,7 +3256,7 @@
             let piece = boardCells[idx];
             if (piece) {
                 if (piece.shieldActive) {
-                    piece.shieldActive = false; // Shield breaks
+                    piece.shieldActive = false;
                     showToast(`🛡️ 【${piece.name}】のシールドがボスの強襲を防ぎました！`);
                 } else {
                     if (piece.owner === 'player') {
@@ -3213,10 +3277,6 @@
         calculateConnectedGroups();
         updateBattleStatusHeader();
         renderBattleBoard();
-    }
-
-    function applyBossRelocation(moves) {
-        // Optional relocation feature logic (omitted in basic version for stability)
     }
 
     function renderPlayerHand() {
@@ -3316,7 +3376,7 @@
                     `;
                 }
 
-                // Interaction Highlights
+                // インタラクション判定
                 if (isPlayerTurn && !inputLocked) {
                     if (currentPhase === 'standby' && selectedQuickItem && piece.type !== 'monster') {
                         if (selectedQuickItem === 'debuff' && piece.owner === 'opponent') {
@@ -3325,7 +3385,6 @@
                             cell.classList.add('item-target-candidate');
                         }
                     } else if (currentPhase === 'attack' && !hasAttackedThisTurn && !isAttackRestricted()) {
-                        // Check if this piece is attackable by player
                         let canAttack = false;
                         if ((piece.owner === 'opponent' || piece.owner === 'neutral') && !piece.shieldActive) {
                             let neighbors = [i-1, i+1, i-5, i+5].filter(n => n>=0 && n<25 && (n%5 !== 0 || i%5 !== 4) && (n%5 !== 4 || i%5 !== 0));
@@ -3345,7 +3404,7 @@
             } else {
                 cell.classList.add('cell-empty');
                 if (isPlayerTurn && currentPhase === 'standby' && selectedHandIndex !== null && !hasPlacedPieceThisTurn && !inputLocked) {
-                    cell.classList.add('tut-active-target'); // Uses cyan border glow
+                    cell.classList.add('tut-active-target');
                 }
             }
             
@@ -3353,7 +3412,6 @@
             grid.appendChild(cell);
         }
 
-        // Render Connections
         const groups = calculateConnectedGroups();
         requestAnimationFrame(() => renderLinkBeams(groups));
     }
@@ -3366,7 +3424,8 @@
 
         if (currentPhase === 'standby') {
             if (!cellData && !burnedCells[index] && selectedHandIndex !== null && !hasPlacedPieceThisTurn) {
-                // Place Piece
+                recordActionSnapshot();
+
                 const pieceId = playerHand[selectedHandIndex];
                 const piece = ALL_PIECES_DATA.find(x => x.id === pieceId);
                 boardCells[index] = {
@@ -3404,9 +3463,9 @@
                 renderPlayerHand();
                 calculateConnectedGroups();
                 renderBattleBoard();
+                updateUndoButtonState();
 
             } else if (cellData && selectedQuickItem) {
-                // Apply Item
                 if (selectedQuickItem === 'debuff') {
                     if (cellData.owner === 'opponent') {
                         showItemConfirmModal(index, 'debuff');
@@ -3417,7 +3476,7 @@
                     if (cellData.owner === 'player') {
                         showItemConfirmModal(index, selectedQuickItem);
                     } else {
-                        showToast("⚠️️ この道具は味方の具材にのみ使用可能です");
+                        showToast("⚠️ この道具は味方の具材にのみ使用可能です");
                     }
                 }
             }
@@ -3428,7 +3487,6 @@
             }
 
             if (cellData && (cellData.owner === 'opponent' || cellData.owner === 'neutral') && !cellData.shieldActive) {
-                // Determine if valid attack
                 let maxPlayerPower = 0;
                 let neighbors = [index-1, index+1, index-5, index+5].filter(n => n>=0 && n<25 && (n%5 !== 0 || index%5 !== 4) && (n%5 !== 4 || index%5 !== 0));
                 
@@ -3440,7 +3498,7 @@
                 });
 
                 if (maxPlayerPower > cellData.currentPower) {
-                    // Successful Attack
+                    recordActionSnapshot();
                     hasAttackedThisTurn = true;
                     if (cellData.owner === 'opponent') {
                         opponentScore = Math.max(0, opponentScore - cellData.power);
@@ -3469,7 +3527,8 @@
                     updateBattleStatusHeader();
                     renderBattleBoard();
                     checkBattleEndCondition();
-                    updatePhaseUI(); // Updates button state
+                    updatePhaseUI();
+                    updateUndoButtonState();
                 } else if (maxPlayerPower > 0) {
                     showToast("⚠️ 連結パワーが不足しているため撃破できません！");
                 }
@@ -3478,7 +3537,6 @@
     }
 
     function calculateConnectedGroups() {
-        // Reset currentPower to base power + bonus - debuff
         boardCells.forEach(cell => {
             if (cell && cell.type !== 'monster') {
                 cell.currentPower = Math.max(0, cell.power + (cell.bonusPower || 0) - (cell.debuffPower || 0));
@@ -3499,10 +3557,10 @@
                     group.push(curr);
                     
                     let neighbors = [];
-                    if (curr % 5 !== 0) neighbors.push(curr - 1); // left
-                    if (curr % 5 !== 4) neighbors.push(curr + 1); // right
-                    if (curr >= 5) neighbors.push(curr - 5);      // up
-                    if (curr < 20) neighbors.push(curr + 5);      // down
+                    if (curr % 5 !== 0) neighbors.push(curr - 1);
+                    if (curr % 5 !== 4) neighbors.push(curr + 1);
+                    if (curr >= 5) neighbors.push(curr - 5);
+                    if (curr < 20) neighbors.push(curr + 5);
                     
                     neighbors.forEach(n => {
                         if (boardCells[n] && boardCells[n].type !== 'monster' && !visited.has(n)) {
@@ -3574,21 +3632,6 @@
         });
     }
 
-    function areFacing(a, b) {
-        const pa = boardCells[a], pb = boardCells[b];
-        if (!pa || !pb || !pa.dir || !pb.dir) return false;
-        const dx = (b % 5) - (a % 5), dy = Math.floor(b / 5) - Math.floor(a / 5);
-        let d;
-        if (dx === 1 && dy === 0) d = 'right';
-        else if (dx === -1 && dy === 0) d = 'left';
-        else if (dy === 1 && dx === 0) d = 'down';
-        else if (dy === -1 && dx === 0) d = 'up';
-        else return false;
-        
-        const o = { right: 'left', left: 'right', up: 'down', down: 'up' }[d];
-        return pa.dir.includes(d) && pb.dir.includes(o);
-    }
-
     function setCellBurned(index, owner) {
         burnedCells[index] = { turns: 2, owner: owner };
     }
@@ -3658,7 +3701,7 @@
         
         let effectDesc = "", changeStr = "";
         if (type === 'shield') {
-            effectDesc = "シールド展開（1ターン無敵）";
+            effectDesc = "シールド展開（1ターン無敵・ボス強襲防御）";
             changeStr = `${cell.currentPower} ➔ ${cell.currentPower} (変化なし)`;
             document.getElementById('confirmItemIcon').textContent = "🛡️";
         } else if (type === 'powerup') {
@@ -3666,14 +3709,14 @@
             changeStr = `${cell.currentPower} ➔ ${cell.currentPower + 4}`;
             document.getElementById('confirmItemIcon').textContent = "⚡";
         } else if (type === 'debuff') {
-            effectDesc = "攻撃力 -5 弱体化（2ターン）";
+            effectDesc = "攻撃力 -5 弱体化（2ターン継続）";
             changeStr = `${cell.currentPower} ➔ ${Math.max(0, cell.currentPower - 5)}`;
             document.getElementById('confirmItemIcon').textContent = "🧪";
         }
 
         document.getElementById('confirmItemEffectDesc').textContent = effectDesc;
         document.getElementById('confirmPiecePowerChange').textContent = changeStr;
-        document.getElementById('confirmGroupPowerChange').textContent = changeStr; // Simplification for UI
+        document.getElementById('confirmGroupPowerChange').textContent = changeStr;
 
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -3701,7 +3744,7 @@
         
         const cell = boardCells[pendingItemConfirmation.index];
         if (cell.dir.includes(dir)) {
-            showToast("⚠️ その具材は既にその方向の矢印を持っています");
+            showToast("⚠️️ その具材は既にその方向の矢印を持っています");
             pendingItemConfirmation = null;
             return;
         }
@@ -3724,6 +3767,8 @@
         const cell = boardCells[index];
         if (!cell) return;
 
+        recordActionSnapshot();
+
         playerItemStocks[type]--;
         updateItemStockUI();
         playSound(type === 'debuff' ? 'debuff' : 'item');
@@ -3740,7 +3785,7 @@
             showToast(`🛡️ 【${cell.name}】にシールドを付与しました`);
         } else if (type === 'powerup') {
             cell.bonusPower += 4;
-            cell.power += 4; // Permanent visually until reset
+            cell.power += 4;
             if (currentBattleMode === 'online') sendNetworkEvent({ type: 'item_powerup', cellIndex: index });
             showToast(`⚡ 【${cell.name}】の攻撃力がアップしました`);
         } else if (type === 'debuff') {
@@ -3756,6 +3801,7 @@
         
         calculateConnectedGroups();
         renderBattleBoard();
+        updateUndoButtonState();
     }
 
     function updateItemStockUI() {
@@ -3792,6 +3838,8 @@
         if (isBossesDead || isBoardFull || isDecksEmpty) {
             battleOver = true;
             inputLocked = true;
+            turnActionHistory = [];
+            updateUndoButtonState();
             
             setTimeout(() => {
                 const isWin = playerScore >= opponentScore;
@@ -3846,7 +3894,7 @@
         document.getElementById('resultModal').classList.remove('flex');
         document.getElementById('resultModal').classList.add('hidden');
         if (currentBattleMode === 'online') {
-            switchScreen('home'); // Prevent instant rematches without lobby
+            switchScreen('home');
         } else {
             startBattlePreparation();
         }
@@ -3934,11 +3982,11 @@
         } else if (currentRulePage === 2) {
             content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">2. 直交連結（出汁の道）</h3><p>矢印が正面から向き合うように具材を配置すると、連結が成立します。連結した具材グループは、全体のパワーが合算されて超強化されます！</p>`;
         } else if (currentRulePage === 3) {
-            content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">3. 激突とボス討伐</h3><p>アタックフェーズでは、矢印が向かい合っていて、かつ相手やボスのパワーを上回っている場合に攻撃可能です。攻撃すると相手の駒を盤面から消し飛ばし、スコアを奪えます。</p>`;
+            content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">3. 激突とボス討伐</h3><p>アタックフェーズでは、矢印が向かい合っていて、かつ相手やボスのパワーを上回っている場合に攻撃可能です（1ターン1回のみ）。攻撃すると相手の駒を盤面から消し飛ばし、スコアを奪えます。</p>`;
         } else if (currentRulePage === 4) {
-            content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">4. 秘伝の道具（アイテム）</h3><p>毎ターン1回、配置前に道具を使えます。方向を追加したり、シールドで守ったり、弱体スプレーで相手のパワーを下げたりできます。使い所が勝負の鍵です。</p>`;
+            content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">4. 秘伝の道具と巻き戻し</h3><p>常設道具（方向付与・シールド・パワーUP・弱体スプレー）を駆使して戦況を有利に導きます。ターンエンド前なら【⏪ 戻す】ボタンで操作を何度でも取り消せます。</p>`;
         } else if (currentRulePage === 5) {
-            content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">5. 天災（ボスの強襲）</h3><p>3ターン目、6ターン目...と3の倍数ターン終了時、盤面に残っているボスが無差別に雷（強襲）を落としてきます。シールドで防ぐか、素早く倒してしまいましょう。</p>`;
+            content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">5. 天災（ボスの強襲）</h3><p>3ターン目、6ターン目...と3の倍数ターン終了時、盤面に残っているボスが無差別に強襲を落としてきます。シールドで防ぐか、素早く倒してしまいましょう。</p>`;
         }
     }
 
@@ -3992,7 +4040,6 @@
             }
         });
 
-        // Initialize user interaction unlocking for Web Audio API
         ['pointerdown', 'touchend', 'click', 'keydown'].forEach(ev => {
             window.addEventListener(ev, unlockAudio, { once: true });
         });
