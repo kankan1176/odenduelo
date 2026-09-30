@@ -1539,7 +1539,7 @@
     let bossRemaining = 3;
 
     let boardCells = Array(25).fill(null);
-    // 破壊されたマス（焦土・2ターン配置不可）管理: Array of { turnsLeft: number, destroyedByTurnHalf: 'first'|'second', destroyedInRound: number, owner: 'player'|'opponent' }
+    // 破壊されたマス（焦土・2ターン配置不可）管理
     let burnedCells = Array(25).fill(null);
 
     let playerHand = [];
@@ -2309,7 +2309,6 @@
             const pl = boardCells[ev.cellIndex];
             if (pl) {
                 playerScore = Math.max(0, playerScore - pl.power);
-                // 破壊されたマスを2ターン封印（owner: 被撃破側 'player'）
                 setCellBurned(ev.cellIndex, 'player');
                 boardCells[ev.cellIndex] = null;
                 playSound('clash');
@@ -2381,6 +2380,7 @@
         tutorialInteractiveStep = 1;
         currentBattleMode = 'tutorial';
 
+        // チュートリアル用の手札設定（大根、たまご、牛すじ、はんぺん）
         playerHand = [1, 2, 7, 6];
         playerDrawPile = [3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
         opponentHand = [];
@@ -2408,7 +2408,9 @@
         playerItemStocks = { ...DEFAULT_ITEM_STOCKS };
         opponentItemStocks = { ...DEFAULT_ITEM_STOCKS };
 
-        boardCells[6] = {
+        // ★修正点：マス2 (x=2, y=0) に相手のちくわ（下向き↓）を配置！
+        // Step 2でたまご（マス7, x=2, y=1）が置かれると、たまごの「上向き↑」とちくわの「下向き↓」が完全に双方向で向き合います！
+        boardCells[2] = {
             ...ALL_PIECES_DATA.find(x => x.id === 3),
             dir: ['down'],
             owner: 'opponent',
@@ -2420,6 +2422,7 @@
             tempDirs: []
         };
 
+        // マス8 (x=3, y=1) に中立ボス（たまごの右隣で討伐可能）
         boardCells[8] = {
             type: 'monster',
             id: 'tut_monster_1',
@@ -2454,32 +2457,32 @@
             case 1:
                 stepLabel.textContent = "Step 1/6";
                 stepTitle.textContent = "具材の配置";
-                stepInstr.textContent = "手札の【大根】をタップし、中央の光るマスに置いてみましょう！";
+                stepInstr.textContent = "手札の【大根】をタップし、中央の光るマス（マス12）に置いてみましょう！";
                 break;
             case 2:
                 stepLabel.textContent = "Step 2/6";
                 stepTitle.textContent = "直交連結（出汁の道）";
-                stepInstr.textContent = "手札の【たまご】を大根の上（マス7）に配置して出汁を繋ぎましょう！";
+                stepInstr.textContent = "手札の【たまご】を大根の上（マス7）に配置して出汁の道を繋ぎましょう！";
                 break;
             case 3:
                 stepLabel.textContent = "Step 3/6";
                 stepTitle.textContent = "アタックへ進む";
-                stepInstr.textContent = "連結が成立！全員【パワー7】に合算！「アタックへ進む」を押してください。";
+                stepInstr.textContent = "連結成立！全員【パワー7】に合算！「アタックへ進む」を押してください。";
                 break;
             case 4:
                 stepLabel.textContent = "Step 4/6";
-                stepTitle.textContent = "直接激突（1ターン1回攻撃）";
-                stepInstr.textContent = "矢印が向かい合う相手の「ちくわ」をタップして激突！破壊されたマスは2ターン封印されます。";
+                stepTitle.textContent = "正面激突（1ターン1回攻撃）";
+                stepInstr.textContent = "たまごの上で矢印が向き合う相手の「ちくわ」をタップして激突・粉砕！";
                 break;
             case 5:
                 stepLabel.textContent = "Step 5/6";
                 stepTitle.textContent = "中立ボスの討伐";
-                stepInstr.textContent = "次ターン以降、連結パワーでボスをタップして討伐できます！";
+                stepInstr.textContent = "合算パワー7で、右隣の見習いボス（パワー6）をタップして討伐してみましょう！";
                 break;
             case 6:
                 stepLabel.textContent = "Step 6/6";
                 stepTitle.textContent = "指南修了！";
-                stepInstr.textContent = "見事です！基本をマスターしました。「指南を修了してメニューへ」を押してください。";
+                stepInstr.textContent = "お見事です！基本をマスターしました。「指南を修了してメニューへ」を押してください。";
                 break;
         }
 
@@ -2562,7 +2565,7 @@
         inputLocked = false;
         dangerTargetCells = [];
         boardCells = Array(25).fill(null);
-        burnedCells = Array(25).fill(null); // 焦土マス初期化
+        burnedCells = Array(25).fill(null);
         playerScore = 0;
         opponentScore = 0;
         roundNumber = 1;
@@ -2602,7 +2605,7 @@
 
             // 中立ボス：12〜20の高難度
             monsterPos.forEach((pos, idx) => {
-                const pVal = Math.floor(Math.random() * 9) + 12; // 12〜20
+                const pVal = Math.floor(Math.random() * 9) + 12;
                 boardCells[pos] = {
                     type: 'monster',
                     id: `monster_${idx}`,
@@ -2906,10 +2909,11 @@
                 cellDiv.classList.add('item-target-candidate');
             }
 
+            // チュートリアル用のターゲットハイライト（Step 4はマス2）
             if (isTutorialMode) {
                 if (tutorialInteractiveStep === 1 && i === 12) cellDiv.classList.add('tut-active-target');
                 if (tutorialInteractiveStep === 2 && i === 7) cellDiv.classList.add('tut-active-target');
-                if (tutorialInteractiveStep === 4 && i === 6) cellDiv.classList.add('tut-active-target');
+                if (tutorialInteractiveStep === 4 && i === 2) cellDiv.classList.add('tut-active-target');
                 if (tutorialInteractiveStep === 5 && i === 8) cellDiv.classList.add('tut-active-target');
             }
 
@@ -2943,13 +2947,16 @@
                         </div>
                     `;
 
+                    // 正面衝突判定
                     if (!isTutorialMode && isPlayerTurn && !isPl && !isAttackRestricted() && !hasAttackedThisTurn && canClashWithPiece(i)) {
                         cellDiv.classList.add('highlight-target');
                         const clashBadge = document.createElement('div');
                         clashBadge.className = "clash-badge";
                         clashBadge.textContent = "激突!";
                         cellDiv.appendChild(clashBadge);
-                    } else if (isTutorialMode && tutorialInteractiveStep >= 3 && i === 6) {
+                    } else if (isTutorialMode && tutorialInteractiveStep >= 3 && i === 2) {
+                        // チュートリアルStep 4（マス2のちくわ）
+                        cellDiv.classList.add('highlight-target');
                         const clashBadge = document.createElement('div');
                         clashBadge.className = "clash-badge";
                         clashBadge.textContent = "激突!";
@@ -3169,6 +3176,7 @@
             return;
         }
 
+        // チュートリアルの操作インターセプト
         if (isTutorialMode) {
             if (tutorialInteractiveStep === 1) {
                 if (selectedHandIndex === null) {
@@ -3201,7 +3209,8 @@
                 return;
             }
             if (tutorialInteractiveStep === 4) {
-                if (index === 6) {
+                // ★修正点：マス2（たまごの真上、ちくわ）が正面衝突対象
+                if (index === 2) {
                     executeClashWithOpponent(index);
                     tutorialInteractiveStep = 5;
                     applyTutorialStepState();
@@ -3408,7 +3417,7 @@
         playerScore += gainScore;
         bossRemaining = Math.max(0, bossRemaining - 1);
         boardCells[monsterIndex] = null;
-        hasAttackedThisTurn = true; // 1ターン1回攻撃終了
+        hasAttackedThisTurn = true;
 
         if (currentBattleMode === 'online') {
             sendNetworkEvent({
@@ -3426,11 +3435,10 @@
         checkBattleEndCondition();
     }
 
-    // 破壊マス（焦土）の設定: 2ターン両者配置不可、破壊された側のフェーズで置けるようになる
     function setCellBurned(cellIndex, destroyedCardOwner) {
         burnedCells[cellIndex] = {
             turnsLeft: 2,
-            owner: destroyedCardOwner, // 'player' または 'opponent'
+            owner: destroyedCardOwner,
             burnedInRound: roundNumber,
             burnedInHalf: turnHalf
         };
@@ -3450,10 +3458,9 @@
         const deductScore = opp.power;
         opponentScore = Math.max(0, opponentScore - deductScore);
 
-        // 破壊されたマスを焦土封印（owner: 'opponent'）
         setCellBurned(oppIndex, 'opponent');
         boardCells[oppIndex] = null;
-        hasAttackedThisTurn = true; // 1ターン1回攻撃終了
+        hasAttackedThisTurn = true;
 
         if (currentBattleMode === 'online') {
             sendNetworkEvent({
@@ -3654,13 +3661,10 @@
         renderBattleBoard();
     }
 
-    // 自分のターン開始時に一時的な効果（方向付与・シールド）を解除
     function clearTurnTemporaryBuffs(owner) {
         boardCells.forEach(cell => {
             if (cell && cell.owner === owner) {
-                // シールド解除
                 cell.shieldActive = false;
-                // 一時付与された方向矢印の解除
                 if (cell.tempDirs && cell.tempDirs.length > 0) {
                     cell.dir = cell.dir.filter(d => !cell.tempDirs.includes(d));
                     cell.tempDirs = [];
@@ -3669,14 +3673,13 @@
         });
     }
 
-    // 破壊されたマスの封印カウントを進行（「2ターン後の破壊された側のフェーズで置けるようになる」）
     function tickBurnedCells(currentTurnOwner) {
         for (let i = 0; i < 25; i++) {
             const burned = burnedCells[i];
             if (burned && burned.owner === currentTurnOwner) {
                 burned.turnsLeft--;
                 if (burned.turnsLeft <= 0) {
-                    burnedCells[i] = null; // 封印解除！配置可能に
+                    burnedCells[i] = null;
                     showToast(`♨️ 破壊マスの焦土が冷め、再び具材を置けるようになりました！`);
                 }
             }
@@ -3694,13 +3697,12 @@
 
         isPlayerTurn = false;
         hasPlacedPieceThisTurn = false;
-        hasAttackedThisTurn = false; // 攻撃権リセット
+        hasAttackedThisTurn = false;
         selectedHandIndex = null;
         previewPlacementIndex = null;
         selectedQuickItem = null;
         updateItemQuickButtonsState();
 
-        // 野球式：先攻が終わると後攻へ、後攻が終わると次のターンへ
         if (turnHalf === 'first') {
             turnHalf = 'second';
         } else {
@@ -3708,7 +3710,6 @@
             roundNumber++;
         }
 
-        // 相手（opponent）の手番開始：相手の一時バフ解除 ＆ 相手側の破壊マス消化
         clearTurnTemporaryBuffs('opponent');
         tickBurnedCells('opponent');
 
@@ -3733,14 +3734,12 @@
 
         isPlayerTurn = true;
         hasPlacedPieceThisTurn = false;
-        hasAttackedThisTurn = false; // 攻撃権リセット
+        hasAttackedThisTurn = false;
         currentPhase = 'standby';
 
-        // プレイヤーの手番開始：プレイヤーの一時バフ解除 ＆ プレイヤー側の破壊マス消化
         clearTurnTemporaryBuffs('player');
         tickBurnedCells('player');
 
-        // 3の倍数ターンの先攻開始時にボス強襲
         const isStrikeTurn = (turnHalf === 'first' && roundNumber % 3 === 0 && bossRemaining > 0);
         inputLocked = isStrikeTurn;
 
@@ -3855,7 +3854,6 @@
     function executeCpuTurn() {
         if (currentScreen !== 'battle' || battleOver) return;
 
-        // 空きマスかつ焦土でないマス
         const emptyIndices = [];
         for (let i = 0; i < 25; i++) {
             if (!boardCells[i] && !burnedCells[i]) emptyIndices.push(i);
@@ -3906,7 +3904,6 @@
         later(() => {
             let attacked = false;
 
-            // 1ターン目は先攻・後攻問わず攻撃不可、かつ攻撃は1回のみ
             if (!isAttackRestricted()) {
                 // 中立ボス討伐チェック
                 for (let i = 0; i < 25; i++) {
@@ -3936,7 +3933,7 @@
                     }
                 }
 
-                // 激突チェック（攻撃未実行時のみ）
+                // 激突チェック
                 if (!attacked) {
                     for (let i = 0; i < 25; i++) {
                         const pl = boardCells[i];
@@ -3958,7 +3955,6 @@
                                             const plP = pl.currentPower ?? pl.power;
                                             if (opP > plP) {
                                                 playerScore = Math.max(0, playerScore - pl.power);
-                                                // 破壊マスを封印（owner: 'player'）
                                                 setCellBurned(i, 'player');
                                                 boardCells[i] = null;
                                                 attacked = true;
