@@ -295,22 +295,25 @@
             left: 1px;
             display: flex;
             align-items: center;
-            gap: 2px;
+            gap: 1.5px;
             z-index: 20;
             pointer-events: none;
         }
+        /* アイテム残ターン数バッジ（小型化） */
         .piece-item-icon-tag {
-            font-size: 8px;
+            font-size: 7.5px;
             line-height: 1;
-            padding: 1px 2px;
-            border-radius: 3px;
-            background: rgba(0, 0, 0, 0.85);
-            border: 0.5px solid rgba(255, 255, 255, 0.4);
+            padding: 0.5px 1.5px;
+            border-radius: 2.5px;
+            background: rgba(0, 0, 0, 0.88);
+            border: 0.5px solid rgba(255, 255, 255, 0.35);
             display: flex;
             align-items: center;
             gap: 1px;
             font-family: 'Inter', sans-serif;
-            font-weight: 900;
+            font-weight: 800;
+            transform: scale(0.92);
+            transform-origin: top left;
             filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8));
         }
 
@@ -619,10 +622,6 @@
             right: -5px !important;
             border-width: 2px !important;
         }
-        .mode-pc .piece-item-icon-tag {
-            font-size: 12px !important;
-            padding: 2px 4px !important;
-        }
         .mode-pc #battleRightColumn {
             flex: 1 1 520px !important;
             max-width: 640px !important;
@@ -736,12 +735,12 @@
                     <div class="flex items-center gap-2">
                         <span class="text-lg">📢</span>
                         <span class="text-xs sm:text-base font-bold text-amber-300 font-serif">アップデート情報</span>
-                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.3.3</span>
+                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.3.4</span>
                     </div>
                     <span class="text-[10px] sm:text-xs px-2.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/80 font-mono font-bold">NEW</span>
                 </div>
                 <div class="text-xs sm:text-sm text-stone-200 leading-relaxed font-serif pl-7">
-                    【🔥 バランス調整＆不具合修正】ボス3T毎強襲・3マス固定化、敵撃破時の得点加算、パワーUP1T化＆アイテム残りターン表示に対応！
+                    【🔥 バトル仕様強化】相手駒撃破時に「相手の戦闘時合計攻撃力」を獲得！ボス強襲被撃破駒のデッキ復帰＆アイテム残ターン表示の小型化を適用！
                 </div>
             </div>
 
@@ -815,7 +814,7 @@
                 <div class="flex items-center gap-2">
                     <span class="text-xl">🍢</span>
                     <span class="font-bold text-sm sm:text-lg tracking-wider text-amber-100 font-serif">おでん道</span>
-                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.3.3</span>
+                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.3.4</span>
                 </div>
             </div>
             
@@ -1315,7 +1314,7 @@
         <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl transition-all">
             <div class="flex items-center justify-between pb-2 border-b border-stone-800">
                 <div class="flex items-center gap-2.5">
-                    <span class="text-2xl sm:text-3xl">⚔️</span>
+                    <span class="text-2xl sm:text-3xl">⚔️️</span>
                     <span class="font-bold text-base sm:text-2xl text-amber-100 font-serif">CPU対戦 難易度選択</span>
                 </div>
                 <button onclick="closeCpuSelectModal()" class="text-stone-400 hover:text-stone-200 text-2xl sm:text-3xl">✕</button>
@@ -1546,7 +1545,7 @@
 
     <script>
     /* ==========================================================================
-       おでん道 - 鍋の陣 完全スクリプト (Ver1.3.3 バグ修正＆機能強化版)
+       おでん道 - 鍋の陣 完全スクリプト (Ver1.3.4 バトル仕様強化版)
        ========================================================================== */
 
     const ALL_PIECES_DATA = [
@@ -2549,13 +2548,14 @@
         } else if (ev.type === 'clash') {
             const pl = boardCells[ev.cellIndex];
             if (pl) {
-                const gained = pl.power;
-                opponentScore += gained; // 相手側の獲得点
-                playerScore = Math.max(0, playerScore - gained);
+                // 戦闘時の相手の合計攻撃力（currentPower）を獲得
+                const gained = ev.earnedPower !== undefined ? ev.earnedPower : pl.currentPower;
+                opponentScore += gained;
+                playerScore = Math.max(0, playerScore - pl.power);
                 setCellBurned(ev.cellIndex, 'player');
                 boardCells[ev.cellIndex] = null;
                 playSound('clash');
-                showToast(`⚠️ 相手があなたの【${pl.name}】を激突粉砕！マスは2T封印されます`);
+                showToast(`⚠️ 相手があなたの【${pl.name}】を激突粉砕！（相手+${gained}点）`);
                 calculateConnectedGroups();
                 updateBattleStatusHeader();
                 renderBattleBoard();
@@ -2568,7 +2568,7 @@
                 bossRemaining = Math.max(0, bossRemaining - 1);
                 boardCells[ev.cellIndex] = null;
                 playSound('defeat');
-                showToast(`⚠️️ 相手が中立ボス【${monster.name}】を討伐しました！`);
+                showToast(`⚠ 相手が中立ボス【${monster.name}】を討伐しました！`);
                 updateBattleStatusHeader();
                 renderBattleBoard();
                 checkBattleEndCondition();
@@ -3374,12 +3374,14 @@
                         let target = chosen.target;
                         
                         if (target.owner === 'player') {
-                            opponentScore += target.power; // 相手側への得点加算
+                            // 相手側への得点加算：戦闘時の合計攻撃力を獲得
+                            const gained = target.currentPower;
+                            opponentScore += gained;
                             playerScore = Math.max(0, playerScore - target.power);
                             setCellBurned(chosen.to, 'opponent');
                             boardCells[chosen.to] = null;
                             playSound('clash');
-                            showToast(`⚠️ 相手があなたの【${target.name}】を撃破しました！`);
+                            showToast(`⚠️ 相手があなたの【${target.name}】を撃破！（相手+${gained}点）`);
                         } else {
                             opponentScore += target.power;
                             bossRemaining = Math.max(0, bossRemaining - 1);
@@ -3404,7 +3406,7 @@
         }
     }
 
-    // 中立ボス強襲フェーズ（3ターン毎・3マス固定化）
+    // 中立ボス強襲フェーズ（3ターン毎・3マス固定化・破壊駒はデッキ復帰）
     function handleBossPhase(callback) {
         if (roundNumber < 3 || roundNumber % 3 !== 0 || bossRemaining === 0) {
             callback();
@@ -3451,8 +3453,12 @@
                 } else {
                     if (piece.owner === 'player') {
                         playerScore = Math.max(0, playerScore - piece.power);
+                        // 中立ボスに倒された駒は再度デッキ（山札の底）へ戻る
+                        if (piece.id) playerDrawPile.push(piece.id);
                     } else if (piece.owner === 'opponent') {
                         opponentScore = Math.max(0, opponentScore - piece.power);
+                        // 相手の駒もデッキへ戻る
+                        if (piece.id) opponentDrawPile.push(piece.id);
                     }
                     boardCells[idx] = null;
                     setCellBurned(idx, 'neutral');
@@ -3462,7 +3468,7 @@
         });
         if (hit) {
             playSound('clash');
-            showToast("💥 ボスの強襲により具材が破壊されました！");
+            showToast("💥 ボスの強襲により具材が破壊され、山札（デッキ）に戻りました！");
         }
         calculateConnectedGroups();
         updateBattleStatusHeader();
@@ -3568,7 +3574,7 @@
                 } else {
                     const isPlayer = piece.owner === 'player';
                     
-                    // アイテム残りターン数バッジの生成
+                    // アイテム残りターン数バッジの生成（小型化対応）
                     let badgesHtml = '';
                     if (piece.shieldActive) {
                         badgesHtml += `<span class="piece-item-icon-tag bg-amber-600/90 text-amber-100 border-amber-400">🛡${piece.shieldTurns || 1}T</span>`;
@@ -3752,17 +3758,17 @@
                     recordActionSnapshot();
                     hasAttackedThisTurn = true;
                     if (cellData.owner === 'opponent') {
-                        // 敵駒粉砕：自分へ得点加算 ＆ 相手から得点減算
-                        const gained = cellData.power;
+                        // 敵駒粉砕：戦闘時の相手の合計攻撃力（currentPower）を獲得！
+                        const gained = cellData.currentPower;
                         playerScore += gained;
-                        opponentScore = Math.max(0, opponentScore - gained);
+                        opponentScore = Math.max(0, opponentScore - cellData.power);
                         
                         setCellBurned(index, 'player');
                         boardCells[index] = null;
                         playSound('clash');
-                        showToast(`💥 相手の【${cellData.name}】を激突撃破！（+${gained}点）マスは2T封印されます`);
+                        showToast(`💥 相手の【${cellData.name}】を激突撃破！（相手の攻撃力+${gained}点を獲得！）`);
                         
-                        if (currentBattleMode === 'online') sendNetworkEvent({ type: 'clash', cellIndex: index });
+                        if (currentBattleMode === 'online') sendNetworkEvent({ type: 'clash', cellIndex: index, earnedPower: gained });
 
                         if (isTutorialMode && tutorialInteractiveStep === 5) {
                             applyTutorialStepState();
@@ -3942,7 +3948,7 @@
         playSound('click');
 
         if (playerItemStocks[type] <= 0) {
-            showToast("⚠️ このアイテムのストックがありません");
+            showToast("⚠️️ このアイテムのストックがありません");
             return;
         }
 
@@ -4284,11 +4290,11 @@
         } else if (currentRulePage === 2) {
             content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">2. 直交連結（出汁の道）</h3><p>矢印が正面から向き合うように具材を配置すると、連結が成立します。連結した具材グループは、全体のパワーが合算されて超強化されます！</p>`;
         } else if (currentRulePage === 3) {
-            content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">3. 激突とボス討伐</h3><p>アタックフェーズでは、矢印が向かい合っていて、かつ相手やボスのパワーを上回っている場合に攻撃可能です（1ターン1回のみ）。攻撃すると相手の駒を盤面から消し飛ばし、対象のパワー分のスコアを獲得できます。</p>`;
+            content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">3. 激突とボス討伐</h3><p>アタックフェーズでは、矢印が向かい合っていて、かつ相手やボスのパワーを上回っている場合に攻撃可能です（1ターン1回のみ）。攻撃すると相手の駒を消し飛ばし、戦闘時の相手の合計攻撃力分のスコアを獲得できます。</p>`;
         } else if (currentRulePage === 4) {
             content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">4. 秘伝の道具と巻き戻し</h3><p>常設道具（方向付与・シールド・パワーUP・弱体スプレー）を駆使して戦況を有利に導きます。各道具には持続ターンがあり、ターンエンド前なら【⏪ 戻す】ボタンで操作を何度でも取り消せます。</p>`;
         } else if (currentRulePage === 5) {
-            content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">5. 天災（ボスの強襲）</h3><p>第3ターン、第6ターン...と3の倍数ターン終了時、盤面に残っているボスが無差別に3マスを強襲します。シールドで防ぐか、素早く倒してしまいましょう。</p>`;
+            content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">5. 天災（ボスの強襲）</h3><p>第3ターン、第6ターン...と3の倍数ターン終了時、盤面に残っているボスが無差別に3マスを強襲します。やられた駒は山札（デッキ）へと戻ります。シールドで防ぐか、素早く倒してしまいましょう。</p>`;
         }
     }
 
