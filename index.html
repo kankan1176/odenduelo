@@ -215,6 +215,24 @@
             cursor: pointer;
         }
 
+        /* 破壊マス（焦土・配置不可）スタイル */
+        .grid-cell.cell-burned {
+            background: radial-gradient(circle, #2a0808 0%, #170404 100%) !important;
+            border: 1.5px dashed #ef4444 !important;
+            box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.5) !important;
+            cursor: not-allowed !important;
+        }
+        .burned-badge {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 15;
+            pointer-events: none;
+        }
+
         .tut-active-target {
             border-color: #38bdf8 !important;
             box-shadow: 0 0 20px rgba(56, 189, 248, 0.95), inset 0 0 10px rgba(56, 189, 248, 0.5) !important;
@@ -295,8 +313,13 @@
         }
 
         .piece-shielded {
-            box-shadow: 0 0 15px rgba(250, 204, 21, 0.85), inset 0 0 6px rgba(250, 204, 21, 0.4) !important;
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.9), inset 0 0 8px rgba(250, 204, 21, 0.5) !important;
             border-color: #facc15 !important;
+            animation: pulse-shield 1.5s infinite alternate;
+        }
+        @keyframes pulse-shield {
+            0% { filter: drop-shadow(0 0 2px #facc15); }
+            100% { filter: drop-shadow(0 0 8px #fde047); }
         }
 
         /* 方向インジケーター */
@@ -309,6 +332,7 @@
         }
         .dir-player { background: #f43f5e; box-shadow: 0 0 5px #f43f5e; }
         .dir-opponent { background: #38bdf8; box-shadow: 0 0 5px #38bdf8; }
+        .dir-temp { background: #facc15 !important; box-shadow: 0 0 7px #facc15 !important; }
 
         .dir-up { top: -2.5px; left: calc(50% - 3.5px); }
         .dir-down { bottom: -2.5px; left: calc(50% - 3.5px); }
@@ -430,6 +454,34 @@
             cursor: not-allowed;
         }
 
+        /* 常設アイテムボタンスタイル */
+        .item-quick-btn {
+            background: linear-gradient(145deg, #1f1814, #140f0c);
+            border: 1px solid #443228;
+            border-radius: 10px;
+            padding: 5px 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .item-quick-btn:hover:not(:disabled) {
+            border-color: #f59e0b;
+            background: #261c16;
+        }
+        .item-quick-btn.active {
+            border-color: #fbbf24 !important;
+            background: #3b2314 !important;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5) !important;
+            transform: scale(0.98);
+        }
+        .item-quick-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            border-color: #26211e;
+        }
+
         /* PCモード専用スタイル */
         .mode-pc .app-root-container {
             max-width: 100vw !important;
@@ -495,16 +547,6 @@
             padding: 22px 26px !important;
             border-radius: 20px !important;
             border-width: 1.5px !important;
-        }
-        .mode-pc #homeMenuGrid .text-2xl, .mode-pc #homeMenuGrid .text-4xl {
-            font-size: 44px !important;
-        }
-        .mode-pc #homeMenuGrid .font-serif.text-sm, .mode-pc #homeMenuGrid .font-serif.text-lg {
-            font-size: 20px !important;
-        }
-        .mode-pc #homeMenuGrid .text-[11px], .mode-pc #homeMenuGrid .text-xs {
-            font-size: 14px !important;
-            margin-top: 4px !important;
         }
 
         .mode-pc #battleScreen.hidden {
@@ -582,12 +624,6 @@
             right: -6px !important;
             border-width: 2px !important;
         }
-        .mode-pc .clash-badge {
-            font-size: 13px !important;
-            padding: 3px 10px !important;
-            top: -12px !important;
-            border-radius: 6px !important;
-        }
 
         .mode-pc #battleRightColumn {
             flex: 1 1 500px !important;
@@ -595,34 +631,12 @@
             display: flex !important;
             flex-direction: column !important;
             justify-content: center !important;
-            gap: 20px !important;
+            gap: 16px !important;
             height: 100% !important;
         }
 
-        .mode-pc #battleRightColumn > div:first-child {
-            padding: 16px 22px !important;
-            border-radius: 18px !important;
-            border-width: 1.5px !important;
-            gap: 10px !important;
-        }
-        .mode-pc #battleRightColumn .text-xs, .mode-pc #battleRightColumn .text-sm {
-            font-size: 16px !important;
-        }
-        .mode-pc #battleRightColumn .text-[11px], .mode-pc #battleRightColumn .text-[10px] {
-            font-size: 14px !important;
-        }
-        .mode-pc #playerScoreDisplay, .mode-pc #opponentScoreDisplay {
-            font-size: 24px !important;
-        }
-
-        .mode-pc #battleRightColumn > div:last-child {
-            padding: 20px 22px !important;
-            border-radius: 20px !important;
-            border-width: 1.5px !important;
-            gap: 16px !important;
-        }
         .mode-pc #playerHandSlots {
-            height: 135px !important;
+            height: 125px !important;
             gap: 12px !important;
         }
         .mode-pc .hand-card {
@@ -632,13 +646,6 @@
         }
         .mode-pc .hand-card span.text-sm, .mode-pc .hand-card span.text-lg, .mode-pc .hand-card span.text-base {
             font-size: 32px !important;
-        }
-        .mode-pc .hand-card .text-[7px], .mode-pc .hand-card .text-[8px], .mode-pc .hand-card .text-[9px] {
-            font-size: 12px !important;
-        }
-        .mode-pc .hand-card .text-[10px] {
-            font-size: 14px !important;
-            font-weight: bold !important;
         }
         .mode-pc .hand-power-wrapper {
             width: 36px !important;
@@ -651,109 +658,15 @@
         .mode-pc .hand-badge-text {
             font-size: 13px !important;
         }
-        .mode-pc .badge-tri-up { border-left-width: 4px; border-right-width: 4px; border-bottom-width: 6px; }
-        .mode-pc .badge-tri-down { border-left-width: 4px; border-right-width: 4px; border-top-width: 6px; }
-        .mode-pc .badge-tri-left { border-top-width: 4px; border-bottom-width: 4px; border-right-width: 6px; }
-        .mode-pc .badge-tri-right { border-top-width: 4px; border-bottom-width: 4px; border-left-width: 6px; }
-
-        .mode-pc #selectedCardBrief {
-            min-height: 48px !important;
-            font-size: 15px !important;
-            padding: 10px 16px !important;
-            border-radius: 12px !important;
-        }
-        .mode-pc #openItemBoxBtn, .mode-pc #mainPhaseActionBtn {
-            padding-top: 14px !important;
-            padding-bottom: 14px !important;
-            font-size: 17px !important;
-            border-radius: 16px !important;
-            letter-spacing: 0.05em !important;
-        }
-
-        .mode-pc #deckScreen.hidden {
-            display: none !important;
-        }
-        .mode-pc #deckScreen:not(.hidden) {
-            display: flex !important;
-            height: calc(100vh - 90px) !important;
-            overflow: hidden !important;
-        }
-        .mode-pc #deckScreenContent {
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 16px !important;
-            height: calc(100% - 55px) !important;
-        }
-        .mode-pc #deckPiecePoolGrid {
-            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-            gap: 14px !important;
-            padding-right: 8px !important;
-        }
-        .mode-pc #deckPiecePoolGrid > div {
-            padding: 14px !important;
+        .mode-pc .item-quick-btn {
+            padding: 10px 14px !important;
             border-radius: 14px !important;
         }
-        .mode-pc #deckPiecePoolGrid .text-2xl, .mode-pc #deckPiecePoolGrid .text-3xl {
-            font-size: 34px !important;
-        }
-        .mode-pc #deckPiecePoolGrid .text-xs, .mode-pc #deckPiecePoolGrid .text-sm {
-            font-size: 16px !important;
-        }
-
-        .mode-pc .fixed.inset-0 > div {
-            max-width: 600px !important;
-            padding: 26px 30px !important;
-            border-radius: 22px !important;
-            border-width: 2px !important;
-        }
-
-        .mode-pc #turnOrderSelectModal > div {
-            max-width: 760px !important;
-            padding: 32px 38px !important;
-            gap: 18px !important;
-        }
-        .mode-pc #turnOrderSelectModal .text-base, 
-        .mode-pc #turnOrderSelectModal .text-xl {
+        .mode-pc .item-quick-btn .text-lg {
             font-size: 24px !important;
         }
-        .mode-pc #turnOrderSelectModal p {
-            font-size: 16px !important;
-            line-height: 1.6 !important;
-        }
-        .mode-pc #initialHandPreviewGrid {
-            height: 135px !important;
-            gap: 14px !important;
-            padding: 12px 14px !important;
-            margin-bottom: 12px !important;
-            border-radius: 16px !important;
-        }
-        .mode-pc #initialHandPreviewGrid > div {
-            height: 110px !important;
-            padding: 6px 8px !important;
-            border-radius: 14px !important;
-        }
-        .mode-pc #initialHandPreviewGrid .text-base {
-            font-size: 28px !important;
-        }
-        .mode-pc #initialHandPreviewGrid .text-xs {
-            font-size: 13px !important;
-        }
-        .mode-pc #turnOrderSelectButtonsGrid {
-            gap: 16px !important;
-            margin-top: 10px !important;
-        }
-        .mode-pc #turnOrderSelectButtonsGrid button {
-            padding: 18px 20px !important;
-            border-radius: 18px !important;
-            gap: 8px !important;
-        }
-        .mode-pc #turnOrderSelectButtonsGrid .font-bold {
-            font-size: 18px !important;
-        }
-        .mode-pc #turnOrderSelectButtonsGrid .text-\[11px\],
-        .mode-pc #turnOrderSelectButtonsGrid .text-stone-400 {
-            font-size: 13.5px !important;
-            line-height: 1.4 !important;
+        .mode-pc .item-quick-btn .text-xs {
+            font-size: 15px !important;
         }
 
         input { user-select: text; -webkit-user-select: text; }
@@ -771,7 +684,7 @@
 </head>
 <body class="washi-pattern flex flex-col items-center justify-between text-stone-100 overflow-x-hidden">
 
-    <div id="appContainer" class="w-full max-w-md h-full flex flex-col justify-between p-2.5 sm:p-3 relative overflow-hidden transition-all duration-300 app-root-container">
+    <div id="appContainer" class="w-full max-w-md h-full flex flex-col justify-between p-2 sm:p-3 relative overflow-hidden transition-all duration-300 app-root-container">
         
         <!-- ================= 0. トップ画面（環境選択 ＆ アップデート告知） ================= -->
         <section id="deviceSelectScreen" class="flex-1 flex flex-col justify-between py-2 sm:py-3 overflow-y-auto overflow-x-hidden z-20">
@@ -781,12 +694,12 @@
                     <div class="flex items-center gap-2">
                         <span class="text-lg">📢</span>
                         <span class="text-xs sm:text-base font-bold text-amber-300 font-serif">アップデート情報</span>
-                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.0.0</span>
+                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.1.0</span>
                     </div>
                     <span class="text-[10px] sm:text-xs px-2.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/80 font-mono font-bold">NEW</span>
                 </div>
                 <div class="text-xs sm:text-sm text-stone-200 leading-relaxed font-serif pl-7">
-                    Newゲーム開発！バグを発見した方はスクショとともにDMをお願い致します。
+                    新ルール実装！「攻撃1ターン1回」「破壊マスの2ターン封印」「常設道具3種（方向付与・シールド・パワーUP）」を搭載！
                 </div>
             </div>
 
@@ -836,26 +749,30 @@
             </div>
         </section>
 
-        <!-- ================= ヘッダー ================= -->
+        <!-- ================= ヘッダー（上部にゲーム説明ボタンを常設） ================= -->
         <header id="mainAppHeader" class="w-full hidden items-center justify-between py-1.5 px-2 shrink-0 border-b border-stone-800/80">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5">
                 <button id="globalBackBtn" onclick="handleGlobalBackClick()" class="hidden px-2.5 py-1 rounded-lg border border-stone-700 bg-stone-900/90 text-stone-300 text-xs font-bold hover:bg-stone-800 active:scale-95 transition">
                     ◀ 戻る
                 </button>
                 <div class="flex items-center gap-2">
                     <span class="text-xl">🍢</span>
                     <span class="font-bold text-sm sm:text-lg tracking-wider text-amber-100 font-serif">おでん道</span>
-                    <span class="text-[10px] sm:text-xs text-amber-500/80 font-mono tracking-widest hidden sm:inline">鍋の陣</span>
-                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.0.0</span>
+                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.1.0</span>
                 </div>
             </div>
             
-            <div class="flex items-center gap-2.5">
+            <div class="flex items-center gap-2">
+                <!-- 上部ヘッダーに配置された「ゲーム説明」ボタン -->
+                <button onclick="openRulesModal()" class="px-2.5 py-1 rounded-lg border border-amber-600/80 bg-gradient-to-r from-amber-950 to-[#2c190d] text-amber-300 text-xs font-bold hover:brightness-110 active:scale-95 flex items-center gap-1.5 transition shadow-sm">
+                    <span>📖</span>
+                    <span>ゲーム説明</span>
+                </button>
                 <button id="deviceToggleBtn" onclick="toggleDeviceModeQuick()" class="px-2.5 py-1 rounded-lg border border-stone-700 bg-stone-900 text-stone-300 text-xs font-bold hover:bg-stone-800 active:scale-95 flex items-center gap-1.5 transition shadow-sm">
                     <span id="deviceToggleIcon">💻</span>
                     <span id="deviceToggleLabel">PC版</span>
                 </button>
-                <button onclick="openSettingsModal()" class="px-2.5 py-1 rounded-lg border border-amber-800/80 bg-stone-900 text-amber-300 text-xs font-bold hover:bg-stone-800 active:scale-95 flex items-center gap-1.5 transition shadow-sm">
+                <button onclick="openSettingsModal()" class="px-2.5 py-1 rounded-lg border border-stone-700 bg-stone-900 text-stone-300 text-xs font-bold hover:bg-stone-800 active:scale-95 flex items-center gap-1.5 transition shadow-sm">
                     <span>⚙️</span>
                     <span>設定</span>
                 </button>
@@ -929,14 +846,6 @@
                     </div>
                     <span class="text-xs sm:text-sm px-3 py-1.5 rounded-lg bg-sky-950 text-sky-300 border border-sky-800 font-bold shrink-0">実戦指南</span>
                 </button>
-
-                <button onclick="openRulesModal()" class="w-full p-3 sm:p-4 rounded-xl border border-stone-800 bg-stone-900/60 hover:border-stone-700 active:scale-98 transition flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <span class="text-xl sm:text-2xl">📖</span>
-                        <div class="text-xs sm:text-sm text-stone-300 font-serif">おでん道の作法（ルール解説マニュアル）</div>
-                    </div>
-                    <span class="text-[10px] sm:text-xs text-amber-400">マニュアル確認 ▶</span>
-                </button>
             </div>
 
             <!-- トップ画面へ戻るボタン -->
@@ -994,14 +903,14 @@
                     </div>
                 </div>
 
-                <!-- 右カラム（PC時）：ステータスバー ＆ 手札 ＆ アクション -->
-                <div id="battleRightColumn" class="flex flex-col justify-between gap-2 shrink-0">
+                <!-- 右カラム（PC時）：ステータスバー ＆ 手札 ＆ 常設道具 ＆ アクション -->
+                <div id="battleRightColumn" class="flex flex-col justify-between gap-1.5 shrink-0">
                     <!-- 上部：対戦ステータスバー -->
-                    <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-3 shrink-0 space-y-2">
+                    <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-2.5 shrink-0 space-y-1.5">
                         <div class="flex items-center justify-between text-xs sm:text-sm">
                             <div class="flex items-center gap-2 text-stone-300 font-bold">
-                                <span id="networkStatusDot" class="w-3 h-3 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]"></span>
-                                <span id="opponentNameDisplay" class="truncate max-w-[180px]">相手（CPU・竹）</span>
+                                <span id="networkStatusDot" class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]"></span>
+                                <span id="opponentNameDisplay" class="truncate max-w-[170px]">相手（CPU・竹）</span>
                             </div>
 
                             <div class="flex items-center gap-2 font-mono text-xs sm:text-sm">
@@ -1013,10 +922,10 @@
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <span class="px-2.5 py-1 rounded text-[11px] sm:text-xs font-bold bg-[#3b0764] text-purple-200 border border-purple-800">
+                                <span class="px-2 py-0.5 rounded text-[11px] sm:text-xs font-bold bg-[#3b0764] text-purple-200 border border-purple-800">
                                     ボス残: <span id="bossRemainingCount">3</span>
                                 </span>
-                                <div id="turnIndicator" class="px-2.5 py-1 rounded text-[11px] sm:text-xs font-bold bg-rose-950 text-rose-200 border border-rose-800">
+                                <div id="turnIndicator" class="px-2 py-0.5 rounded text-[11px] sm:text-xs font-bold bg-rose-950 text-rose-200 border border-rose-800">
                                     あなたの手番
                                 </div>
                             </div>
@@ -1030,19 +939,19 @@
 
                             <div class="flex items-center gap-2 text-[11px] sm:text-xs">
                                 <span class="text-stone-400">フェーズ:</span>
-                                <span id="currentPhaseBadge" class="px-2.5 py-0.5 rounded font-bold bg-rose-950 text-rose-300 border border-rose-800">
+                                <span id="currentPhaseBadge" class="px-2 py-0.5 rounded font-bold bg-rose-950 text-rose-300 border border-rose-800">
                                     スタンバイ（配置）
                                 </span>
                             </div>
 
                             <div id="attackNoticeBadge" class="text-[11px] text-amber-400/90 font-bold hidden">
-                                ※攻撃後は配置不可
+                                ※攻撃は1ターンに1回のみ
                             </div>
                         </div>
                     </div>
 
-                    <!-- 下部：手札・アクションエリア -->
-                    <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-3 shrink-0 space-y-2.5">
+                    <!-- 下部：手札・常設道具・アクションエリア -->
+                    <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-2.5 shrink-0 space-y-2">
                         <div class="flex items-center justify-between text-xs text-stone-400">
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-rose-500"></span>
@@ -1052,26 +961,47 @@
                         </div>
 
                         <!-- 手札スロット -->
-                        <div id="playerHandSlots" class="grid grid-cols-4 gap-2 h-[76px] sm:h-[88px]">
+                        <div id="playerHandSlots" class="grid grid-cols-4 gap-1.5 h-[72px] sm:h-[84px]">
                             <!-- JS描画 -->
                         </div>
 
+                        <!-- 常設アイテムボタングリッド（道具箱を開かずに即時使用可能） -->
+                        <div class="grid grid-cols-3 gap-1.5 pt-0.5">
+                            <button id="quickItemDirBtn" onclick="handleQuickItemSelect('direction')" class="item-quick-btn group">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-base sm:text-lg">🧭</span>
+                                    <span class="font-bold text-xs sm:text-sm text-stone-200">方向付与</span>
+                                </div>
+                                <span id="itemStockDirText" class="font-mono text-xs font-bold text-amber-400">残3</span>
+                            </button>
+
+                            <button id="quickItemShieldBtn" onclick="handleQuickItemSelect('shield')" class="item-quick-btn group">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-base sm:text-lg">🛡️</span>
+                                    <span class="font-bold text-xs sm:text-sm text-stone-200">シールド</span>
+                                </div>
+                                <span id="itemStockShieldText" class="font-mono text-xs font-bold text-amber-400">残3</span>
+                            </button>
+
+                            <button id="quickItemPowerBtn" onclick="handleQuickItemSelect('powerup')" class="item-quick-btn group">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-base sm:text-lg">⚡</span>
+                                    <span class="font-bold text-xs sm:text-sm text-stone-200">パワーUP</span>
+                                </div>
+                                <span id="itemStockPowerText" class="font-mono text-xs font-bold text-amber-400">残2</span>
+                            </button>
+                        </div>
+
                         <!-- 説明文バー -->
-                        <div id="selectedCardBrief" class="min-h-[32px] text-xs text-stone-300 bg-[#191513] px-3.5 py-2 rounded-xl border border-[#2b2522] flex items-center justify-between">
-                            <span id="selectedCardBriefText" class="truncate">具材を選択してください</span>
+                        <div id="selectedCardBrief" class="min-h-[30px] text-xs text-stone-300 bg-[#191513] px-3 py-1.5 rounded-lg border border-[#2b2522] flex items-center justify-between">
+                            <span id="selectedCardBriefText" class="truncate">具材または道具を選択してください</span>
                             <button id="showSelectedCardDetailBtn" onclick="showSelectedPieceDetailModal()" class="text-amber-400 underline hidden text-xs shrink-0 ml-2">詳細</button>
                         </div>
 
                         <!-- アクションボタン -->
-                        <div class="grid grid-cols-3 gap-3 pt-0.5">
-                            <button id="openItemBoxBtn" onclick="openItemBoxModal()" class="col-span-1 py-3 rounded-xl border border-amber-700/80 bg-gradient-to-br from-amber-950 to-[#261709] text-amber-200 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 flex items-center justify-center gap-1.5 shadow-md transition">
-                                <span>🧰</span>
-                                <span>道具 (<span id="totalItemCount">8</span>)</span>
-                            </button>
-                            <button id="mainPhaseActionBtn" onclick="handleMainPhaseButtonClick()" class="col-span-2 py-3 rounded-xl border border-sky-600 bg-gradient-to-r from-sky-700 to-sky-900 text-sky-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-md transition">
-                                アタックへ進む
-                            </button>
-                        </div>
+                        <button id="mainPhaseActionBtn" onclick="handleMainPhaseButtonClick()" class="w-full py-2.5 rounded-xl border border-sky-600 bg-gradient-to-r from-sky-700 to-sky-900 text-sky-100 font-bold text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md transition">
+                            アタックへ進む
+                        </button>
                     </div>
                 </div>
 
@@ -1106,6 +1036,67 @@
     </div>
 
     <!-- ================= モーダル群 ================= -->
+
+    <!-- 方向選択ミニポップアップ（方向付与道具使用時） -->
+    <div id="directionPickModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
+        <div class="bg-[#161311] border border-amber-600/90 rounded-2xl w-full max-w-xs p-5 space-y-4 shadow-2xl text-center">
+            <div class="font-bold text-base text-amber-100 font-serif">付与する方向を選択</div>
+            <p class="text-xs text-stone-300 leading-relaxed">
+                選択した具材に付与したい方向の矢印を選んでください。<br>
+                <span class="text-amber-400 text-[11px]">※次の自分のターンまで有効</span>
+            </p>
+
+            <div class="grid grid-cols-2 gap-2.5">
+                <button onclick="confirmDirectionPick('up')" id="pickDirUpBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
+                    ⬆️ 上（↑）
+                </button>
+                <button onclick="confirmDirectionPick('down')" id="pickDirDownBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
+                    ⬇️ 下（↓）
+                </button>
+                <button onclick="confirmDirectionPick('left')" id="pickDirLeftBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
+                    ⬅️ 左（←）
+                </button>
+                <button onclick="confirmDirectionPick('right')" id="pickDirRightBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
+                    ➡️ 右（→）
+                </button>
+            </div>
+
+            <button onclick="cancelDirectionPick()" class="w-full py-2.5 rounded-xl border border-stone-700 bg-stone-950 text-stone-400 font-bold text-xs hover:bg-stone-900">
+                キャンセル
+            </button>
+        </div>
+    </div>
+
+    <!-- ゲーム説明（数ページ構成のスライドマニュアル） -->
+    <div id="rulesModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-5">
+        <div class="bg-[#161311] border border-amber-700/80 rounded-2xl w-full max-w-sm sm:max-w-lg max-h-[90vh] p-5 sm:p-6 flex flex-col justify-between shadow-2xl">
+            <div class="flex items-center justify-between pb-2.5 border-b border-stone-800">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">📖</span>
+                    <span class="font-bold text-base sm:text-xl text-amber-100 font-serif">おでん道 ゲーム説明</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="rulePageIndicator" class="text-xs sm:text-sm font-mono text-amber-400 font-bold px-2 py-0.5 rounded bg-stone-950 border border-stone-800">1 / 5</span>
+                    <button onclick="closeRulesModal()" class="text-stone-400 hover:text-stone-200 text-2xl">✕</button>
+                </div>
+            </div>
+
+            <!-- スライドページ本文 -->
+            <div id="ruleContentBody" class="flex-1 overflow-y-auto py-3.5 space-y-3 text-xs sm:text-sm text-stone-200 leading-relaxed font-serif pr-1">
+                <!-- JSでページごとに動的切り替え -->
+            </div>
+
+            <!-- スライド送りナビゲーション -->
+            <div class="pt-3 border-t border-stone-800 flex items-center justify-between gap-3">
+                <button id="rulePrevBtn" onclick="navigateRulePage(-1)" class="flex-1 py-2.5 rounded-xl border border-stone-700 bg-stone-900 text-stone-300 font-bold text-xs sm:text-sm hover:bg-stone-800 disabled:opacity-30 disabled:cursor-not-allowed">
+                    ◀ 前へ
+                </button>
+                <button id="ruleNextBtn" onclick="navigateRulePage(1)" class="flex-1 py-2.5 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95">
+                    次へ ▶
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- オンライン対戦待機モーダル -->
     <div id="onlineWaitingModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3">
@@ -1219,51 +1210,6 @@
         </div>
     </div>
 
-    <!-- ルール解説モーダル（おでん道の作法） -->
-    <div id="rulesModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-5">
-        <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm sm:max-w-lg max-h-[85vh] p-5 sm:p-6 flex flex-col justify-between shadow-2xl">
-            <div class="flex items-center justify-between pb-2.5 border-b border-stone-800">
-                <div class="flex items-center gap-2.5">
-                    <span class="text-2xl sm:text-3xl">📖</span>
-                    <span class="font-bold text-base sm:text-xl text-amber-100 font-serif">おでん道の作法（ルール解説）</span>
-                </div>
-                <button onclick="closeRulesModal()" class="text-stone-400 hover:text-stone-200 text-2xl">✕</button>
-            </div>
-
-            <div class="flex-1 overflow-y-auto py-3 space-y-3.5 text-xs sm:text-sm text-stone-300 leading-relaxed pr-1 font-serif">
-                <div>
-                    <span class="text-amber-400 font-bold text-sm sm:text-base">1. 終局と勝利条件</span><br>
-                    盤面に初期配置される<strong class="text-purple-400">中立ボス3体（紫枠・数字12〜20）</strong>がすべて討伐された時点、または<strong class="text-amber-300">互いの手札・山札が尽きた（0枚になった）時点</strong>、盤面が全て埋まった時点で即時対局終了となり、合計獲得スコアの多いプレイヤーが完全勝利となります。
-                </div>
-                <div>
-                    <span class="text-amber-400 font-bold text-sm sm:text-base">2. ターン進行と1ターン目攻撃制限</span><br>
-                    試合は野球のように「1ターン目 先攻 ➔ 1ターン目 後攻 ➔ 2ターン目 先攻 ➔ 2ターン目 後攻…」と進行します。<br>
-                    <strong class="text-rose-400 font-bold">※第1ターン（1ターン目先攻・後攻）は互いに攻撃を行えません。</strong>第2ターン（2ターン目先攻）以降より、激突およびボス討伐が解禁されます。
-                </div>
-                <div>
-                    <span class="text-amber-400 font-bold text-sm sm:text-base">3. 直交連結（出汁の道）</span><br>
-                    上下左右に向き合う矢印同士が正面から隣接すると光の出汁ビームが走り、<strong class="text-amber-300">グループ全体のパワーが合算値へと跳ね上がります</strong>。強力な中立ボス（12〜20）を倒すには、複数枚の直交連結が不可欠です！
-                </div>
-                <div>
-                    <span class="text-amber-400 font-bold text-sm sm:text-base">4. 相手駒との直接戦闘（激突！）</span><br>
-                    相手の駒と矢印が正面から向き合い、自軍の連結パワーが勝っていれば激突可能！相手駒を除外してスコアを減算させます。<strong class="text-amber-300">激突可能な箇所がある限り、1ターンに何度でも連続攻撃が可能です。</strong>
-                </div>
-                <div>
-                    <span class="text-amber-400 font-bold text-sm sm:text-base">5. 天災：中立ボスの強襲（3の倍数ターン）</span><br>
-                    <strong class="text-rose-400 font-bold">3ターン目、6ターン目、9ターン目…</strong>の開始時、生き残っている中立ボスが暴走！<strong class="text-amber-300">完全ランダムに3〜5マス</strong>を猛熱で襲撃し、巻き込まれたカードは自軍・敵軍問わず即座に粉砕されます（ボスのマスは除外）。
-                </div>
-                <div>
-                    <span class="text-amber-400 font-bold text-sm sm:text-base">6. 具材デッキ（全20種フル参戦）</span><br>
-                    対局では全20種の具材すべてが山札（手札4枚＋山札16枚）となり、長期的かつダイナミックな出汁の取り合いが繰り広げられます。
-                </div>
-            </div>
-
-            <button onclick="closeRulesModal()" class="mt-2 w-full py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs sm:text-sm hover:bg-stone-800">
-                理解した
-            </button>
-        </div>
-    </div>
-
     <!-- プレイヤー名変更モーダル -->
     <div id="nameChangeModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
         <div class="bg-[#161311] border border-amber-900/80 rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl">
@@ -1362,22 +1308,6 @@
                     部屋を作成・入室
                 </button>
             </div>
-
-            <div class="pt-2.5 border-t border-stone-800 text-xs text-stone-400">
-                <div class="flex items-center justify-between">
-                    <span>📡 通信状態: <span id="firebaseStatusIndicator" class="text-amber-400 font-bold">未接続</span></span>
-                    <button onclick="toggleFirebaseConfigBox()" class="underline text-stone-400 hover:text-amber-300">⚙ 接続キー設定</button>
-                </div>
-                <div id="firebaseConfigBox" class="mt-2.5 p-3 bg-stone-950 rounded-xl border border-stone-800 hidden space-y-2">
-                    <div>
-                        <span class="text-xs text-stone-400">Database URL (シンガポール)</span>
-                        <input type="text" id="customDbUrlInput" class="w-full px-3 py-1.5 bg-stone-900 text-stone-200 rounded-lg text-xs border border-stone-700 mt-1" value="https://oden-duello-default-rtdb.asia-southeast1.firebasedatabase.app">
-                    </div>
-                    <div class="pt-1 flex justify-end">
-                        <button onclick="saveCustomFirebaseConfig()" class="px-3 py-1 bg-amber-800 text-amber-100 rounded-lg text-xs font-bold">更新保存</button>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -1391,7 +1321,7 @@
             
             <p class="text-xs sm:text-base text-stone-300 leading-relaxed">
                 配られた初手具材（4枚）を確認し、先攻または後攻を選択してください。<br>
-                <span class="text-amber-400 font-bold">※第1ターン（1ターン目先攻・後攻）は互いに攻撃を行えません。（第2ターンより攻撃解禁）</span>
+                <span class="text-amber-400 font-bold">※第1ターン（1ターン目先攻・後攻）は互いに攻撃を行えません。（第2ターンより解禁・1ターン1回のみ）</span>
             </p>
 
             <div class="text-xs sm:text-sm text-stone-400">◆ 配布された初手具材:</div>
@@ -1415,32 +1345,6 @@
                     <span class="text-[11px] sm:text-xs text-stone-400 font-normal leading-tight text-left">相手の手を見てから配置。1ターン目は具材配置のみ。</span>
                 </button>
             </div>
-        </div>
-    </div>
-
-    <!-- 秘伝の道具箱モーダル -->
-    <div id="itemBoxModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
-        <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm max-h-[90vh] p-6 flex flex-col justify-between shadow-2xl">
-            <div class="flex items-center justify-between pb-2 border-b border-stone-800">
-                <div class="flex items-center gap-2.5">
-                    <span class="text-2xl">🧰</span>
-                    <span class="font-bold text-base sm:text-xl text-amber-200 font-serif">秘伝の道具箱</span>
-                </div>
-                <button onclick="closeItemBoxModal()" class="text-stone-400 hover:text-stone-200 text-2xl">✕</button>
-            </div>
-
-            <p class="text-xs sm:text-sm text-stone-300 py-1.5">
-                使用したい道具を選択してください。<br>
-                <span class="text-amber-400">※ターンエンド前であればいつでも使用できます。</span>
-            </p>
-
-            <div id="itemListContainer" class="flex-1 overflow-y-auto space-y-2 pr-1 py-1">
-                <!-- JS描画 -->
-            </div>
-
-            <button onclick="closeItemBoxModal()" class="mt-3 w-full py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-300 font-bold text-xs sm:text-sm hover:bg-stone-800">
-                閉じる
-            </button>
         </div>
     </div>
 
@@ -1554,7 +1458,7 @@
 
     <script>
     /* ==========================================================================
-       おでん道 - 鍋の陣 完全スクリプト (Ver1.0.0 改訂版)
+       おでん道 - 鍋の陣 完全スクリプト (Ver1.1.0 攻撃1回・焦土・道具常設改訂版)
        ========================================================================== */
 
     const ALL_PIECES_DATA = [
@@ -1582,14 +1486,11 @@
 
     const ALL_PIECE_IDS = ALL_PIECES_DATA.map(p => p.id);
 
-    const INITIAL_ITEM_STOCKS = {
-        shield: { id: "shield", name: "鍋蓋", icon: "🛡️", count: 2, desc: "選択した自軍具材に2ターンの間攻撃無効シールド付与" },
-        sake: { id: "sake", name: "日本酒", icon: "🍶", count: 1, desc: "選択した自軍具材に上（↑）の矢印を追加" },
-        chopsticks: { id: "chopsticks", name: "割り箸", icon: "🥢", count: 1, desc: "選択した自軍具材に右（→）の矢印を追加" },
-        pot: { id: "pot", name: "土鍋", icon: "🍲", count: 1, desc: "選択した自軍具材に左（←）の矢印を追加" },
-        plate: { id: "plate", name: "お皿", icon: "🍽️", count: 1, desc: "選択した自軍具材に下（↓）の矢印を追加" },
-        tongs: { id: "tongs", name: "黄金トング", icon: "🔱", count: 1, minTurn: 4, target: "global", desc: "3ターンの間、相手のすべての攻撃を封殺" },
-        spice: { id: "spice", name: "伝説の調味料", icon: "🧂", count: 1, minTurn: 4, target: "global", desc: "盤面の自軍具材すべてにパワー+4を全体付与" }
+    // 新アイテムストック（方向付与x3, シールドx3, パワーアップx2）
+    const DEFAULT_ITEM_STOCKS = {
+        direction: 3,
+        shield: 3,
+        powerup: 2
     };
 
     let currentDeviceMode = 'mobile';
@@ -1631,24 +1532,29 @@
     let isPlayerFirst = true;
     let currentPhase = 'standby';
     let hasPlacedPieceThisTurn = false;
-    let opponentAttackDisabledTurns = 0;
+    let hasAttackedThisTurn = false; // 攻撃は1ターンに1回のみ
 
     let playerScore = 0;
     let opponentScore = 0;
     let bossRemaining = 3;
 
     let boardCells = Array(25).fill(null);
+    // 破壊されたマス（焦土・2ターン配置不可）管理: Array of { turnsLeft: number, destroyedByTurnHalf: 'first'|'second', destroyedInRound: number, owner: 'player'|'opponent' }
+    let burnedCells = Array(25).fill(null);
+
     let playerHand = [];
     let playerDrawPile = [];
     let opponentHand = [];
     let opponentDrawPile = [];
 
-    let playerItemStocks = JSON.parse(JSON.stringify(INITIAL_ITEM_STOCKS));
-    let opponentItemStocks = JSON.parse(JSON.stringify(INITIAL_ITEM_STOCKS));
+    let playerItemStocks = { ...DEFAULT_ITEM_STOCKS };
+    let opponentItemStocks = { ...DEFAULT_ITEM_STOCKS };
 
     let selectedHandIndex = null;
     let previewPlacementIndex = null;
-    let selectedActiveItemId = null;
+    let selectedQuickItem = null; // 'direction' | 'shield' | 'powerup'
+    let pendingDirPickCellIndex = null;
+
     let cutinTimer = null;
     let dangerTargetCells = [];
     let battleId = 0;
@@ -1671,13 +1577,16 @@
     let defeatSynth = null;
     let clashSynth = null;
 
+    // ゲーム説明マニュアルのスライド管理
+    let currentRulePage = 1;
+    const TOTAL_RULE_PAGES = 5;
+
     /* ================= デバイスモード設定 ================= */
     function selectDeviceMode(mode) {
         initAudioEngine();
         playSound('connect');
         currentDeviceMode = mode;
         applyDeviceModeLayout();
-
         showToast(mode === 'pc' ? '💻 PC版（ワイド画面）を設定しました' : '📱 スマホ版（縦画面）を設定しました');
         switchScreen('home');
     }
@@ -2004,7 +1913,7 @@
                 backBtn.innerHTML = "◀ 中断";
                 backBtn.className = "px-3 py-1.5 rounded-lg border border-sky-800 bg-sky-950/80 text-sky-300 text-xs sm:text-sm font-bold hover:bg-sky-900 active:scale-95 transition";
             } else {
-                backBtn.innerHTML = "🏳️️ 降参";
+                backBtn.innerHTML = "🏳 降参";
                 backBtn.className = "px-3 py-1.5 rounded-lg border border-rose-800/80 bg-rose-950/70 text-rose-300 text-xs sm:text-sm font-bold hover:bg-rose-900 active:scale-95 transition";
             }
             requestAnimationFrame(() => renderLinkBeams(calculateConnectedGroups()));
@@ -2143,20 +2052,10 @@
                 firebase.initializeApp(currentFirebaseConfig);
             }
             firebaseDb = firebase.database();
-            const ind = document.getElementById('firebaseStatusIndicator');
-            if (ind) {
-                ind.textContent = "接続可能";
-                ind.className = "text-emerald-400 font-bold";
-            }
             return true;
         } catch (e) {
             console.error("Firebase init error:", e);
-            const ind = document.getElementById('firebaseStatusIndicator');
-            if (ind) {
-                ind.textContent = "接続エラー";
-                ind.className = "text-rose-400 font-bold";
-            }
-            showToast("Firebaseの初期化に失敗しました。URLをご確認ください");
+            showToast("Firebaseの接続に失敗しました");
             return false;
         }
     }
@@ -2173,29 +2072,6 @@
         playSound('click');
         document.getElementById('onlineMatchModal').classList.remove('flex');
         document.getElementById('onlineMatchModal').classList.add('hidden');
-    }
-
-    function toggleFirebaseConfigBox() {
-        const box = document.getElementById('firebaseConfigBox');
-        box.classList.toggle('hidden');
-    }
-
-    function saveCustomFirebaseConfig() {
-        const url = document.getElementById('customDbUrlInput').value.trim();
-        if (url) {
-            currentFirebaseConfig.databaseURL = url;
-            saveGame();
-            try {
-                if (firebase.apps.length) {
-                    firebase.app().delete();
-                }
-                firebaseDb = null;
-                initFirebaseClient();
-                showToast("Firebase接続先を更新しました");
-            } catch (e) {
-                showToast("再初期化中にエラーが発生しました");
-            }
-        }
     }
 
     function copyOnlineShareUrl() {
@@ -2251,7 +2127,7 @@
                 const monsterIcons = ["👹", "👺", "👻"];
                 const monsterNames = ["焦げ魔", "煮崩れ鬼", "出汁啜り"];
 
-                // 中立ボス：12〜20の高難度化
+                // 中立ボス：12〜20
                 const initialMonsters = monsterPos.map((pos, idx) => {
                     const pVal = Math.floor(Math.random() * 9) + 12;
                     return { pos, name: monsterNames[idx], icon: monsterIcons[idx], power: pVal };
@@ -2305,7 +2181,7 @@
             }
         }).catch(err => {
             console.error("Firebase access error:", err);
-            showToast("通信エラーが発生しました。DBのルール設定をご確認ください");
+            showToast("通信エラーが発生しました。設定をご確認ください");
         });
     }
 
@@ -2421,7 +2297,9 @@
                     owner: 'opponent',
                     currentPower: p.power,
                     instanceId: `net_opp_${Date.now()}`,
-                    shieldTurns: 0
+                    shieldActive: false,
+                    bonusPower: 0,
+                    tempDirs: []
                 };
                 playSound('place');
                 calculateConnectedGroups();
@@ -2431,9 +2309,11 @@
             const pl = boardCells[ev.cellIndex];
             if (pl) {
                 playerScore = Math.max(0, playerScore - pl.power);
+                // 破壊されたマスを2ターン封印（owner: 被撃破側 'player'）
+                setCellBurned(ev.cellIndex, 'player');
                 boardCells[ev.cellIndex] = null;
                 playSound('clash');
-                showToast(`⚠️ 相手があなたの【${pl.name}】を激突撃破しました！`);
+                showToast(`⚠️ 相手があなたの【${pl.name}】を激突撃破しました！マスは2ターン封印されます`);
                 calculateConnectedGroups();
                 updateBattleStatusHeader();
                 renderBattleBoard();
@@ -2446,22 +2326,38 @@
                 bossRemaining = Math.max(0, bossRemaining - 1);
                 boardCells[ev.cellIndex] = null;
                 playSound('defeat');
-                showToast(`⚠ 相手が中立ボス【${monster.name}】を討伐しました！`);
+                showToast(`⚠️ 相手が中立ボス【${monster.name}】を討伐しました！`);
                 updateBattleStatusHeader();
                 renderBattleBoard();
                 checkBattleEndCondition();
             }
-        } else if (ev.type === 'item_global') {
-            if (ev.itemId === 'tongs') {
-                opponentAttackDisabledTurns = 3;
-                showToast("🔱 相手が【黄金トング】を発動！3ターンの間こちらの攻撃が封殺されます！");
-            }
-        } else if (ev.type === 'item_target') {
+        } else if (ev.type === 'item_direction') {
             const oppPiece = boardCells[ev.cellIndex];
             if (oppPiece) {
-                if (ev.itemId === 'shield') oppPiece.shieldTurns = 2;
-                if (ev.addDir && !oppPiece.dir.includes(ev.addDir)) oppPiece.dir.push(ev.addDir);
+                if (!oppPiece.dir.includes(ev.direction)) oppPiece.dir.push(ev.direction);
+                if (!oppPiece.tempDirs) oppPiece.tempDirs = [];
+                oppPiece.tempDirs.push(ev.direction);
                 playSound('item');
+                showToast(`🧭 相手が道具【方向付与】を使用しました！`);
+                calculateConnectedGroups();
+                renderBattleBoard();
+            }
+        } else if (ev.type === 'item_shield') {
+            const oppPiece = boardCells[ev.cellIndex];
+            if (oppPiece) {
+                oppPiece.shieldActive = true;
+                playSound('item');
+                showToast(`🛡️ 相手が【シールド】を展開しました！`);
+                renderBattleBoard();
+            }
+        } else if (ev.type === 'item_powerup') {
+            const oppPiece = boardCells[ev.cellIndex];
+            if (oppPiece) {
+                oppPiece.bonusPower = (oppPiece.bonusPower || 0) + 4;
+                oppPiece.power += 4;
+                playSound('item');
+                showToast(`⚡ 相手が【パワーUP】を使用しました！（パワー+4）`);
+                calculateConnectedGroups();
                 renderBattleBoard();
             }
         } else if (ev.type === 'turn_end') {
@@ -2491,6 +2387,7 @@
         opponentDrawPile = [];
 
         boardCells = Array(25).fill(null);
+        burnedCells = Array(25).fill(null);
         playerScore = 0;
         opponentScore = 0;
         roundNumber = 1;
@@ -2500,12 +2397,16 @@
         isPlayerTurn = true;
         currentPhase = 'standby';
         hasPlacedPieceThisTurn = false;
+        hasAttackedThisTurn = false;
         selectedHandIndex = null;
         previewPlacementIndex = null;
-        selectedActiveItemId = null;
+        selectedQuickItem = null;
         battleOver = false;
         inputLocked = false;
         dangerTargetCells = [];
+
+        playerItemStocks = { ...DEFAULT_ITEM_STOCKS };
+        opponentItemStocks = { ...DEFAULT_ITEM_STOCKS };
 
         boardCells[6] = {
             ...ALL_PIECES_DATA.find(x => x.id === 3),
@@ -2514,7 +2415,9 @@
             power: 3,
             currentPower: 3,
             instanceId: 'tut_opp_chikuwa',
-            shieldTurns: 0
+            shieldActive: false,
+            bonusPower: 0,
+            tempDirs: []
         };
 
         boardCells[8] = {
@@ -2530,6 +2433,7 @@
 
         document.getElementById('opponentNameDisplay').textContent = "師範代（指南）";
         updateBattleStatusHeader();
+        updateItemStockUI();
 
         switchScreen('battle');
 
@@ -2564,13 +2468,13 @@
                 break;
             case 4:
                 stepLabel.textContent = "Step 4/6";
-                stepTitle.textContent = "直接激突（相手駒の撃破）";
-                stepInstr.textContent = "矢印が向かい合う相手の「ちくわ」をタップして激突・粉砕しましょう！";
+                stepTitle.textContent = "直接激突（1ターン1回攻撃）";
+                stepInstr.textContent = "矢印が向かい合う相手の「ちくわ」をタップして激突！破壊されたマスは2ターン封印されます。";
                 break;
             case 5:
                 stepLabel.textContent = "Step 5/6";
                 stepTitle.textContent = "中立ボスの討伐";
-                stepInstr.textContent = "連結パワー7はボスの数字(6)より上！右隣のボスをタップして討伐！";
+                stepInstr.textContent = "次ターン以降、連結パワーでボスをタップして討伐できます！";
                 break;
             case 6:
                 stepLabel.textContent = "Step 6/6";
@@ -2606,7 +2510,7 @@
         const tutBar = document.getElementById('tutorialGuideBar');
         if (tutBar) tutBar.classList.add('hidden');
 
-        // 全20種すべてをデッキ（山札）として参戦
+        // 全20種すべてを山札として参戦
         playerDrawPile = shuffleArray([...ALL_PIECE_IDS]);
         playerHand = playerDrawPile.splice(0, 4);
 
@@ -2658,19 +2562,20 @@
         inputLocked = false;
         dangerTargetCells = [];
         boardCells = Array(25).fill(null);
+        burnedCells = Array(25).fill(null); // 焦土マス初期化
         playerScore = 0;
         opponentScore = 0;
         roundNumber = 1;
         turnHalf = 'first';
         bossRemaining = 3;
         hasPlacedPieceThisTurn = false;
-        opponentAttackDisabledTurns = 0;
+        hasAttackedThisTurn = false;
         selectedHandIndex = null;
         previewPlacementIndex = null;
-        selectedActiveItemId = null;
+        selectedQuickItem = null;
 
-        playerItemStocks = JSON.parse(JSON.stringify(INITIAL_ITEM_STOCKS));
-        opponentItemStocks = JSON.parse(JSON.stringify(INITIAL_ITEM_STOCKS));
+        playerItemStocks = { ...DEFAULT_ITEM_STOCKS };
+        opponentItemStocks = { ...DEFAULT_ITEM_STOCKS };
 
         if (currentBattleMode === 'online' && sharedMonstersData && sharedMonstersData.length > 0) {
             sharedMonstersData.forEach((m, idx) => {
@@ -2695,7 +2600,7 @@
             const monsterIcons = ["👹", "👺", "👻"];
             const monsterNames = ["焦げ魔", "煮崩れ鬼", "出汁啜り"];
 
-            // 中立ボスの数字を 12〜20 に強化
+            // 中立ボス：12〜20の高難度
             monsterPos.forEach((pos, idx) => {
                 const pVal = Math.floor(Math.random() * 9) + 12; // 12〜20
                 boardCells[pos] = {
@@ -2712,6 +2617,7 @@
         }
 
         updateBattleStatusHeader();
+        updateItemStockUI();
     }
 
     function startBattleSession() {
@@ -2719,6 +2625,7 @@
             isPlayerTurn = true;
             turnHalf = 'first';
             currentPhase = 'standby';
+            hasAttackedThisTurn = false;
             triggerPhaseCutin('standby', 'スタンバイフェーズ', `${getTurnString()} 具材配置`, '🍱');
             updatePhaseUI();
             renderPlayerHand();
@@ -2727,6 +2634,7 @@
             isPlayerTurn = false;
             turnHalf = 'first';
             currentPhase = 'standby';
+            hasAttackedThisTurn = false;
             triggerPhaseCutin('standby', '相手のスタンバイ', `${getTurnString()} 相手の手番`, '🛡️');
             updatePhaseUI();
             renderPlayerHand();
@@ -2800,17 +2708,17 @@
             if (tutorialInteractiveStep === 3) {
                 badge.textContent = "アタックへ進む準備完了";
                 mainBtn.textContent = "アタックへ進む 👉";
-                mainBtn.className = "col-span-2 py-3 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
+                mainBtn.className = "w-full py-2.5 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
                 mainBtn.disabled = false;
             } else if (tutorialInteractiveStep === 6) {
                 badge.textContent = "指南修了";
                 mainBtn.textContent = "指南を修了してメニューへ 🎉";
-                mainBtn.className = "col-span-2 py-3 rounded-xl border border-emerald-500 bg-emerald-800 text-emerald-100 font-black text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md";
+                mainBtn.className = "w-full py-2.5 rounded-xl border border-emerald-500 bg-emerald-800 text-emerald-100 font-black text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md";
                 mainBtn.disabled = false;
             } else {
                 badge.textContent = currentPhase === 'standby' ? "スタンバイ（配置）" : "アタック（攻撃）";
                 mainBtn.textContent = currentPhase === 'standby' ? "アタックへ進む" : "ターンエンド";
-                mainBtn.className = "col-span-2 py-3 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
+                mainBtn.className = "w-full py-2.5 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
                 mainBtn.disabled = (tutorialInteractiveStep !== 3 && tutorialInteractiveStep !== 6);
             }
             return;
@@ -2830,14 +2738,19 @@
                 badge.textContent = "スタンバイ（配置）";
                 badge.className = "px-2.5 py-0.5 rounded font-bold bg-rose-950/80 text-rose-300 border border-rose-800";
                 mainBtn.textContent = "アタックへ進む";
-                mainBtn.className = "col-span-2 py-3 rounded-xl border border-sky-600 bg-gradient-to-r from-sky-700 to-sky-900 text-sky-100 font-bold text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md transition";
+                mainBtn.className = "w-full py-2.5 rounded-xl border border-sky-600 bg-gradient-to-r from-sky-700 to-sky-900 text-sky-100 font-bold text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md transition";
                 attackNotice.classList.add('hidden');
                 handLabel.textContent = "手札（タップして空きマスへ配置）";
             } else {
-                badge.textContent = isAttackRestricted() ? "1ターン目（攻撃不可）" : "アタック（攻撃 or 終了）";
-                badge.className = "px-2.5 py-0.5 rounded font-bold bg-rose-950 text-rose-300 border border-rose-800";
+                if (hasAttackedThisTurn) {
+                    badge.textContent = "攻撃完了（ターン終了へ）";
+                    badge.className = "px-2.5 py-0.5 rounded font-bold bg-amber-950 text-amber-300 border border-amber-800";
+                } else {
+                    badge.textContent = isAttackRestricted() ? "1ターン目（攻撃不可）" : "アタック（攻撃1回のみ）";
+                    badge.className = "px-2.5 py-0.5 rounded font-bold bg-rose-950 text-rose-300 border border-rose-800";
+                }
                 mainBtn.textContent = "ターンエンド";
-                mainBtn.className = "col-span-2 py-3 rounded-xl border border-rose-600 bg-gradient-to-r from-rose-700 to-rose-900 text-rose-100 font-bold text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md transition";
+                mainBtn.className = "w-full py-2.5 rounded-xl border border-rose-600 bg-gradient-to-r from-rose-700 to-rose-900 text-rose-100 font-bold text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md transition";
                 attackNotice.classList.remove('hidden');
                 handLabel.textContent = "手札（アタックフェーズ中は配置不可）";
             }
@@ -2846,7 +2759,7 @@
             turnInd.className = "px-2.5 py-1 rounded text-xs font-bold bg-sky-950 text-sky-200 border border-sky-800 animate-pulse";
             mainBtn.disabled = true;
             mainBtn.textContent = "相手の行動中";
-            mainBtn.className = "col-span-2 py-3 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
+            mainBtn.className = "w-full py-2.5 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
         }
     }
 
@@ -2882,8 +2795,10 @@
             currentPhase = 'attack';
             selectedHandIndex = null;
             previewPlacementIndex = null;
+            selectedQuickItem = null;
+            updateItemQuickButtonsState();
 
-            triggerPhaseCutin('battle', 'バトルフェーズ', isAttackRestricted() ? '1ターン目（攻撃不可）' : '敵討伐・直接激突の好機！', '⚔️');
+            triggerPhaseCutin('battle', 'バトルフェーズ', isAttackRestricted() ? '1ターン目（攻撃不可）' : '攻撃は1ターンに1回のみ！', '⚔️');
             updatePhaseUI();
             renderPlayerHand();
             renderBattleBoard();
@@ -2891,7 +2806,7 @@
             if (isAttackRestricted()) {
                 showToast("【アタックフェーズ】※1ターン目は先攻・後攻ともに攻撃不可。「ターンエンド」を押してください");
             } else {
-                showToast("【アタックフェーズ】激突可能な箇所がある限り何度でも攻撃できます！");
+                showToast("【アタックフェーズ】激突またはボス討伐を1回行えます！");
             }
         } else {
             inputLocked = true;
@@ -2969,6 +2884,7 @@
 
         for (let i = 0; i < 25; i++) {
             const cell = boardCells[i];
+            const burned = burnedCells[i];
             const cellDiv = document.createElement('div');
             cellDiv.className = "grid-cell";
             cellDiv.dataset.index = i;
@@ -2977,7 +2893,16 @@
                 cellDiv.classList.add('cell-danger-target');
             }
 
-            if (selectedActiveItemId && cell && cell.owner === 'player') {
+            // 破壊されたマス（焦土・配置不可）
+            if (burned) {
+                cellDiv.classList.add('cell-burned');
+                cellDiv.innerHTML = `
+                    <div class="burned-badge">
+                        <span class="text-sm sm:text-lg animate-pulse">🔥</span>
+                        <span class="text-[8px] sm:text-[10px] text-rose-400 font-mono font-bold leading-none mt-0.5">封印 ${burned.turnsLeft}T</span>
+                    </div>
+                `;
+            } else if (selectedQuickItem && cell && cell.owner === 'player') {
                 cellDiv.classList.add('item-target-candidate');
             }
 
@@ -2996,26 +2921,29 @@
                             <div class="monster-power-circle">${cell.power}</div>
                         </div>
                     `;
-                    if (!isTutorialMode && isPlayerTurn && !isAttackRestricted() && canAttackTarget(i)) {
+                    if (!isTutorialMode && isPlayerTurn && !isAttackRestricted() && !hasAttackedThisTurn && canAttackTarget(i)) {
                         cellDiv.classList.add('highlight-target-monster');
                     }
                 } else {
                     const isPl = cell.owner === 'player';
-                    const isShielded = cell.shieldTurns > 0;
+                    const isShielded = !!cell.shieldActive;
                     const dispPower = cell.currentPower ?? cell.power;
 
                     cellDiv.innerHTML = `
                         <div class="piece-card ${isPl ? 'piece-player' : 'piece-opponent'} ${isShielded ? 'piece-shielded' : ''}">
-                            ${cell.dir.map(d => `<div class="dir-arrow ${isPl ? 'dir-player' : 'dir-opponent'} dir-${d}"></div>`).join('')}
+                            ${cell.dir.map(d => {
+                                const isTemp = cell.tempDirs && cell.tempDirs.includes(d);
+                                return `<div class="dir-arrow ${isPl ? 'dir-player' : 'dir-opponent'} ${isTemp ? 'dir-temp' : ''} dir-${d}"></div>`;
+                            }).join('')}
                             <span class="text-xl sm:text-3xl mb-1">${cell.icon}</span>
                             <div class="power-diamond ${isPl ? 'diamond-player' : 'diamond-opponent'}">
                                 <span class="power-diamond-text">${dispPower}</span>
                             </div>
-                            ${isShielded ? `<span class="absolute top-0 right-0 text-[10px] bg-yellow-500 text-black px-1.5 rounded-bl font-bold">🛡️${cell.shieldTurns}</span>` : ''}
+                            ${isShielded ? `<span class="absolute top-0 right-0 text-[10px] bg-yellow-500 text-black px-1.5 rounded-bl font-bold">🛡️シールド</span>` : ''}
                         </div>
                     `;
 
-                    if (!isTutorialMode && isPlayerTurn && !isPl && !isAttackRestricted() && canClashWithPiece(i)) {
+                    if (!isTutorialMode && isPlayerTurn && !isPl && !isAttackRestricted() && !hasAttackedThisTurn && canClashWithPiece(i)) {
                         cellDiv.classList.add('highlight-target');
                         const clashBadge = document.createElement('div');
                         clashBadge.className = "clash-badge";
@@ -3028,7 +2956,7 @@
                         cellDiv.appendChild(clashBadge);
                     }
                 }
-            } else if (i === previewPlacementIndex && selectedHandIndex !== null) {
+            } else if (!burned && i === previewPlacementIndex && selectedHandIndex !== null) {
                 const pId = playerHand[selectedHandIndex];
                 const p = ALL_PIECES_DATA.find(x => x.id === pId);
                 if (p) {
@@ -3042,7 +2970,7 @@
                         </div>
                     `;
                 }
-            } else {
+            } else if (!burned) {
                 cellDiv.classList.add('cell-empty');
             }
 
@@ -3193,7 +3121,9 @@
             }
         }
 
-        selectedActiveItemId = null;
+        selectedQuickItem = null;
+        updateItemQuickButtonsState();
+
         if (selectedHandIndex === index) {
             selectedHandIndex = null;
             previewPlacementIndex = null;
@@ -3216,7 +3146,7 @@
             textEl.textContent = `【${piece.name}】（方向: ${glyphs}）${piece.desc}`;
             detailBtn.classList.remove('hidden');
         } else {
-            textEl.textContent = "具材を選択してください";
+            textEl.textContent = "具材または道具を選択してください";
             detailBtn.classList.add('hidden');
         }
     }
@@ -3224,9 +3154,18 @@
     function handleCellClick(index) {
         if (!isPlayerTurn || battleOver || inputLocked) return;
         const cell = boardCells[index];
+        const burned = burnedCells[index];
 
-        if (selectedActiveItemId) {
-            applyActiveItemToCell(index);
+        // 破壊されたマス（焦土）は配置不可
+        if (burned) {
+            playSound('error');
+            showToast(`🔥 このマスは破壊により封印されています（解除まで残${burned.turnsLeft}ターン）`);
+            return;
+        }
+
+        // 常設道具の対象選択中
+        if (selectedQuickItem) {
+            applyQuickItemToTargetCell(index);
             return;
         }
 
@@ -3286,10 +3225,16 @@
             return;
         }
 
+        // 中立ボス討伐
         if (cell && cell.type === 'monster') {
             if (isAttackRestricted()) {
                 playSound('error');
                 showToast("1ターン目は先攻・後攻ともに攻撃を行えません（2ターン目より解禁）");
+                return;
+            }
+            if (hasAttackedThisTurn) {
+                playSound('error');
+                showToast("攻撃は1ターンに1回のみです。ターンエンドしてください");
                 return;
             }
             if (canAttackTarget(index)) {
@@ -3301,15 +3246,21 @@
             return;
         }
 
+        // 相手駒への直接戦闘（激突）
         if (cell && cell.owner === 'opponent') {
-            if (cell.shieldTurns > 0) {
+            if (cell.shieldActive) {
                 playSound('error');
-                showToast(`🛡️ 相手の【${cell.name}】は鍋蓋シールド中のため攻撃できません！`);
+                showToast(`🛡️ 相手の【${cell.name}】はシールド発動中のため攻撃を受けません！`);
                 return;
             }
             if (isAttackRestricted()) {
                 playSound('error');
                 showToast("1ターン目は先攻・後攻ともに攻撃を行えません（2ターン目より解禁）");
+                return;
+            }
+            if (hasAttackedThisTurn) {
+                playSound('error');
+                showToast("攻撃は1ターンに1回のみです。ターンエンドしてください");
                 return;
             }
             if (canClashWithPiece(index)) {
@@ -3321,6 +3272,7 @@
             return;
         }
 
+        // 空きマスへの配置
         if (!cell) {
             if (currentPhase !== 'standby') {
                 playSound('error');
@@ -3352,7 +3304,9 @@
             owner: 'player',
             currentPower: p.power,
             instanceId: `pl_${Date.now()}`,
-            shieldTurns: 0
+            shieldActive: false,
+            bonusPower: 0,
+            tempDirs: []
         };
 
         if (currentBattleMode === 'online') {
@@ -3410,7 +3364,7 @@
 
     function canClashWithPiece(oppIndex) {
         const opp = boardCells[oppIndex];
-        if (!opp || opp.owner !== 'opponent' || opp.shieldTurns > 0) return false;
+        if (!opp || opp.owner !== 'opponent' || opp.shieldActive) return false;
 
         const ox = oppIndex % 5;
         const oy = Math.floor(oppIndex / 5);
@@ -3439,23 +3393,13 @@
         return false;
     }
 
-    function countAvailableClashes() {
-        let count = 0;
-        for (let i = 0; i < 25; i++) {
-            if (boardCells[i] && boardCells[i].owner === 'opponent' && canClashWithPiece(i)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
     function executeDefeatMonster(monsterIndex) {
         if (!isTutorialMode && currentPhase === 'standby') {
             if (previewPlacementIndex !== null && selectedHandIndex !== null) {
                 commitPreviewPlacement();
             }
             currentPhase = 'attack';
-            triggerPhaseCutin('battle', 'バトルフェーズ', 'ボス撃破！', '⚔️');
+            triggerPhaseCutin('battle', 'バトルフェーズ', 'ボス討伐成功！', '⚔️');
             updatePhaseUI();
         }
 
@@ -3464,6 +3408,7 @@
         playerScore += gainScore;
         bossRemaining = Math.max(0, bossRemaining - 1);
         boardCells[monsterIndex] = null;
+        hasAttackedThisTurn = true; // 1ターン1回攻撃終了
 
         if (currentBattleMode === 'online') {
             sendNetworkEvent({
@@ -3473,11 +3418,22 @@
         }
 
         playSound('defeat');
-        showToast(`💥 ${monster.name}を討伐！ +${gainScore}点獲得！`);
+        showToast(`💥 ${monster.name}を討伐！ +${gainScore}点獲得！（今ターンの攻撃完了）`);
 
         updateBattleStatusHeader();
+        updatePhaseUI();
         renderBattleBoard();
         checkBattleEndCondition();
+    }
+
+    // 破壊マス（焦土）の設定: 2ターン両者配置不可、破壊された側のフェーズで置けるようになる
+    function setCellBurned(cellIndex, destroyedCardOwner) {
+        burnedCells[cellIndex] = {
+            turnsLeft: 2,
+            owner: destroyedCardOwner, // 'player' または 'opponent'
+            burnedInRound: roundNumber,
+            burnedInHalf: turnHalf
+        };
     }
 
     function executeClashWithOpponent(oppIndex) {
@@ -3493,7 +3449,11 @@
         const opp = boardCells[oppIndex];
         const deductScore = opp.power;
         opponentScore = Math.max(0, opponentScore - deductScore);
+
+        // 破壊されたマスを焦土封印（owner: 'opponent'）
+        setCellBurned(oppIndex, 'opponent');
         boardCells[oppIndex] = null;
+        hasAttackedThisTurn = true; // 1ターン1回攻撃終了
 
         if (currentBattleMode === 'online') {
             sendNetworkEvent({
@@ -3503,16 +3463,11 @@
         }
 
         playSound('clash');
+        showToast(`⚔️ 相手の【${opp.name}】を粉砕！相手スコア -${deductScore}点！（マスは2ターン封印）`);
 
         calculateConnectedGroups();
-        const remainClashes = countAvailableClashes();
-        if (remainClashes > 0) {
-            showToast(`⚔️ 相手の【${opp.name}】を撃破！相手スコア -${deductScore}点！(さらに激突可能: 残${remainClashes}箇所)`);
-        } else {
-            showToast(`⚔️️ 相手の【${opp.name}】を撃破！相手スコア -${deductScore}点！`);
-        }
-
         updateBattleStatusHeader();
+        updatePhaseUI();
         renderBattleBoard();
         checkBattleEndCondition();
     }
@@ -3526,189 +3481,206 @@
         if (turnDisplayLabel) {
             turnDisplayLabel.textContent = getTurnString();
         }
-
-        const totalItems = Object.values(playerItemStocks).reduce((sum, item) => sum + item.count, 0);
-        document.getElementById('totalItemCount').textContent = totalItems;
     }
 
-    /* ================= 秘伝の道具システム ================= */
-    function openItemBoxModal() {
-        if (selectedActiveItemId) {
-            selectedActiveItemId = null;
-            showToast('道具の選択を解除しました');
-            renderBattleBoard();
-            return;
-        }
+    /* ================= 新・常設道具システム ================= */
+    function updateItemStockUI() {
+        const dirEl = document.getElementById('itemStockDirText');
+        const shieldEl = document.getElementById('itemStockShieldText');
+        const powerEl = document.getElementById('itemStockPowerText');
+
+        if (dirEl) dirEl.textContent = `残${playerItemStocks.direction}`;
+        if (shieldEl) shieldEl.textContent = `残${playerItemStocks.shield}`;
+        if (powerEl) powerEl.textContent = `残${playerItemStocks.powerup}`;
+
+        document.getElementById('quickItemDirBtn').disabled = playerItemStocks.direction <= 0;
+        document.getElementById('quickItemShieldBtn').disabled = playerItemStocks.shield <= 0;
+        document.getElementById('quickItemPowerBtn').disabled = playerItemStocks.powerup <= 0;
+    }
+
+    function handleQuickItemSelect(itemType) {
         if (!isPlayerTurn || battleOver || inputLocked) {
-            showToast('今は道具を使えません');
+            showToast("今は道具を使用できません");
             return;
         }
-        initAudioEngine();
-        playSound('click');
-        const listCont = document.getElementById('itemListContainer');
-        listCont.innerHTML = '';
 
-        Object.values(playerItemStocks).forEach(item => {
-            const isCountAvail = item.count > 0;
-            const isTurnUnlocked = !item.minTurn || roundNumber >= item.minTurn;
-            const isUsable = isCountAvail && isTurnUnlocked;
-
-            const btn = document.createElement('button');
-            btn.className = `w-full p-3 rounded-xl border flex items-center justify-between text-left transition ${
-                isUsable 
-                    ? 'border-amber-700/80 bg-stone-900 hover:border-amber-500 active:scale-98 cursor-pointer' 
-                    : 'border-stone-800 bg-stone-950 opacity-40 cursor-not-allowed'
-            }`;
-
-            let turnNotice = '';
-            if (item.minTurn && roundNumber < item.minTurn) {
-                turnNotice = `<span class="text-rose-400 font-bold ml-1.5">※第${item.minTurn}ターンから使用可能 (現在: 第${roundNumber}ターン)</span>`;
-            }
-
-            btn.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <span class="text-2xl sm:text-3xl">${item.icon}</span>
-                    <div>
-                        <div class="font-bold text-xs sm:text-base text-amber-100 font-serif flex items-center">
-                            <span>${item.name}</span>
-                            ${item.target === 'global' ? '<span class="text-[9px] sm:text-xs bg-purple-950 text-purple-300 border border-purple-800 px-1.5 py-0.5 rounded ml-2 font-sans">全体即時</span>' : ''}
-                        </div>
-                        <div class="text-[11px] sm:text-xs text-stone-400 mt-0.5">${item.desc}${turnNotice}</div>
-                    </div>
-                </div>
-                <div class="text-xs sm:text-sm font-mono font-bold ${isUsable ? 'text-amber-400' : 'text-stone-600'}">
-                    残 ${item.count}回
-                </div>
-            `;
-
-            if (isUsable) {
-                btn.onclick = () => activateItem(item.id);
-            }
-            listCont.appendChild(btn);
-        });
-
-        document.getElementById('itemBoxModal').classList.remove('hidden');
-        document.getElementById('itemBoxModal').classList.add('flex');
-    }
-
-    function closeItemBoxModal() {
-        playSound('click');
-        document.getElementById('itemBoxModal').classList.remove('flex');
-        document.getElementById('itemBoxModal').classList.add('hidden');
-    }
-
-    function activateItem(itemId) {
-        if (!isPlayerTurn || battleOver || inputLocked) return;
-        const item = playerItemStocks[itemId];
-        if (!item || item.count <= 0) return;
-        if (item.minTurn && roundNumber < item.minTurn) {
+        if (playerItemStocks[itemType] <= 0) {
             playSound('error');
-            showToast(`第${item.minTurn}ターン以降から使用可能になります`);
+            showToast("この道具は使い切りました");
             return;
         }
 
-        if (item.target === 'global') {
-            closeItemBoxModal();
-            item.count--;
-
-            if (itemId === 'tongs') {
-                opponentAttackDisabledTurns = 3;
-                playSound('item');
-                showToast("🔱 【黄金トング】発動！3ターンの間、相手のすべての攻撃を封殺！");
-                if (currentBattleMode === 'online') {
-                    sendNetworkEvent({ type: 'item_global', itemId: 'tongs' });
-                }
-            } else if (itemId === 'spice') {
-                let buffCount = 0;
-                boardCells.forEach(cell => {
-                    if (cell && cell.owner === 'player') {
-                        cell.power += 4;
-                        if (cell.basePower) cell.basePower += 4;
-                        buffCount++;
-                    }
-                });
-                calculateConnectedGroups();
-                playSound('connect');
-                showToast(`🧂 【伝説の調味料】発動！盤面の味方具材(${buffCount}体)のパワーを+4強化！`);
-            }
-
-            updateBattleStatusHeader();
+        if (selectedQuickItem === itemType) {
+            selectedQuickItem = null;
+            updateItemQuickButtonsState();
+            showToast("道具の選択を解除しました");
             renderBattleBoard();
             return;
         }
 
-        selectItemToUse(itemId);
-    }
+        selectedQuickItem = itemType;
+        selectedHandIndex = null;
+        previewPlacementIndex = null;
+        updateItemQuickButtonsState();
 
-    function selectItemToUse(itemId) {
-        selectedActiveItemId = itemId;
-        closeItemBoxModal();
         playSound('click');
-        showToast(`【${playerItemStocks[itemId].name}】対象の味方具材をタップしてください`);
+        if (itemType === 'direction') {
+            showToast("🧭 【方向付与】対象の味方具材をタップしてください");
+        } else if (itemType === 'shield') {
+            showToast("🛡️ 【シールド】対象の味方具材をタップしてください");
+        } else if (itemType === 'powerup') {
+            showToast("⚡ 【パワーUP】対象の味方具材をタップしてください（攻撃力+4）");
+        }
+
+        renderPlayerHand();
         renderBattleBoard();
     }
 
-    function applyActiveItemToCell(index) {
-        const cell = boardCells[index];
+    function updateItemQuickButtonsState() {
+        const btnDir = document.getElementById('quickItemDirBtn');
+        const btnShield = document.getElementById('quickItemShieldBtn');
+        const btnPower = document.getElementById('quickItemPowerBtn');
+
+        btnDir?.classList.toggle('active', selectedQuickItem === 'direction');
+        btnShield?.classList.toggle('active', selectedQuickItem === 'shield');
+        btnPower?.classList.toggle('active', selectedQuickItem === 'powerup');
+    }
+
+    function applyQuickItemToTargetCell(cellIndex) {
+        const cell = boardCells[cellIndex];
         if (!cell || cell.owner !== 'player') {
             playSound('error');
             showToast("対象には味方の具材を選択してください");
             return;
         }
 
-        const item = playerItemStocks[selectedActiveItemId];
-        if (!item || item.count <= 0) return;
-
-        const addDir = { sake: 'up', chopsticks: 'right', pot: 'left', plate: 'down' }[selectedActiveItemId];
-        if (addDir && cell.dir.includes(addDir)) {
-            playSound('error');
-            showToast('すでにその向きの矢印があります（道具は消費されません）');
+        if (selectedQuickItem === 'direction') {
+            pendingDirPickCellIndex = cellIndex;
+            openDirectionPickModal(cell.dir);
             return;
         }
 
-        if (selectedActiveItemId === 'shield') {
-            cell.shieldTurns = 2;
+        if (selectedQuickItem === 'shield') {
+            if (cell.shieldActive) {
+                playSound('error');
+                showToast("すでにシールドが付与されています");
+                return;
+            }
+            cell.shieldActive = true;
+            playerItemStocks.shield--;
+            selectedQuickItem = null;
+            updateItemQuickButtonsState();
+            updateItemStockUI();
             playSound('item');
-            showToast(`🛡 【${cell.name}】に鍋蓋シールドを付与！（2ターン無効）`);
-        } else if (selectedActiveItemId === 'sake') {
-            if (!cell.dir.includes('up')) cell.dir.push('up');
-            playSound('item');
-            showToast(`🍶 【${cell.name}】に上（↑）の矢印を追加！`);
-        } else if (selectedActiveItemId === 'chopsticks') {
-            if (!cell.dir.includes('right')) cell.dir.push('right');
-            playSound('item');
-            showToast(`🥢 【${cell.name}】に右（→）の矢印を追加！`);
-        } else if (selectedActiveItemId === 'pot') {
-            if (!cell.dir.includes('left')) cell.dir.push('left');
-            playSound('item');
-            showToast(`🍲 【${cell.name}】に左（←）の矢印を追加！`);
-        } else if (selectedActiveItemId === 'plate') {
-            if (!cell.dir.includes('down')) cell.dir.push('down');
-            playSound('item');
-            showToast(`🍽️ 【${cell.name}】に下（↓）の矢印を追加！`);
+            showToast(`🛡️ 【${cell.name}】にシールドを付与！（次の自ターンまで無敵）`);
+
+            if (currentBattleMode === 'online') {
+                sendNetworkEvent({ type: 'item_shield', cellIndex });
+            }
+
+            renderBattleBoard();
+            return;
         }
 
-        if (currentBattleMode === 'online') {
-            sendNetworkEvent({
-                type: 'item_target',
-                itemId: selectedActiveItemId,
-                cellIndex: index,
-                addDir: addDir || null
-            });
-        }
+        if (selectedQuickItem === 'powerup') {
+            cell.bonusPower = (cell.bonusPower || 0) + 4;
+            cell.power += 4;
+            playerItemStocks.powerup--;
+            selectedQuickItem = null;
+            updateItemQuickButtonsState();
+            updateItemStockUI();
+            playSound('item');
+            showToast(`⚡ 【${cell.name}】の攻撃力を+4強化しました！（連結合計も+4）`);
 
-        item.count--;
-        selectedActiveItemId = null;
-        updateBattleStatusHeader();
+            if (currentBattleMode === 'online') {
+                sendNetworkEvent({ type: 'item_powerup', cellIndex });
+            }
+
+            calculateConnectedGroups();
+            renderBattleBoard();
+            return;
+        }
+    }
+
+    function openDirectionPickModal(existingDirs) {
+        document.getElementById('pickDirUpBtn').disabled = existingDirs.includes('up');
+        document.getElementById('pickDirDownBtn').disabled = existingDirs.includes('down');
+        document.getElementById('pickDirLeftBtn').disabled = existingDirs.includes('left');
+        document.getElementById('pickDirRightBtn').disabled = existingDirs.includes('right');
+
+        document.getElementById('directionPickModal').classList.remove('hidden');
+        document.getElementById('directionPickModal').classList.add('flex');
+    }
+
+    function cancelDirectionPick() {
+        document.getElementById('directionPickModal').classList.remove('flex');
+        document.getElementById('directionPickModal').classList.add('hidden');
+        pendingDirPickCellIndex = null;
+        selectedQuickItem = null;
+        updateItemQuickButtonsState();
         renderBattleBoard();
     }
 
-    function tickShieldTurns(owner) {
+    function confirmDirectionPick(dir) {
+        if (pendingDirPickCellIndex === null) return;
+        const cell = boardCells[pendingDirPickCellIndex];
+        if (!cell || cell.owner !== 'player') return;
+
+        document.getElementById('directionPickModal').classList.remove('flex');
+        document.getElementById('directionPickModal').classList.add('hidden');
+
+        if (!cell.dir.includes(dir)) {
+            cell.dir.push(dir);
+            if (!cell.tempDirs) cell.tempDirs = [];
+            cell.tempDirs.push(dir);
+        }
+
+        playerItemStocks.direction--;
+        const cellIdx = pendingDirPickCellIndex;
+        pendingDirPickCellIndex = null;
+        selectedQuickItem = null;
+        updateItemQuickButtonsState();
+        updateItemStockUI();
+
+        playSound('item');
+        const arrowGlyph = { up: '↑', down: '↓', left: '←', right: '→' }[dir];
+        showToast(`🧭 【${cell.name}】に方向「${arrowGlyph}」を追加付与しました！（次の自ターンまで有効）`);
+
+        if (currentBattleMode === 'online') {
+            sendNetworkEvent({ type: 'item_direction', cellIndex: cellIdx, direction: dir });
+        }
+
+        calculateConnectedGroups();
+        renderBattleBoard();
+    }
+
+    // 自分のターン開始時に一時的な効果（方向付与・シールド）を解除
+    function clearTurnTemporaryBuffs(owner) {
         boardCells.forEach(cell => {
-            if (cell && cell.owner === owner && cell.shieldTurns > 0) {
-                cell.shieldTurns--;
+            if (cell && cell.owner === owner) {
+                // シールド解除
+                cell.shieldActive = false;
+                // 一時付与された方向矢印の解除
+                if (cell.tempDirs && cell.tempDirs.length > 0) {
+                    cell.dir = cell.dir.filter(d => !cell.tempDirs.includes(d));
+                    cell.tempDirs = [];
+                }
             }
         });
+    }
+
+    // 破壊されたマスの封印カウントを進行（「2ターン後の破壊された側のフェーズで置けるようになる」）
+    function tickBurnedCells(currentTurnOwner) {
+        for (let i = 0; i < 25; i++) {
+            const burned = burnedCells[i];
+            if (burned && burned.owner === currentTurnOwner) {
+                burned.turnsLeft--;
+                if (burned.turnsLeft <= 0) {
+                    burnedCells[i] = null; // 封印解除！配置可能に
+                    showToast(`♨️ 破壊マスの焦土が冷め、再び具材を置けるようになりました！`);
+                }
+            }
+        }
     }
 
     /* ================= ターン遷移 ＆ ボス強襲 ================= */
@@ -3722,9 +3694,11 @@
 
         isPlayerTurn = false;
         hasPlacedPieceThisTurn = false;
+        hasAttackedThisTurn = false; // 攻撃権リセット
         selectedHandIndex = null;
         previewPlacementIndex = null;
-        selectedActiveItemId = null;
+        selectedQuickItem = null;
+        updateItemQuickButtonsState();
 
         // 野球式：先攻が終わると後攻へ、後攻が終わると次のターンへ
         if (turnHalf === 'first') {
@@ -3733,6 +3707,10 @@
             turnHalf = 'first';
             roundNumber++;
         }
+
+        // 相手（opponent）の手番開始：相手の一時バフ解除 ＆ 相手側の破壊マス消化
+        clearTurnTemporaryBuffs('opponent');
+        tickBurnedCells('opponent');
 
         updateBattleStatusHeader();
         updatePhaseUI();
@@ -3753,10 +3731,14 @@
     function switchTurnToPlayer() {
         if (checkBattleEndCondition()) return;
 
-        tickShieldTurns('opponent');
         isPlayerTurn = true;
         hasPlacedPieceThisTurn = false;
+        hasAttackedThisTurn = false; // 攻撃権リセット
         currentPhase = 'standby';
+
+        // プレイヤーの手番開始：プレイヤーの一時バフ解除 ＆ プレイヤー側の破壊マス消化
+        clearTurnTemporaryBuffs('player');
+        tickBurnedCells('player');
 
         // 3の倍数ターンの先攻開始時にボス強襲
         const isStrikeTurn = (turnHalf === 'first' && roundNumber % 3 === 0 && bossRemaining > 0);
@@ -3816,8 +3798,14 @@
             dangerTargetCells.forEach(idx => {
                 const targetPiece = boardCells[idx];
                 if (targetPiece) {
-                    if (targetPiece.owner === 'player') destroyedPlayerCount++;
-                    if (targetPiece.owner === 'opponent') destroyedOpponentCount++;
+                    if (targetPiece.owner === 'player') {
+                        destroyedPlayerCount++;
+                        setCellBurned(idx, 'player');
+                    }
+                    if (targetPiece.owner === 'opponent') {
+                        destroyedOpponentCount++;
+                        setCellBurned(idx, 'opponent');
+                    }
                     boardCells[idx] = null;
                 }
             });
@@ -3827,7 +3815,7 @@
             renderBattleBoard();
 
             if (destroyedPlayerCount > 0 || destroyedOpponentCount > 0) {
-                showToast(`💥 強襲被弾！味方${destroyedPlayerCount}枚・敵${destroyedOpponentCount}枚が破壊されました！`);
+                showToast(`💥 強襲被弾！味方${destroyedPlayerCount}枚・敵${destroyedOpponentCount}枚が破壊され焦土となりました！`);
             } else {
                 showToast(`♨️ 強襲は空マスに着弾！損害はありませんでした！`);
             }
@@ -3848,7 +3836,12 @@
         later(() => {
             playSound('boss_strike');
             dangerTargetCells.forEach(idx => {
-                boardCells[idx] = null;
+                const p = boardCells[idx];
+                if (p) {
+                    if (p.owner === 'player') setCellBurned(idx, 'player');
+                    if (p.owner === 'opponent') setCellBurned(idx, 'opponent');
+                    boardCells[idx] = null;
+                }
             });
             dangerTargetCells = [];
             calculateConnectedGroups();
@@ -3862,9 +3855,10 @@
     function executeCpuTurn() {
         if (currentScreen !== 'battle' || battleOver) return;
 
+        // 空きマスかつ焦土でないマス
         const emptyIndices = [];
         for (let i = 0; i < 25; i++) {
-            if (!boardCells[i]) emptyIndices.push(i);
+            if (!boardCells[i] && !burnedCells[i]) emptyIndices.push(i);
         }
 
         if (emptyIndices.length > 0 && opponentHand.length > 0) {
@@ -3895,7 +3889,9 @@
                 owner: 'opponent',
                 currentPower: p.power,
                 instanceId: `opp_${Date.now()}`,
-                shieldTurns: 0
+                shieldActive: false,
+                bonusPower: 0,
+                tempDirs: []
             };
 
             if (opponentDrawPile.length > 0) {
@@ -3910,10 +3906,9 @@
         later(() => {
             let attacked = false;
 
-            // 1ターン目は先攻・後攻問わず攻撃不可
-            if (opponentAttackDisabledTurns > 0) {
-                showToast(`🔱 黄金トングの封印効果中！相手は攻撃を行えません（残${opponentAttackDisabledTurns}ターン）`);
-            } else if (!isAttackRestricted()) {
+            // 1ターン目は先攻・後攻問わず攻撃不可、かつ攻撃は1回のみ
+            if (!isAttackRestricted()) {
+                // 中立ボス討伐チェック
                 for (let i = 0; i < 25; i++) {
                     const c = boardCells[i];
                     if (c && c.type === 'monster') {
@@ -3941,10 +3936,11 @@
                     }
                 }
 
+                // 激突チェック（攻撃未実行時のみ）
                 if (!attacked) {
                     for (let i = 0; i < 25; i++) {
                         const pl = boardCells[i];
-                        if (pl && pl.owner === 'player' && pl.shieldTurns === 0) {
+                        if (pl && pl.owner === 'player' && !pl.shieldActive) {
                             const px = i % 5, py = Math.floor(i / 5);
                             const clashVectors = [
                                 { dx: 0, dy: -1, plNeedDir: 'up',    cpuNeedDir: 'down' },
@@ -3962,10 +3958,12 @@
                                             const plP = pl.currentPower ?? pl.power;
                                             if (opP > plP) {
                                                 playerScore = Math.max(0, playerScore - pl.power);
+                                                // 破壊マスを封印（owner: 'player'）
+                                                setCellBurned(i, 'player');
                                                 boardCells[i] = null;
                                                 attacked = true;
                                                 playSound('clash');
-                                                showToast(`⚠️ 相手があなたの【${pl.name}】を撃破！ -${pl.power}点`);
+                                                showToast(`⚠️ 相手があなたの【${pl.name}】を撃破！ -${pl.power}点（マス封印）`);
                                                 break;
                                             }
                                         }
@@ -3977,9 +3975,6 @@
                     }
                 }
             }
-
-            if (opponentAttackDisabledTurns > 0) opponentAttackDisabledTurns--;
-            tickShieldTurns('player');
 
             updateBattleStatusHeader();
             renderBattleBoard();
@@ -4087,10 +4082,78 @@
         }
     }
 
-    /* ================= 設定・ルール・名前変更 ================= */
+    /* ================= ゲーム説明（複数ページスライド式マニュアル） ================= */
+    const RULE_PAGES_DATA = [
+        {
+            title: "1. 盤面構成と勝利条件",
+            content: `
+                <div class="space-y-3">
+                    <p class="leading-relaxed"><strong class="text-amber-300 font-bold">【5×5の鍋盤面】</strong><br>
+                    おでんの具材を配置し、出汁の矢印を繋げて盤上を支配するタクティカル対戦ゲームです。</p>
+                    <p class="leading-relaxed"><strong class="text-purple-400 font-bold">【中立ボス（3体）】</strong><br>
+                    盤面に初期配置される紫枠のボス（数字12〜20）。強大なパワーを持ちますが、討伐するとそのパワー分の大量得点を獲得できます！</p>
+                    <p class="leading-relaxed"><strong class="text-rose-400 font-bold">【完全勝利の条件】</strong><br>
+                    中立ボス3体が全滅するか、互いの手札・山札が尽きた（全20枚消化）時点で対局終了。合計獲得スコアの高い方が完全勝利となります。</p>
+                </div>
+            `
+        },
+        {
+            title: "2. ターン進行と攻撃ルール",
+            content: `
+                <div class="space-y-3">
+                    <p class="leading-relaxed"><strong class="text-amber-300 font-bold">【野球式のターン進行】</strong><br>
+                    「1ターン目 先攻 ➔ 1ターン目 後攻 ➔ 2ターン目 先攻 ➔ 2ターン目 後攻…」と表裏のように交互に進行します。</p>
+                    <p class="leading-relaxed"><strong class="text-rose-400 font-bold">【1ターン目の攻撃禁止】</strong><br>
+                    第1ターン（1ターン目先攻・後攻）は、互いに具材の配置や道具の使用のみ可能で、攻撃（激突・討伐）はできません。</p>
+                    <p class="leading-relaxed"><strong class="text-amber-400 font-bold">【攻撃は1ターンに1回のみ！】</strong><br>
+                    第2ターン以降のバトルフェーズでは、<strong class="text-rose-300">「相手駒への激突」または「ボス討伐」のいずれか1回のみ</strong>攻撃を行えます。攻撃後はターンエンドへ進みます。</p>
+                </div>
+            `
+        },
+        {
+            title: "3. 直交連結（出汁の道）と激突",
+            content: `
+                <div class="space-y-3">
+                    <p class="leading-relaxed"><strong class="text-amber-300 font-bold">【直交連結（パワー合算）】</strong><br>
+                    上下左右に向き合う矢印同士が正面から隣接すると光の出汁ビームが走り、<strong class="text-rose-400">グループ全体のパワーが合算値へと跳ね上がります</strong>！ボス討伐には複数枚の連結が不可欠です。</p>
+                    <p class="leading-relaxed"><strong class="text-sky-300 font-bold">【直接戦闘（激突！）】</strong><br>
+                    相手の駒と矢印が正面から向き合い、自軍の連結パワーが勝っていれば激突可能！相手駒を除外して、その具材のパワー分スコアを減算させます。</p>
+                </div>
+            `
+        },
+        {
+            title: "4. 破壊マスの焦土封印（2ターン制限）",
+            content: `
+                <div class="space-y-3">
+                    <p class="leading-relaxed"><strong class="text-rose-400 font-bold">【破壊されたマスは焦土化！】</strong><br>
+                    直接激突やボス強襲によってカードが破壊されたマスは、炎が渦巻く<strong class="text-amber-300">「焦土マス（封印）」</strong>となります。</p>
+                    <p class="leading-relaxed"><strong class="text-amber-300 font-bold">【2ターンの間、両者配置不可】</strong><br>
+                    破壊されたマスには、2ターンの間両プレイヤーともに具材を置くことができません。</p>
+                    <p class="leading-relaxed"><strong class="text-emerald-400 font-bold">【破壊された側のフェーズで復活】</strong><br>
+                    2ターン経過後の「破壊されたプレイヤーのスタンバイフェーズ」開始時に焦土が冷め、再び具材が配置できるようになります。</p>
+                </div>
+            `
+        },
+        {
+            title: "5. 秘伝の道具と天災（ボス強襲）",
+            content: `
+                <div class="space-y-2.5">
+                    <p class="leading-relaxed"><strong class="text-amber-300 font-bold">【常設された3種の秘伝道具】</strong>（戦闘画面下に常時表示）<br>
+                    ・<strong class="text-amber-400">🧭 方向付与 (残3)</strong>: 選択した味方に好きな方向矢印を1つ追加（次の自ターンまで有効）。<br>
+                    ・<strong class="text-sky-400">🛡️ シールド (残3)</strong>: 選択した味方に攻撃無効シールド付与（次の自ターンまで有効）。<br>
+                    ・<strong class="text-rose-400">⚡ パワーUP (残2)</strong>: 選択した味方の攻撃力を+4強化！連結合計にも+4合算されます（破壊されるまで維持）。</p>
+                    <p class="leading-relaxed"><strong class="text-purple-400 font-bold">【天災：中立ボスの強襲】</strong><br>
+                    3ターン目、6ターン目…の開始時、生き残っているボスが暴走！完全ランダムに3〜5マスを猛熱で襲撃し、巻き込まれたカードを即時粉砕（マスは焦土化）します。</p>
+                </div>
+            `
+        }
+    ];
+
     function openRulesModal() {
         initAudioEngine();
         playSound('click');
+        currentRulePage = 1;
+        renderRulePageContent();
         document.getElementById('rulesModal').classList.remove('hidden');
         document.getElementById('rulesModal').classList.add('flex');
     }
@@ -4101,6 +4164,38 @@
         document.getElementById('rulesModal').classList.add('hidden');
     }
 
+    function renderRulePageContent() {
+        const page = RULE_PAGES_DATA[currentRulePage - 1];
+        document.getElementById('rulePageIndicator').textContent = `${currentRulePage} / ${TOTAL_RULE_PAGES}`;
+        document.getElementById('ruleContentBody').innerHTML = `
+            <div class="text-amber-300 font-bold text-sm sm:text-base mb-2 border-b border-stone-800 pb-1">${page.title}</div>
+            ${page.content}
+        `;
+
+        const prevBtn = document.getElementById('rulePrevBtn');
+        const nextBtn = document.getElementById('ruleNextBtn');
+
+        prevBtn.disabled = (currentRulePage === 1);
+        if (currentRulePage === TOTAL_RULE_PAGES) {
+            nextBtn.textContent = "理解した（閉じる） ✓";
+            nextBtn.className = "flex-1 py-2.5 rounded-xl border border-emerald-600 bg-gradient-to-r from-emerald-700 to-emerald-900 text-emerald-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95";
+        } else {
+            nextBtn.textContent = "次へ ▶";
+            nextBtn.className = "flex-1 py-2.5 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95";
+        }
+    }
+
+    function navigateRulePage(dir) {
+        playSound('click');
+        if (dir === 1 && currentRulePage === TOTAL_RULE_PAGES) {
+            closeRulesModal();
+            return;
+        }
+        currentRulePage = Math.max(1, Math.min(TOTAL_RULE_PAGES, currentRulePage + dir));
+        renderRulePageContent();
+    }
+
+    /* ================= 設定・名前変更 ================= */
     function openSettingsModal() {
         initAudioEngine();
         playSound('click');
