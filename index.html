@@ -155,7 +155,7 @@
         /* 5×5 盤面スタイル */
         .board-container {
             width: 100%;
-            max-width: min(320px, 42vh);
+            max-width: min(340px, 36.5vh);
             aspect-ratio: 1 / 1;
             position: relative;
             margin: 0 auto;
@@ -200,7 +200,7 @@
             cursor: pointer;
         }
 
-        /* 破壊マス（撃破マス）：グレー仕様（封印中配置不可） */
+        /* 破壊マス（撃破マス）：封印仕様 */
         .grid-cell.cell-burned {
             background: linear-gradient(145deg, #1c1917 0%, #12100e 100%) !important;
             border: 1.5px dashed #71717a !important;
@@ -423,7 +423,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            padding: 2.5px 2px;
+            padding: 2px 2px;
             cursor: pointer;
             transition: all 0.15s ease;
             position: relative;
@@ -441,12 +441,12 @@
             cursor: not-allowed;
         }
 
-        /* 常設アイテムボタンスタイル（4列対応） */
+        /* 常設アイテムボタンスタイル */
         .item-quick-btn {
             background: linear-gradient(145deg, #1f1814, #140f0c);
             border: 1px solid #443228;
             border-radius: 8px;
-            padding: 4px 4px;
+            padding: 3px 2px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -454,7 +454,7 @@
             gap: 1px;
             cursor: pointer;
             transition: all 0.15s ease;
-            min-height: 44px;
+            min-height: 42px;
         }
         .item-quick-btn:hover:not(:disabled) {
             border-color: #f59e0b;
@@ -478,17 +478,16 @@
             border-color: #26211e;
         }
 
+        /* PCモード専用スタイル */
         .mode-pc .app-root-container {
             max-width: 100vw !important;
             width: 100vw !important;
             height: 100vh !important;
             padding: 12px 32px 16px 32px !important;
         }
-
         .mode-pc body, .mode-pc {
             font-size: 16px !important;
         }
-
         .mode-pc #mainAppHeader:not(.hidden) {
             display: flex !important;
             padding: 10px 20px !important;
@@ -506,14 +505,12 @@
             font-size: 14px !important;
             border-radius: 10px !important;
         }
-
         .mode-pc #deviceSelectScreen:not(.hidden) {
             display: flex !important;
             max-width: 840px !important;
             margin: auto !important;
             padding: 24px !important;
         }
-
         .mode-pc #homeScreen:not(.hidden) {
             display: flex !important;
             max-width: 1300px !important;
@@ -543,7 +540,6 @@
             border-radius: 20px !important;
             border-width: 1.5px !important;
         }
-
         .mode-pc #battleScreen.hidden {
             display: none !important;
         }
@@ -562,7 +558,6 @@
             width: 100% !important;
             padding: 6px 24px !important;
         }
-
         .mode-pc #battleLeftColumn {
             flex: 0 0 auto !important;
             display: flex !important;
@@ -623,7 +618,6 @@
             font-size: 12px !important;
             padding: 2px 4px !important;
         }
-
         .mode-pc #battleRightColumn {
             flex: 1 1 520px !important;
             max-width: 640px !important;
@@ -668,7 +662,7 @@
             font-size: 13px !important;
         }
 
-        /* ワイドモーダル設定（CPU難易度選択の整列ズレを根絶） */
+        /* ワイドモーダル */
         .mode-pc #cpuSelectModal > div {
             max-width: 900px !important;
             width: 90vw !important;
@@ -679,24 +673,19 @@
             display: grid !important;
             grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
             gap: 16px !important;
-            margin: 0 !important;
+            margin-top: 0 !important;
+        }
+        .mode-pc #cpuSelectModal .space-y-3 > * + * {
+            margin-top: 0 !important;
         }
         .mode-pc #cpuSelectModal .space-y-3 > button {
             height: 180px !important;
-            padding: 20px 18px !important;
+            padding: 18px !important;
             border-radius: 18px !important;
             margin: 0 !important;
             display: flex !important;
             flex-direction: column !important;
             justify-content: space-between !important;
-            align-items: stretch !important;
-        }
-        .mode-pc #cpuSelectModal .space-y-3 > button > div {
-            width: 100% !important;
-        }
-        .mode-pc #cpuSelectModal .space-y-3 > button > span {
-            align-self: flex-end !important;
-            margin-top: auto !important;
         }
 
         .mode-pc #turnOrderSelectModal > div {
@@ -734,9 +723,9 @@
 
     <div id="appContainer" class="w-full max-w-md h-full flex flex-col justify-between p-2 sm:p-3 relative overflow-hidden transition-all duration-300 app-root-container">
         
-        <!-- 0. トップ画面（プレイヤー名入力 ＆ 環境選択 ＆ アップデート告知） -->
+        <!-- 0. トップ画面 -->
         <section id="deviceSelectScreen" class="flex-1 flex flex-col justify-between py-2 sm:py-3 overflow-y-auto overflow-x-hidden z-20">
-            <!-- アップデートお知らせ窓枠 -->
+            <!-- アップデート告知 -->
             <div class="mb-2 p-3 sm:p-4 rounded-2xl border border-amber-700/70 bg-gradient-to-r from-[#20150d] via-[#16100d] to-[#20150d] shadow-xl">
                 <div class="flex items-center justify-between gap-1 mb-1">
                     <div class="flex items-center gap-2">
@@ -747,11 +736,11 @@
                     <span class="text-[10px] sm:text-xs px-2.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/80 font-mono font-bold">NEW</span>
                 </div>
                 <div class="text-xs sm:text-sm text-stone-200 leading-relaxed font-serif pl-7">
-                    【🔰 実践指南・大幅進化】最新ルール（1T目攻撃制限・新道具・グレー撃破マス・ボス討伐決着）に完全対応した本格チュートリアルへ強化！
+                    【📖 実践指南・大幅進化】最新ルール（1T目攻撃制限・新道具・グレー撃破マス・ボス討伐決着）に完全対応した本格チュートリアルへ強化！
                 </div>
             </div>
 
-            <!-- タイトルロゴ・ビジュアルセクション -->
+            <!-- タイトルロゴ -->
             <div class="text-center my-auto py-2 space-y-1.5">
                 <div class="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-br from-amber-950/80 via-stone-900 to-rose-950/60 border border-amber-700/60 shadow-2xl">
                     <span class="text-5xl sm:text-6xl drop-shadow-md">🍢</span>
@@ -765,7 +754,7 @@
                 </p>
             </div>
 
-            <!-- プレイヤー名入力 ＆ デバイス選択セクション -->
+            <!-- プレイヤー名入力 & 環境選択 -->
             <div class="space-y-3 pb-2 max-w-md mx-auto w-full px-1">
                 <div class="p-3.5 rounded-2xl border border-amber-700/70 bg-[#161210] shadow-lg space-y-2">
                     <label for="landingPlayerNameInput" class="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-300 font-serif">
@@ -811,14 +800,12 @@
             </div>
         </section>
 
-        <!-- ヘッダー（上部にゲーム説明ボタンを常設、ベクター旗アイコンSVG降参ボタン） -->
+        <!-- ヘッダー -->
         <header id="mainAppHeader" class="w-full hidden items-center justify-between py-1.5 px-2 shrink-0 border-b border-stone-800/80">
             <div class="flex items-center gap-2.5">
-                <button id="globalBackBtn" onclick="handleGlobalBackClick()" class="hidden px-2.5 py-1 rounded-lg border border-stone-700 bg-stone-900/90 text-stone-300 text-xs font-bold hover:bg-stone-800 active:scale-95 transition flex items-center gap-1.5 shadow-sm">
-                    <span id="globalBackIconContainer" class="flex items-center">
-                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-                    </span>
-                    <span id="globalBackLabel">戻る</span>
+                <button id="globalBackBtn" onclick="handleGlobalBackClick()" class="hidden px-2.5 py-1 rounded-lg border border-rose-800/80 bg-rose-950/70 text-rose-300 text-xs font-bold hover:bg-rose-900 active:scale-95 transition flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 fill-current shrink-0" viewBox="0 0 24 24"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z"/></svg>
+                    <span id="globalBackBtnText">降参</span>
                 </button>
                 <div class="flex items-center gap-2">
                     <span class="text-xl">🍢</span>
@@ -859,7 +846,7 @@
                     </div>
                 </div>
                 <div class="mt-2 pt-2 border-t border-stone-800/80 text-[11px] sm:text-xs text-stone-500 font-serif flex items-center justify-between">
-                    <span>※プレイヤー名の変更は右上の【⚙️ 設定】からいつでも行えます</span>
+                    <span>※プレイヤー名の変更は右上の【⚙️️ 設定】からいつでも行えます</span>
                     <button onclick="openSettingsModal()" class="text-amber-400/90 underline hover:text-amber-300">設定を開く</button>
                 </div>
             </div>
@@ -922,21 +909,21 @@
         <!-- 2. バトル画面 -->
         <section id="battleScreen" class="flex-1 hidden flex-col justify-between overflow-hidden" style="display: none;">
             
-            <!-- 実践チュートリアル専用ガイダンスバナー（全8ステップ対応） -->
-            <div id="tutorialGuideBar" class="hidden shrink-0 mb-2 p-2.5 sm:p-4 rounded-2xl border border-sky-500/80 bg-gradient-to-r from-[#0d1e2e] via-[#091520] to-[#0d1e2e] shadow-lg flex items-center justify-between z-30">
-                <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                    <span class="text-xl sm:text-2xl shrink-0 animate-bounce">👉</span>
+            <!-- 実践チュートリアル専用ガイダンス -->
+            <div id="tutorialGuideBar" class="hidden shrink-0 mb-2 p-2 sm:p-3 rounded-2xl border border-sky-500/80 bg-gradient-to-r from-[#0d1e2e] via-[#091520] to-[#0d1e2e] shadow-lg flex items-center justify-between z-30">
+                <div class="flex items-center gap-2 min-w-0 flex-1">
+                    <span class="text-lg sm:text-2xl shrink-0 animate-bounce">👉</span>
                     <div class="min-w-0 flex-1">
-                        <div class="flex items-center gap-2.5">
-                            <span id="tutStepLabel" class="text-xs sm:text-sm px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 font-bold font-mono">Step 1/8</span>
+                        <div class="flex items-center gap-2">
+                            <span id="tutStepLabel" class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 font-bold font-mono">Step 1/8</span>
                             <span id="tutStepTitle" class="text-xs sm:text-base font-bold text-sky-200 font-serif truncate">具材の配置</span>
                         </div>
-                        <div id="tutStepInstruction" class="text-xs sm:text-sm text-stone-200 leading-snug mt-0.5">
-                            手札の【大根】をタップし、中央の光るマス（マス12）に置いてみましょう！
+                        <div id="tutStepInstruction" class="text-[11px] sm:text-xs text-stone-200 leading-snug mt-0.5">
+                            手札の【大根】をタップし、中央の光るマスに置いてみましょう！
                         </div>
                     </div>
                 </div>
-                <button onclick="quitTutorialPrompt()" class="ml-2 px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-700 text-stone-400 text-xs sm:text-sm hover:text-rose-400 shrink-0">
+                <button onclick="quitTutorialPrompt()" class="ml-2 px-2.5 py-1 rounded-lg bg-stone-900 border border-stone-700 text-stone-400 text-xs hover:text-rose-400 shrink-0">
                     ✕ 中断
                 </button>
             </div>
@@ -952,121 +939,120 @@
                 </div>
             </div>
 
-            <!-- PCモード / スマホモード両対応ラッパー構造 -->
+            <!-- バトル画面ラッパー -->
             <div id="battleScreenContent" class="flex-1 flex flex-col justify-between overflow-hidden">
                 
-                <!-- 左カラム：巨大5×5盤面 ＆ 連結ビーム（マスとマスの間の隙間ジョイント） -->
-                <div id="battleLeftColumn" class="my-auto py-1 flex items-center justify-center">
+                <!-- 盤面 & 連結ビーム -->
+                <div id="battleLeftColumn" class="my-auto py-0.5 flex items-center justify-center">
                     <div class="board-container">
                         <div id="battleBoardGrid" class="w-full h-full grid grid-cols-5 grid-rows-5 gap-1 p-1 bg-[#100d0c] border border-[#2b2420] rounded-xl relative shadow-2xl z-0">
-                            <!-- JS生成 -->
+                            <!-- JS動的生成 -->
                         </div>
                         <svg id="linkSvgOverlay" class="absolute inset-0 w-full h-full pointer-events-none z-20"></svg>
                     </div>
                 </div>
 
-                <!-- 右カラム：ステータスバー ＆ 手札 ＆ 常設道具（4種） ＆ アクション -->
-                <div id="battleRightColumn" class="flex flex-col justify-between gap-1.5 shrink-0">
-                    <!-- 上部：対戦ステータスバー -->
-                    <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-2.5 shrink-0 space-y-1.5">
+                <!-- ステータスバー & 手札 & アクション -->
+                <div id="battleRightColumn" class="flex flex-col justify-between gap-1 shrink-0">
+                    <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-2 shrink-0 space-y-1">
                         <div class="flex items-center justify-between text-xs sm:text-sm">
-                            <div class="flex items-center gap-2 text-stone-300 font-bold">
-                                <span id="networkStatusDot" class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]"></span>
-                                <span id="opponentNameDisplay" class="truncate max-w-[170px]">相手（CPU・竹）</span>
+                            <div class="flex items-center gap-1.5 text-stone-300 font-bold">
+                                <span id="networkStatusDot" class="w-2 h-2 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]"></span>
+                                <span id="opponentNameDisplay" class="truncate max-w-[150px]">相手（CPU・竹）</span>
                             </div>
 
-                            <div class="flex items-center gap-2 font-mono text-xs sm:text-sm">
+                            <div class="flex items-center gap-1.5 font-mono text-xs">
                                 <span class="text-stone-400">YOU</span>
-                                <span id="playerScoreDisplay" class="text-rose-400 font-bold text-sm sm:text-lg">0</span>
+                                <span id="playerScoreDisplay" class="text-rose-400 font-bold text-sm sm:text-base">0</span>
                                 <span class="text-stone-600 text-xs">VS</span>
-                                <span id="opponentScoreDisplay" class="text-sky-400 font-bold text-sm sm:text-lg">0</span>
+                                <span id="opponentScoreDisplay" class="text-sky-400 font-bold text-sm sm:text-base">0</span>
                                 <span class="text-stone-400">RIVAL</span>
                             </div>
 
-                            <div class="flex items-center gap-2">
-                                <span class="px-2 py-0.5 rounded text-[11px] sm:text-xs font-bold bg-[#3b0764] text-purple-200 border border-purple-800">
+                            <div class="flex items-center gap-1.5">
+                                <span class="px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-bold bg-[#3b0764] text-purple-200 border border-purple-800">
                                     ボス残: <span id="bossRemainingCount">3</span>
                                 </span>
-                                <div id="turnIndicator" class="px-2 py-0.5 rounded text-[11px] sm:text-xs font-bold bg-rose-950 text-rose-200 border border-rose-800">
+                                <div id="turnIndicator" class="px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-bold bg-rose-950 text-rose-200 border border-rose-800">
                                     あなたの手番
                                 </div>
                             </div>
                         </div>
 
                         <div class="flex items-center justify-between text-xs pt-0.5">
-                            <div class="flex items-center gap-2">
-                                <span id="turnOrderBadge" class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800 font-bold">先攻</span>
-                                <span class="text-stone-400 font-serif text-xs sm:text-sm"><span id="turnDisplayLabel" class="text-amber-400 font-bold font-mono">1ターン目 先攻</span></span>
+                            <div class="flex items-center gap-1.5">
+                                <span id="turnOrderBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800 font-bold">先攻</span>
+                                <span class="text-stone-400 font-serif text-[11px] sm:text-xs"><span id="turnDisplayLabel" class="text-amber-400 font-bold font-mono">1ターン目 先攻</span></span>
                             </div>
 
-                            <div class="flex items-center gap-2 text-[11px] sm:text-xs">
+                            <div class="flex items-center gap-1 text-[10px] sm:text-xs">
                                 <span class="text-stone-400">フェーズ:</span>
-                                <span id="currentPhaseBadge" class="px-2 py-0.5 rounded font-bold bg-rose-950 text-rose-300 border border-rose-800">
+                                <span id="currentPhaseBadge" class="px-1.5 py-0.5 rounded font-bold bg-rose-950 text-rose-300 border border-rose-800">
                                     スタンバイ（配置）
                                 </span>
                             </div>
 
-                            <div id="attackNoticeBadge" class="text-[11px] text-amber-400/90 font-bold hidden">
-                                ※攻撃は1ターンに1回のみ
+                            <div id="attackNoticeBadge" class="text-[10px] text-amber-400/90 font-bold hidden">
+                                ※攻撃は1回のみ
                             </div>
                         </div>
                     </div>
 
-                    <!-- 下部：手札・常設道具・アクションエリア -->
-                    <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-2.5 shrink-0 space-y-2">
-                        <div class="flex items-center justify-between text-xs text-stone-400">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                    <!-- 手札・道具・操作 -->
+                    <div class="bg-[#141110] border border-[#2b2522] rounded-xl p-2 shrink-0 space-y-1.5">
+                        <div class="flex items-center justify-between text-[11px] text-stone-400">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
                                 <span id="handAreaLabel">手札（タップして空きマスへ配置）</span>
                             </div>
-                            <span class="text-xs font-mono">山札: <span id="drawPileCount" class="text-amber-400 font-bold">16</span></span>
+                            <span class="text-[11px] font-mono">山札: <span id="drawPileCount" class="text-amber-400 font-bold">16</span></span>
                         </div>
 
                         <!-- 手札スロット -->
-                        <div id="playerHandSlots" class="grid grid-cols-4 gap-1.5 h-[72px] sm:h-[84px]">
+                        <div id="playerHandSlots" class="grid grid-cols-4 gap-1.5 h-[68px] sm:h-[84px]">
                             <!-- JS描画 -->
                         </div>
 
-                        <!-- 常設アイテムボタングリッド（4種一新） -->
-                        <div class="grid grid-cols-4 gap-1 sm:gap-1.5 pt-0.5">
+                        <!-- 常設アイテム（4種） -->
+                        <div class="grid grid-cols-4 gap-1 pt-0.5">
                             <button id="quickItemDirBtn" onclick="handleQuickItemSelect('direction')" class="item-quick-btn group" title="味方に方向矢印を1つ追加">
-                                <span class="text-sm sm:text-base">🧭</span>
-                                <span class="font-bold text-[10px] sm:text-xs text-stone-200">方向付与</span>
-                                <span id="itemStockDirText" class="font-mono text-[9px] sm:text-[11px] font-bold text-amber-400">残3</span>
+                                <span class="text-xs sm:text-sm">🧭</span>
+                                <span class="font-bold text-[9px] sm:text-xs text-stone-200">方向付与</span>
+                                <span id="itemStockDirText" class="font-mono text-[9px] sm:text-[10px] font-bold text-amber-400">残3</span>
                             </button>
 
                             <button id="quickItemShieldBtn" onclick="handleQuickItemSelect('shield')" class="item-quick-btn group" title="味方を敵＆ボスの攻撃から守る">
-                                <span class="text-sm sm:text-base">🛡️</span>
-                                <span class="font-bold text-[10px] sm:text-xs text-stone-200">シールド</span>
-                                <span id="itemStockShieldText" class="font-mono text-[9px] sm:text-[11px] font-bold text-amber-400">残3</span>
+                                <span class="text-xs sm:text-sm">🛡</span>
+                                <span class="font-bold text-[9px] sm:text-xs text-stone-200">シールド</span>
+                                <span id="itemStockShieldText" class="font-mono text-[9px] sm:text-[10px] font-bold text-amber-400">残3</span>
                             </button>
 
                             <button id="quickItemPowerBtn" onclick="handleQuickItemSelect('powerup')" class="item-quick-btn group" title="味方の攻撃力を+4強化">
-                                <span class="text-sm sm:text-base">⚡</span>
-                                <span class="font-bold text-[10px] sm:text-xs text-stone-200">パワーUP</span>
-                                <span id="itemStockPowerText" class="font-mono text-[9px] sm:text-[11px] font-bold text-amber-400">残2</span>
+                                <span class="text-xs sm:text-sm">⚡</span>
+                                <span class="font-bold text-[9px] sm:text-xs text-stone-200">パワーUP</span>
+                                <span id="itemStockPowerText" class="font-mono text-[9px] sm:text-[10px] font-bold text-amber-400">残2</span>
                             </button>
 
                             <button id="quickItemDebuffBtn" onclick="handleQuickItemSelect('debuff')" class="item-quick-btn group" title="相手駒の攻撃力を-5弱体化（2ターン継続）">
-                                <span class="text-sm sm:text-base">🧪</span>
-                                <span class="font-bold text-[10px] sm:text-purple-300">弱体スプレー</span>
-                                <span id="itemStockDebuffText" class="font-mono text-[9px] sm:text-[11px] font-bold text-purple-400">残2</span>
+                                <span class="text-xs sm:text-sm">🧪</span>
+                                <span class="font-bold text-[9px] sm:text-xs text-purple-300">弱体スプレー</span>
+                                <span id="itemStockDebuffText" class="font-mono text-[9px] sm:text-[10px] font-bold text-purple-400">残2</span>
                             </button>
                         </div>
 
-                        <!-- 説明文バー -->
-                        <div id="selectedCardBrief" class="min-h-[30px] text-xs text-stone-300 bg-[#191513] px-3 py-1.5 rounded-lg border border-[#2b2522] flex items-center justify-between">
+                        <!-- 選択情報バー -->
+                        <div id="selectedCardBrief" class="min-h-[26px] text-[11px] sm:text-xs text-stone-300 bg-[#191513] px-2.5 py-1 rounded-lg border border-[#2b2522] flex items-center justify-between">
                             <span id="selectedCardBriefText" class="truncate">具材または道具を選択してください</span>
-                            <button id="showSelectedCardDetailBtn" onclick="showSelectedPieceDetailModal()" class="text-amber-400 underline hidden text-xs shrink-0 ml-2">詳細</button>
+                            <button id="showSelectedCardDetailBtn" onclick="showSelectedPieceDetailModal()" class="text-amber-400 underline hidden text-[11px] shrink-0 ml-1.5">詳細</button>
                         </div>
 
-                        <!-- アクションボタンエリア（戻すボタン ＆ メイン進行ボタン） -->
-                        <div class="flex items-center gap-2">
-                            <button id="undoActionBtn" onclick="handleUndoClick()" disabled class="w-1/3 py-2.5 rounded-xl border border-stone-700 bg-stone-900 text-stone-400 font-bold text-xs sm:text-sm hover:border-amber-600 hover:text-amber-200 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center justify-center gap-1 shadow-sm">
+                        <!-- アクションボタンエリア -->
+                        <div class="flex items-center gap-1.5">
+                            <button id="undoActionBtn" onclick="handleUndoClick()" disabled class="w-1/3 py-2 rounded-xl border border-stone-700 bg-stone-900 text-stone-400 font-bold text-xs hover:border-amber-600 hover:text-amber-200 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center justify-center gap-1 shadow-sm">
                                 <span>⏪</span>
                                 <span>戻す</span>
                             </button>
-                            <button id="mainPhaseActionBtn" onclick="handleMainPhaseButtonClick()" class="w-2/3 py-2.5 rounded-xl border border-sky-600 bg-gradient-to-r from-sky-700 to-sky-900 text-sky-100 font-bold text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md transition">
+                            <button id="mainPhaseActionBtn" onclick="handleMainPhaseButtonClick()" class="w-2/3 py-2 rounded-xl border border-sky-600 bg-gradient-to-r from-sky-700 to-sky-900 text-sky-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-md transition">
                                 アタックへ進む
                             </button>
                         </div>
@@ -1094,8 +1080,8 @@
                 </div>
             </div>
 
-            <div class="pt-2.5 shrink-0 border-t border-stone-800/80 flex items-center gap-3">
-                <button onclick="switchScreen('home')" class="w-full py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95 transition flex items-center justify-center gap-1.5">
+            <div class="pt-2 shrink-0 border-t border-stone-800/80 flex items-center gap-3">
+                <button onclick="switchScreen('home')" class="w-full py-2.5 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95 transition flex items-center justify-center gap-1.5">
                     ◀ ホームへ戻る
                 </button>
             </div>
@@ -1107,7 +1093,7 @@
 
     <!-- アイテム使用確認モーダル -->
     <div id="itemConfirmModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-5">
-        <div class="bg-[#161311] border border-amber-600/90 rounded-2xl w-full max-w-sm sm:max-w-md p-5 sm:p-6 space-y-4 shadow-2xl text-center animate-fade-in">
+        <div class="bg-[#161311] border border-amber-600/90 rounded-2xl w-full max-w-sm sm:max-w-md p-5 sm:p-6 space-y-4 shadow-2xl text-center">
             <div class="flex items-center justify-center gap-2.5">
                 <span id="confirmItemIcon" class="text-3xl sm:text-4xl">⚡</span>
                 <span id="confirmItemTitle" class="font-bold text-base sm:text-xl text-amber-100 font-serif">アイテム使用の確認</span>
@@ -1138,10 +1124,10 @@
             </p>
 
             <div class="grid grid-cols-2 gap-3 pt-1">
-                <button onclick="cancelItemConfirmation()" class="py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-300 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95 transition">
+                <button onclick="cancelItemConfirmation()" class="py-2.5 rounded-xl border border-stone-700 bg-stone-900 text-stone-300 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95 transition">
                     やっぱりやめる
                 </button>
-                <button onclick="commitItemConfirmation()" class="py-3 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 transition shadow-md">
+                <button onclick="commitItemConfirmation()" class="py-2.5 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 transition shadow-md">
                     付与を確定する
                 </button>
             </div>
@@ -1158,21 +1144,21 @@
             </p>
 
             <div class="grid grid-cols-2 gap-2.5">
-                <button onclick="chooseDirectionForConfirm('up')" id="pickDirUpBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
+                <button onclick="chooseDirectionForConfirm('up')" id="pickDirUpBtn" class="py-2.5 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
                     ⬆️ 上（↑）
                 </button>
-                <button onclick="chooseDirectionForConfirm('down')" id="pickDirDownBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
+                <button onclick="chooseDirectionForConfirm('down')" id="pickDirDownBtn" class="py-2.5 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
                     ⬇️ 下（↓）
                 </button>
-                <button onclick="chooseDirectionForConfirm('left')" id="pickDirLeftBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
+                <button onclick="chooseDirectionForConfirm('left')" id="pickDirLeftBtn" class="py-2.5 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
                     ⬅ 左（←）
                 </button>
-                <button onclick="chooseDirectionForConfirm('right')" id="pickDirRightBtn" class="py-3 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
+                <button onclick="chooseDirectionForConfirm('right')" id="pickDirRightBtn" class="py-2.5 rounded-xl border border-amber-800 bg-stone-900 text-amber-200 font-bold text-sm hover:border-amber-400 active:scale-95">
                     ➡ 右（→）
                 </button>
             </div>
 
-            <button onclick="cancelDirectionPick()" class="w-full py-2.5 rounded-xl border border-stone-700 bg-stone-950 text-stone-400 font-bold text-xs hover:bg-stone-900">
+            <button onclick="cancelDirectionPick()" class="w-full py-2 rounded-xl border border-stone-700 bg-stone-950 text-stone-400 font-bold text-xs hover:bg-stone-900">
                 キャンセル
             </button>
         </div>
@@ -1180,7 +1166,7 @@
 
     <!-- ゲーム説明（スライドマニュアル） -->
     <div id="rulesModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-5">
-        <div class="bg-[#161311] border border-amber-700/80 rounded-2xl w-full max-w-sm sm:max-w-lg max-h-[90vh] p-5 sm:p-6 flex flex-col justify-between shadow-2xl">
+        <div class="bg-[#161311] border border-amber-700/80 rounded-2xl w-full max-w-sm sm:max-w-lg max-h-[88vh] p-5 sm:p-6 flex flex-col justify-between shadow-2xl">
             <div class="flex items-center justify-between pb-2.5 border-b border-stone-800">
                 <div class="flex items-center gap-2">
                     <span class="text-2xl">📖</span>
@@ -1220,32 +1206,30 @@
             </div>
 
             <div class="flex flex-col gap-2.5 pt-1">
-                <button onclick="copyOnlineShareUrl()" class="py-3 rounded-xl border border-amber-700/80 bg-stone-900 text-amber-200 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95 transition">
+                <button onclick="copyOnlineShareUrl()" class="py-2.5 rounded-xl border border-amber-700/80 bg-stone-900 text-amber-200 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95 transition">
                     📋 招待URLをコピー
                 </button>
-                <button onclick="cancelOnlineWaiting()" class="py-3 rounded-xl border border-stone-700 bg-stone-950 text-stone-400 font-bold text-xs sm:text-sm hover:bg-stone-900 active:scale-95 transition">
+                <button onclick="cancelOnlineWaiting()" class="py-2.5 rounded-xl border border-stone-700 bg-stone-950 text-stone-400 font-bold text-xs sm:text-sm hover:bg-stone-900 active:scale-95 transition">
                     待機を中止して戻る
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- 降参確認モーダル（ベクター旗SVG仕様） -->
+    <!-- 降参確認モーダル -->
     <div id="surrenderModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
         <div class="bg-[#161311] border border-rose-900/80 rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl text-center">
-            <div class="flex justify-center text-rose-400">
-                <svg class="w-14 h-14 fill-current drop-shadow-lg" viewBox="0 0 24 24"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z"/></svg>
-            </div>
+            <div class="text-5xl">🏳</div>
             <div class="font-bold text-base sm:text-xl text-stone-100 font-serif">対局の中断・降参</div>
             <p class="text-xs sm:text-base text-stone-300 leading-relaxed">
                 対局を中断してメインメニューに戻りますか？<br>
                 <span class="text-rose-400 font-bold">※現在の対戦結果は無効（敗北扱い）となります。</span>
             </p>
             <div class="grid grid-cols-2 gap-3 pt-2">
-                <button onclick="closeSurrenderModal()" class="py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-300 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95 transition">
+                <button onclick="closeSurrenderModal()" class="py-2.5 rounded-xl border border-stone-700 bg-stone-900 text-stone-300 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95 transition">
                     対局を続ける
                 </button>
-                <button onclick="confirmSurrenderAndQuit()" class="py-3 rounded-xl border border-rose-800 bg-gradient-to-r from-rose-900 to-[#2c0a11] text-rose-200 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 transition">
+                <button onclick="confirmSurrenderAndQuit()" class="py-2.5 rounded-xl border border-rose-800 bg-gradient-to-r from-rose-900 to-[#2c0a11] text-rose-200 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 transition">
                     降参して戻る
                 </button>
             </div>
@@ -1261,10 +1245,10 @@
                 端末内のキャッシュとセーブデータを消去し、最新バージョンを強制再読込します。<br>よろしいですか？
             </p>
             <div class="grid grid-cols-2 gap-3 pt-2">
-                <button onclick="closeCacheClearModal()" class="py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-300 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95 transition">
+                <button onclick="closeCacheClearModal()" class="py-2.5 rounded-xl border border-stone-700 bg-stone-900 text-stone-300 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95 transition">
                     キャンセル
                 </button>
-                <button onclick="executeCacheClearAndUpdate()" class="py-3 rounded-xl border border-rose-800 bg-gradient-to-r from-rose-900 to-[#2c0a11] text-rose-200 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 transition">
+                <button onclick="executeCacheClearAndUpdate()" class="py-2.5 rounded-xl border border-rose-800 bg-gradient-to-r from-rose-900 to-[#2c0a11] text-rose-200 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 transition">
                     消去して更新
                 </button>
             </div>
@@ -1280,10 +1264,10 @@
                 実戦指南を中断してホームメニューに戻りますか？
             </p>
             <div class="grid grid-cols-2 gap-3 pt-2">
-                <button onclick="closeTutorialQuitModal()" class="py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-300 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95 transition">
+                <button onclick="closeTutorialQuitModal()" class="py-2.5 rounded-xl border border-stone-700 bg-stone-900 text-stone-300 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95 transition">
                     指南を続ける
                 </button>
-                <button onclick="confirmTutorialQuit()" class="py-3 rounded-xl border border-sky-800 bg-gradient-to-r from-sky-900 to-[#081a29] text-sky-200 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 transition">
+                <button onclick="confirmTutorialQuit()" class="py-2.5 rounded-xl border border-sky-800 bg-gradient-to-r from-sky-900 to-[#081a29] text-sky-200 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 transition">
                     中断して戻る
                 </button>
             </div>
@@ -1315,7 +1299,7 @@
                 </p>
             </div>
 
-            <button onclick="closePieceDetailModal()" class="w-full py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs sm:text-sm hover:bg-stone-800 transition">
+            <button onclick="closePieceDetailModal()" class="w-full py-2.5 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs sm:text-sm hover:bg-stone-800 transition">
                 閉じる
             </button>
         </div>
@@ -1384,10 +1368,10 @@
             </div>
 
             <div class="pt-1 flex gap-3">
-                <button onclick="copyOnlineShareUrl()" class="flex-1 py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs sm:text-sm hover:bg-stone-800">
+                <button onclick="copyOnlineShareUrl()" class="flex-1 py-2.5 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs sm:text-sm hover:bg-stone-800">
                     📋 招待URLコピー
                 </button>
-                <button onclick="startOnlineRoomMatch()" class="flex-1 py-3 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs sm:text-sm hover:brightness-110">
+                <button onclick="startOnlineRoomMatch()" class="flex-1 py-2.5 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs sm:text-sm hover:brightness-110">
                     部屋を作成・入室
                 </button>
             </div>
@@ -1506,7 +1490,7 @@
             </div>
 
             <div class="pt-2">
-                <button onclick="saveSettingsAndClose()" class="w-full py-3 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-md">
+                <button onclick="saveSettingsAndClose()" class="w-full py-2.5 rounded-xl border border-amber-600 bg-gradient-to-r from-amber-700 to-amber-900 text-amber-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-md">
                     設定を保存して戻る
                 </button>
             </div>
@@ -1540,10 +1524,10 @@
             </div>
 
             <div class="grid grid-cols-2 gap-3 pt-1">
-                <button onclick="restartBattleMatch()" class="py-3 rounded-xl border border-rose-600 bg-gradient-to-r from-rose-700 to-rose-900 text-rose-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-md">
+                <button onclick="restartBattleMatch()" class="py-2.5 rounded-xl border border-rose-600 bg-gradient-to-r from-rose-700 to-rose-900 text-rose-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-md">
                     🔄 もう一度
                 </button>
-                <button onclick="returnToMainMenuFromResult()" class="py-3 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95">
+                <button onclick="returnToMainMenuFromResult()" class="py-2.5 rounded-xl border border-stone-700 bg-stone-900 text-stone-200 font-bold text-xs sm:text-sm hover:bg-stone-800 active:scale-95">
                     🏠 メニューへ
                 </button>
             </div>
@@ -1551,13 +1535,13 @@
     </div>
 
     <!-- 汎用トーストメッセージ -->
-    <div id="gameToast" role="status" aria-live="polite" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none px-5 py-2.5 rounded-full bg-stone-950/95 border border-amber-600/80 text-amber-200 text-xs sm:text-base font-serif shadow-2xl opacity-0 transition-opacity duration-300">
+    <div id="gameToast" role="status" aria-live="polite" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none px-5 py-2 rounded-full bg-stone-950/95 border border-amber-600/80 text-amber-200 text-xs sm:text-base font-serif shadow-2xl opacity-0 transition-opacity duration-300">
         メッセージ
     </div>
 
     <script>
     /* ==========================================================================
-       おでん道 - 鍋の陣 完全スクリプト (Ver1.3.2 隙間連結ビーム・Undo機能・実践指南強化)
+       おでん道 - 鍋の陣 完全スクリプト (Ver1.3.2 安定化修正版)
        ========================================================================== */
 
     const ALL_PIECES_DATA = [
@@ -1585,7 +1569,6 @@
 
     const ALL_PIECE_IDS = ALL_PIECES_DATA.map(p => p.id);
 
-    // 4種の常設アイテムストック（方向付与x3, シールドx3, パワーアップx2, 弱体スプレーx2）
     const DEFAULT_ITEM_STOCKS = {
         direction: 3,
         shield: 3,
@@ -1625,7 +1608,6 @@
     let playerWins = 0;
     let playerLosses = 0;
 
-    // 野球式ターン管理
     let roundNumber = 1;
     let turnHalf = 'first';
     let isPlayerTurn = true;
@@ -1649,13 +1631,11 @@
     let playerItemStocks = { ...DEFAULT_ITEM_STOCKS };
     let opponentItemStocks = { ...DEFAULT_ITEM_STOCKS };
 
-    // 操作巻き戻し（アンドゥ）スタック
     let turnActionHistory = [];
 
     let selectedHandIndex = null;
     let previewPlacementIndex = null;
     let selectedQuickItem = null;
-    let pendingDirPickCellIndex = null;
     let pendingItemConfirmation = null;
 
     let cutinTimer = null;
@@ -1684,7 +1664,7 @@
     const TOTAL_RULE_PAGES = 5;
 
     function recordActionSnapshot() {
-        if (!isPlayerTurn || battleOver || isTutorialMode) return;
+        if (!isPlayerTurn || battleOver) return;
         const snapshot = {
             boardCells: JSON.parse(JSON.stringify(boardCells)),
             burnedCells: JSON.parse(JSON.stringify(burnedCells)),
@@ -1820,18 +1800,19 @@
     }
 
     function isAttackRestricted() {
-        if (isTutorialMode) {
-            // チュートリアル中も最新ルール通り「1ターン目」は攻撃不可
-            return roundNumber === 1;
-        }
         return roundNumber === 1;
     }
 
     function canStrike(a, b) {
         const pa = boardCells[a], pb = boardCells[b];
         if (!pa || !pb || pa.type === 'monster') return false;
-        if (pb.type === 'monster') return true;
-        return areFacing(a, b);
+        const dx = (b % 5) - (a % 5), dy = Math.floor(b / 5) - Math.floor(a / 5);
+        const d = dx === 1 ? 'right' : dx === -1 ? 'left' : dy === 1 ? 'down' : 'up';
+        if (pb.type === 'monster') {
+            return pa.dir && pa.dir.includes(d);
+        }
+        const o = { right: 'left', left: 'right', up: 'down', down: 'up' }[d];
+        return pa.dir && pb.dir && pa.dir.includes(d) && pb.dir.includes(o);
     }
 
     function areFacing(a, b) {
@@ -2069,8 +2050,7 @@
         const battle = document.getElementById('battleScreen');
         const deck = document.getElementById('deckScreen');
         const backBtn = document.getElementById('globalBackBtn');
-        const backIcon = document.getElementById('globalBackIconContainer');
-        const backLabel = document.getElementById('globalBackLabel');
+        const backBtnText = document.getElementById('globalBackBtnText');
         const tutBar = document.getElementById('tutorialGuideBar');
 
         landing.classList.add('hidden');
@@ -2107,15 +2087,12 @@
             battle.style.display = 'flex';
             backBtn.classList.remove('hidden');
             applyDeviceModeLayout();
-            
             if (isTutorialMode) {
-                backIcon.innerHTML = `<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>`;
-                backLabel.textContent = "中断";
-                backBtn.className = "px-3 py-1.5 rounded-lg border border-sky-800 bg-sky-950/80 text-sky-300 text-xs sm:text-sm font-bold hover:bg-sky-900 active:scale-95 transition flex items-center gap-1 shadow-sm";
+                if (backBtnText) backBtnText.textContent = "中断";
+                backBtn.className = "px-2.5 py-1 rounded-lg border border-sky-800 bg-sky-950/80 text-sky-300 text-xs font-bold hover:bg-sky-900 active:scale-95 transition flex items-center gap-1.5";
             } else {
-                backIcon.innerHTML = `<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z"/></svg>`;
-                backLabel.textContent = "降参";
-                backBtn.className = "px-3 py-1.5 rounded-lg border border-rose-800/80 bg-rose-950/70 text-rose-300 text-xs sm:text-sm font-bold hover:bg-rose-900 active:scale-95 transition flex items-center gap-1 shadow-sm";
+                if (backBtnText) backBtnText.textContent = "降参";
+                backBtn.className = "px-2.5 py-1 rounded-lg border border-rose-800/80 bg-rose-950/70 text-rose-300 text-xs font-bold hover:bg-rose-900 active:scale-95 transition flex items-center gap-1.5";
             }
             requestAnimationFrame(() => renderLinkBeams(calculateConnectedGroups()));
         } else if (target === 'deck') {
@@ -2125,9 +2102,8 @@
             deck.classList.remove('hidden');
             deck.style.display = 'flex';
             backBtn.classList.remove('hidden');
-            backIcon.innerHTML = `<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>`;
-            backLabel.textContent = "戻る";
-            backBtn.className = "px-3 py-1.5 rounded-lg border border-stone-700 bg-stone-900/90 text-stone-300 text-xs sm:text-sm font-bold hover:bg-stone-800 active:scale-95 transition flex items-center gap-1 shadow-sm";
+            if (backBtnText) backBtnText.textContent = "戻る";
+            backBtn.className = "px-2.5 py-1 rounded-lg border border-stone-700 bg-stone-900/90 text-stone-300 text-xs font-bold hover:bg-stone-800 active:scale-95 transition flex items-center gap-1.5";
             applyDeviceModeLayout();
             renderDeckScreen();
         }
@@ -2199,25 +2175,25 @@
         listCont.innerHTML = '';
         ALL_PIECES_DATA.forEach(p => {
             const card = document.createElement('div');
-            card.className = 'p-3 rounded-xl border border-stone-800 bg-[#161210] hover:border-amber-700/80 flex items-center justify-between transition select-none shadow-sm';
+            card.className = 'p-2.5 rounded-xl border border-stone-800 bg-[#161210] hover:border-amber-700/80 flex items-center justify-between transition select-none shadow-sm';
 
             const badgeHtml = createHandPowerBadgeHtml(p.power, p.dir);
             card.innerHTML = `
-                <div class="flex items-center gap-3 min-w-0 flex-1">
-                    <span class="text-3xl shrink-0">${p.icon}</span>
+                <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                    <span class="text-2xl sm:text-3xl shrink-0">${p.icon}</span>
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center justify-between gap-1.5 pr-1">
                             <span class="font-bold text-xs sm:text-base text-stone-100 font-serif truncate">${p.name}</span>
-                            <span class="text-[9px] sm:text-xs text-amber-300 border border-stone-800 bg-stone-950 px-2 py-0.5 rounded font-mono shrink-0">${p.typeName}</span>
+                            <span class="text-[9px] sm:text-xs text-amber-300 border border-stone-800 bg-stone-950 px-1.5 py-0.5 rounded font-mono shrink-0">${p.typeName}</span>
                         </div>
-                        <div class="flex items-center gap-2 text-[10px] sm:text-xs mt-1">
+                        <div class="flex items-center gap-2 text-[10px] sm:text-xs mt-0.5">
                             <span class="text-amber-400 font-serif leading-none">${p.stars}</span>
                             <span class="text-stone-400 font-mono">攻${p.power}</span>
                         </div>
-                        <div class="text-[11px] sm:text-xs text-stone-400 leading-tight truncate mt-1">${p.desc}</div>
+                        <div class="text-[10px] sm:text-xs text-stone-400 leading-tight truncate mt-0.5">${p.desc}</div>
                     </div>
                 </div>
-                <div class="shrink-0 ml-2">
+                <div class="shrink-0 ml-1.5">
                     ${badgeHtml}
                 </div>
             `;
@@ -2330,7 +2306,7 @@
                 const monsterNames = ["焦げ魔", "煮崩れ鬼", "出汁啜り"];
 
                 const initialMonsters = monsterPos.map((pos, idx) => {
-                    const pVal = Math.floor(Math.random() * 9) + 12; // 12〜20
+                    const pVal = Math.floor(Math.random() * 9) + 12;
                     return { pos, name: monsterNames[idx], icon: monsterIcons[idx], power: pVal };
                 });
 
@@ -2603,7 +2579,7 @@
             if (oppPiece) {
                 oppPiece.shieldActive = true;
                 playSound('item');
-                showToast(`🛡️ 相手が【シールド】を展開しました！`);
+                showToast(`🛡️️ 相手が【シールド】を展開しました！`);
                 renderBattleBoard();
             }
         } else if (ev.type === 'item_powerup') {
@@ -2651,9 +2627,6 @@
         }
     }
 
-    /* ==========================================================================
-       実践指南【チュートリアル】全8幕（最新ルール完全準拠・道具・封印・決着実戦）
-       ========================================================================== */
     function startInteractiveTutorial() {
         initAudioEngine();
         playSound('connect');
@@ -2661,9 +2634,8 @@
         tutorialInteractiveStep = 1;
         currentBattleMode = 'tutorial';
 
-        // チュートリアル専用固定デッキ（大根, たまご, 牛すじ, もち巾着）
-        playerHand = [1, 2, 7, 10];
-        playerDrawPile = [3, 4, 5, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+        playerHand = [1, 2, 15, 10];
+        playerDrawPile = [3, 4, 5, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19, 20];
         opponentHand = [];
         opponentDrawPile = [];
 
@@ -2688,12 +2660,10 @@
         inputLocked = false;
         dangerTargetCells = [];
 
-        // チュートリアル用の初期ストック
         playerItemStocks = { direction: 3, shield: 3, powerup: 2, debuff: 2 };
         opponentItemStocks = { direction: 3, shield: 3, powerup: 2, debuff: 2 };
 
-        // マス8（中段右寄り）に修行用の中立ボス（パワー12）を配置
-        boardCells[8] = {
+        boardCells[22] = {
             type: 'monster',
             id: 'tut_monster_boss',
             name: '修練鬼',
@@ -2753,12 +2723,12 @@
             case 6:
                 stepLabel.textContent = "Step 6/8";
                 stepTitle.textContent = "具材の追加＆パワーUP";
-                stepInstr.textContent = "手札の【牛すじ】を大根の右（マス13）に配置し、下の【パワーUP⚡】を味方に使ってボス（12）討伐の力を蓄えましょう！";
+                stepInstr.textContent = "手札の【つくね串】を大根の下（マス17）に配置し、下の【パワーUP⚡】を味方に使ってボス（12）討伐の力を蓄えましょう！";
                 break;
             case 7:
                 stepLabel.textContent = "Step 7/8";
                 stepTitle.textContent = "中立ボスの討伐";
-                stepInstr.textContent = "全体のパワーが16に到達！「アタックへ進む」を押し、右隣の中立ボス（パワー12）をタップして討伐しましょう！";
+                stepInstr.textContent = "全体のパワーが15に到達！「アタックへ進む」を押し、真下の中立ボス（パワー12）をタップして討伐しましょう！";
                 break;
             case 8:
                 stepLabel.textContent = "Step 8/8";
@@ -2886,7 +2856,7 @@
             const monsterNames = ["焦げ魔", "煮崩れ鬼", "出汁啜り"];
 
             monsterPos.forEach((pos, idx) => {
-                const pVal = Math.floor(Math.random() * 9) + 12; // 12〜20
+                const pVal = Math.floor(Math.random() * 9) + 12;
                 boardCells[pos] = {
                     type: 'monster',
                     id: `monster_${idx}`,
@@ -2992,58 +2962,58 @@
             orderBadge.textContent = '指南';
             orderBadge.className = 'text-xs px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 font-bold';
             turnInd.textContent = "実践指南中";
-            turnInd.className = "px-2.5 py-1 rounded text-xs font-bold bg-sky-950 text-sky-200 border border-sky-800";
+            turnInd.className = "px-2 py-0.5 rounded text-[10px] sm:text-xs font-bold bg-sky-950 text-sky-200 border border-sky-800";
             
             if (tutorialInteractiveStep === 3) {
                 if (currentPhase === 'standby') {
-                    badge.textContent = "第1ターン（攻撃不可）";
+                    badge.textContent = "連結成立！";
                     mainBtn.textContent = "アタックへ進む 👉";
-                    mainBtn.className = "w-2/3 py-2.5 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
+                    mainBtn.className = "w-2/3 py-2 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
                     mainBtn.disabled = false;
                 } else {
-                    badge.textContent = "1T目攻撃不可（ターン終了へ）";
+                    badge.textContent = "第1ターン攻撃不可";
                     mainBtn.textContent = "ターンエンド 👉";
-                    mainBtn.className = "w-2/3 py-2.5 rounded-xl border-2 border-amber-400 bg-amber-800 text-amber-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
+                    mainBtn.className = "w-2/3 py-2 rounded-xl border-2 border-amber-400 bg-amber-800 text-amber-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
                     mainBtn.disabled = false;
                 }
             } else if (tutorialInteractiveStep === 5) {
                 if (currentPhase === 'standby') {
                     badge.textContent = "準備完了";
                     mainBtn.textContent = "アタックへ進む 👉";
-                    mainBtn.className = "w-2/3 py-2.5 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
+                    mainBtn.className = "w-2/3 py-2 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
                     mainBtn.disabled = false;
                 } else if (hasAttackedThisTurn) {
-                    badge.textContent = "攻撃完了（ターン終了へ）";
+                    badge.textContent = "攻撃完了（終了へ）";
                     mainBtn.textContent = "ターンエンド 👉";
-                    mainBtn.className = "w-2/3 py-2.5 rounded-xl border-2 border-amber-400 bg-amber-800 text-amber-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
+                    mainBtn.className = "w-2/3 py-2 rounded-xl border-2 border-amber-400 bg-amber-800 text-amber-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
                     mainBtn.disabled = false;
                 } else {
-                    badge.textContent = "アタック（激突対象を選択）";
-                    mainBtn.textContent = "相手ちくわをタップ！";
-                    mainBtn.className = "w-2/3 py-2.5 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
+                    badge.textContent = "激突対象を選択";
+                    mainBtn.textContent = "ちくわをタップ！";
+                    mainBtn.className = "w-2/3 py-2 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
                     mainBtn.disabled = true;
                 }
             } else if (tutorialInteractiveStep === 7) {
                 if (currentPhase === 'standby') {
-                    badge.textContent = "パワー16到達！";
+                    badge.textContent = "パワー15到達！";
                     mainBtn.textContent = "アタックへ進む 👉";
-                    mainBtn.className = "w-2/3 py-2.5 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
+                    mainBtn.className = "w-2/3 py-2 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
                     mainBtn.disabled = false;
                 } else {
-                    badge.textContent = "中立ボス討伐可能！";
-                    mainBtn.textContent = "中立ボスをタップ！";
-                    mainBtn.className = "w-2/3 py-2.5 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
+                    badge.textContent = "ボス討伐可能！";
+                    mainBtn.textContent = "ボスをタップ！";
+                    mainBtn.className = "w-2/3 py-2 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
                     mainBtn.disabled = true;
                 }
             } else if (tutorialInteractiveStep === 8) {
-                badge.textContent = "指南修了！";
+                badge.textContent = "指南修了";
                 mainBtn.textContent = "指南を修了してメニューへ 🎉";
-                mainBtn.className = "w-2/3 py-2.5 rounded-xl border border-emerald-500 bg-emerald-800 text-emerald-100 font-black text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md";
+                mainBtn.className = "w-2/3 py-2 rounded-xl border border-emerald-500 bg-emerald-800 text-emerald-100 font-black text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md";
                 mainBtn.disabled = false;
             } else {
-                badge.textContent = currentPhase === 'standby' ? "スタンバイ（指示を実行）" : "アタック";
-                mainBtn.textContent = currentPhase === 'standby' ? "指示に従ってください" : "ターンエンド";
-                mainBtn.className = "w-2/3 py-2.5 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
+                badge.textContent = currentPhase === 'standby' ? "スタンバイ（配置）" : "アタック";
+                mainBtn.textContent = currentPhase === 'standby' ? "具材を置いてください" : "アタック";
+                mainBtn.className = "w-2/3 py-2 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
                 mainBtn.disabled = true;
             }
             return;
@@ -3056,35 +3026,35 @@
 
         if (isPlayerTurn) {
             turnInd.textContent = "あなたの手番";
-            turnInd.className = "px-2.5 py-1 rounded text-xs font-bold bg-rose-950 text-rose-200 border border-rose-800";
+            turnInd.className = "px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-bold bg-rose-950 text-rose-200 border border-rose-800";
             mainBtn.disabled = false;
 
             if (currentPhase === 'standby') {
                 badge.textContent = "スタンバイ（配置）";
-                badge.className = "px-2.5 py-0.5 rounded font-bold bg-rose-950/80 text-rose-300 border border-rose-800";
+                badge.className = "px-1.5 py-0.5 rounded font-bold bg-rose-950/80 text-rose-300 border border-rose-800";
                 mainBtn.textContent = "アタックへ進む";
-                mainBtn.className = "w-2/3 py-2.5 rounded-xl border border-sky-600 bg-gradient-to-r from-sky-700 to-sky-900 text-sky-100 font-bold text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md transition";
+                mainBtn.className = "w-2/3 py-2 rounded-xl border border-sky-600 bg-gradient-to-r from-sky-700 to-sky-900 text-sky-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-md transition";
                 attackNotice.classList.add('hidden');
                 handLabel.textContent = "手札（タップして空きマスへ配置）";
             } else {
                 if (hasAttackedThisTurn) {
                     badge.textContent = "攻撃完了（ターン終了へ）";
-                    badge.className = "px-2.5 py-0.5 rounded font-bold bg-amber-950 text-amber-300 border border-amber-800";
+                    badge.className = "px-1.5 py-0.5 rounded font-bold bg-amber-950 text-amber-300 border border-amber-800";
                 } else {
                     badge.textContent = isAttackRestricted() ? "1ターン目（攻撃不可）" : "アタック（攻撃1回のみ）";
-                    badge.className = "px-2.5 py-0.5 rounded font-bold bg-rose-950 text-rose-300 border border-rose-800";
+                    badge.className = "px-1.5 py-0.5 rounded font-bold bg-rose-950 text-rose-300 border border-rose-800";
                 }
                 mainBtn.textContent = "ターンエンド";
-                mainBtn.className = "w-2/3 py-2.5 rounded-xl border border-rose-600 bg-gradient-to-r from-rose-700 to-rose-900 text-rose-100 font-bold text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md transition";
+                mainBtn.className = "w-2/3 py-2 rounded-xl border border-rose-600 bg-gradient-to-r from-rose-700 to-rose-900 text-rose-100 font-bold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-md transition";
                 attackNotice.classList.remove('hidden');
                 handLabel.textContent = "手札（アタックフェーズ中は配置不可）";
             }
         } else {
             turnInd.textContent = "相手の手番";
-            turnInd.className = "px-2.5 py-1 rounded text-xs font-bold bg-sky-950 text-sky-200 border border-sky-800 animate-pulse";
+            turnInd.className = "px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-bold bg-sky-950 text-sky-200 border border-sky-800 animate-pulse";
             mainBtn.disabled = true;
             mainBtn.textContent = "相手の行動中";
-            mainBtn.className = "w-2/3 py-2.5 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
+            mainBtn.className = "w-2/3 py-2 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
         }
         updateUndoButtonState();
     }
@@ -3096,82 +3066,64 @@
             if (tutorialInteractiveStep === 3) {
                 if (currentPhase === 'standby') {
                     currentPhase = 'attack';
-                    triggerPhaseCutin('battle', 'アタックフェーズ', '第1ターンは攻撃不可', '⚔️');
+                    triggerPhaseCutin('battle', 'アタックフェーズ', '第1ターンは攻撃不可', '🛡️');
                     playSound('click');
                     updatePhaseUI();
                     renderBattleBoard();
                 } else {
-                    // 1T目のターンエンド ➔ 師範代の手番をシミュレート
-                    triggerPhaseCutin('turnend', '第1ターン終了', '師範代の手番へ', '🏁');
-                    inputLocked = true;
-                    later(() => {
-                        // 師範代がマス2にちくわ（下矢印、パワー3）を配置
-                        boardCells[2] = {
-                            ...ALL_PIECES_DATA.find(x => x.id === 3),
-                            dir: ['down'],
-                            owner: 'opponent',
-                            power: 3,
-                            currentPower: 3,
-                            instanceId: 'tut_opp_chikuwa',
-                            shieldActive: false,
-                            bonusPower: 0,
-                            debuffPower: 0,
-                            debuffTurns: 0,
-                            tempDirs: []
-                        };
-                        playSound('place');
-                        calculateConnectedGroups();
-                        renderBattleBoard();
-
-                        showToast("師範代:『第1ターンは相手も攻撃不可。第2ターンから攻撃解禁じゃ！』");
-
-                        later(() => {
-                            roundNumber = 2;
-                            turnHalf = 'first';
-                            currentPhase = 'standby';
-                            hasPlacedPieceThisTurn = false;
-                            hasAttackedThisTurn = false;
-                            inputLocked = false;
-                            tutorialInteractiveStep = 4;
-                            triggerPhaseCutin('standby', '2ターン目 先攻', '攻撃＆道具が解禁！', '🍱');
-                            applyTutorialStepState();
-                        }, 1400);
-                    }, 800);
+                    currentPhase = 'standby';
+                    roundNumber = 2;
+                    turnHalf = 'first';
+                    hasPlacedPieceThisTurn = false;
+                    hasAttackedThisTurn = false;
+                    
+                    boardCells[2] = {
+                        ...ALL_PIECES_DATA.find(x => x.id === 3),
+                        dir: ['down'],
+                        owner: 'opponent',
+                        power: 3,
+                        currentPower: 3,
+                        instanceId: 'tut_opp_chikuwa',
+                        shieldActive: false,
+                        bonusPower: 0,
+                        debuffPower: 0,
+                        debuffTurns: 0,
+                        tempDirs: []
+                    };
+                    
+                    triggerPhaseCutin('standby', '第2ターン開始', '攻撃解禁！', '⚔️');
+                    tutorialInteractiveStep = 4;
+                    applyTutorialStepState();
                 }
             } else if (tutorialInteractiveStep === 5) {
                 if (currentPhase === 'standby') {
                     currentPhase = 'attack';
-                    triggerPhaseCutin('battle', 'アタックフェーズ', '敵に激突！', '⚔️️');
+                    triggerPhaseCutin('battle', 'アタックフェーズ', '相手ちくわを激突！', '⚔️');
+                    playSound('click');
                     updatePhaseUI();
                     renderBattleBoard();
                 } else if (hasAttackedThisTurn) {
-                    // ちくわ撃破後のターンエンド ➔ 3ターン目へ
-                    triggerPhaseCutin('turnend', '第2ターン終了', '', '🏁');
-                    inputLocked = true;
-                    later(() => {
-                        updateBurnedCells(); // 封印カウントが減る様子を体感
-                        roundNumber = 3;
-                        turnHalf = 'first';
-                        currentPhase = 'standby';
-                        hasPlacedPieceThisTurn = false;
-                        hasAttackedThisTurn = false;
-                        inputLocked = false;
-                        tutorialInteractiveStep = 6;
-                        triggerPhaseCutin('standby', '3ターン目 先攻', '中立ボス討伐へ！', '🍱');
-                        applyTutorialStepState();
-                    }, 1000);
+                    currentPhase = 'standby';
+                    roundNumber = 3;
+                    turnHalf = 'first';
+                    hasPlacedPieceThisTurn = false;
+                    hasAttackedThisTurn = false;
+                    updateBurnedCells();
+                    triggerPhaseCutin('standby', '第3ターン開始', 'ボス討伐へ！', '🍢');
+                    tutorialInteractiveStep = 6;
+                    applyTutorialStepState();
                 }
             } else if (tutorialInteractiveStep === 7) {
                 if (currentPhase === 'standby') {
                     currentPhase = 'attack';
-                    triggerPhaseCutin('battle', 'アタックフェーズ', '中立ボスに挑戦！', '⚔️');
+                    triggerPhaseCutin('battle', 'アタックフェーズ', '修練鬼を討伐！', '⚔️️');
+                    playSound('click');
                     updatePhaseUI();
                     renderBattleBoard();
                 }
             } else if (tutorialInteractiveStep === 8) {
                 isTutorialMode = false;
                 switchScreen('home');
-                showToast("🎉 実践指南をすべて修了しました！準備万端です！");
             }
             return;
         }
@@ -3181,7 +3133,7 @@
             currentPhase = 'attack';
             selectedHandIndex = null;
             previewPlacementIndex = null;
-            triggerPhaseCutin('battle', 'アタックフェーズ', '攻撃対象の選択', '⚔️');
+            triggerPhaseCutin('battle', 'アタックフェーズ', '攻撃対象の選択', '⚔');
             playSound('click');
             updatePhaseUI();
             renderBattleBoard();
@@ -3518,7 +3470,6 @@
     function handleHandCardClick(index) {
         if (!isPlayerTurn || currentPhase !== 'standby' || hasPlacedPieceThisTurn || inputLocked) return;
         
-        // 実践指南中の操作誘導ガード
         if (isTutorialMode) {
             if (tutorialInteractiveStep === 1 && playerHand[index] !== 1) {
                 showToast('👉 ガイドで指示された【大根】を選んでください');
@@ -3526,8 +3477,8 @@
             } else if (tutorialInteractiveStep === 2 && playerHand[index] !== 2) {
                 showToast('👉 ガイドで指示された【たまご】を選んでください');
                 return;
-            } else if (tutorialInteractiveStep === 6 && playerHand[index] !== 7) {
-                showToast('👉 ガイドで指示された【牛すじ】を選んでください');
+            } else if (tutorialInteractiveStep === 6 && playerHand[index] !== 15) {
+                showToast('👉 ガイドで指示された【つくね串】を選んでください');
                 return;
             } else if (tutorialInteractiveStep !== 1 && tutorialInteractiveStep !== 2 && tutorialInteractiveStep !== 6) {
                 showToast('👉 現在のステップの指示に従ってください');
@@ -3567,7 +3518,7 @@
             
             if (burnedCells[i]) {
                 cell.classList.add('cell-burned');
-                cell.innerHTML = `<div class="burned-badge text-[10px] sm:text-xs text-stone-400 font-bold font-mono">封印<br>${burnedCells[i].turns}T</div>`;
+                cell.innerHTML = `<div class="burned-badge text-[10px] sm:text-xs text-stone-500 font-bold font-mono">封印<br>${burnedCells[i].turns}</div>`;
             } else if (boardCells[i]) {
                 const piece = boardCells[i];
                 if (piece.type === 'monster') {
@@ -3595,7 +3546,6 @@
                     `;
                 }
 
-                // インタラクション判定
                 if (isPlayerTurn && !inputLocked) {
                     if (currentPhase === 'standby' && selectedQuickItem && piece.type !== 'monster') {
                         if (selectedQuickItem === 'debuff' && piece.owner === 'opponent') {
@@ -3626,10 +3576,9 @@
                     if (!isTutorialMode) {
                         cell.classList.add('tut-active-target');
                     } else {
-                        // チュートリアル中の光るマス誘導
                         if ((tutorialInteractiveStep === 1 && i === 12) || 
                             (tutorialInteractiveStep === 2 && i === 7) || 
-                            (tutorialInteractiveStep === 6 && i === 13)) {
+                            (tutorialInteractiveStep === 6 && i === 17)) {
                             cell.classList.add('tut-active-target');
                         }
                     }
@@ -3654,7 +3603,7 @@
             if (isTutorialMode && !cellData && selectedHandIndex !== null) {
                 if ((tutorialInteractiveStep === 1 && index !== 12) ||
                     (tutorialInteractiveStep === 2 && index !== 7) ||
-                    (tutorialInteractiveStep === 6 && index !== 13)) {
+                    (tutorialInteractiveStep === 6 && index !== 17)) {
                     showToast('👉 ガイドで水色に光っているマスに置いてください');
                     return;
                 }
@@ -3679,7 +3628,7 @@
                 
                 playerHand.splice(selectedHandIndex, 1);
                 selectedHandIndex = null;
-                hasPlacedPieceThisTurn = !isTutorialMode; // チュートリアルではステップ進行で管理
+                hasPlacedPieceThisTurn = !isTutorialMode;
                 
                 playSound('place');
                 document.getElementById('selectedCardBriefText').textContent = "具材を配置しました";
@@ -3697,8 +3646,7 @@
                         tutorialInteractiveStep = 3;
                         applyTutorialStepState();
                     } else if (tutorialInteractiveStep === 6) {
-                        // 牛すじ配置完了。次はパワーUPアイテムの使用へ
-                        applyTutorialStepState();
+                        document.getElementById('tutStepInstruction').textContent = "つくね串を配置！下の【パワーUP⚡】を選び、味方具材（大根等）をタップして強化しましょう！";
                     }
                 }
 
@@ -3733,8 +3681,8 @@
                 if (tutorialInteractiveStep === 5 && index !== 2) {
                     showToast("👉 マス2の相手【ちくわ】をタップして激突してください");
                     return;
-                } else if (tutorialInteractiveStep === 7 && index !== 8) {
-                    showToast("👉 マス8の中立ボス【修練鬼】をタップして討伐してください");
+                } else if (tutorialInteractiveStep === 7 && index !== 22) {
+                    showToast("👉 マス22の中立ボス【修練鬼】をタップして討伐してください");
                     return;
                 }
             }
@@ -3758,12 +3706,12 @@
                         setCellBurned(index, 'player');
                         boardCells[index] = null;
                         playSound('clash');
-                        showToast(`💥 相手の【${cellData.name}】を激突撃破しました！マスは2T封印されます`);
+                        showToast(`💥 相手の【${cellData.name}】を激突撃破しました！マスは2ターン封印されます`);
                         
                         if (currentBattleMode === 'online') sendNetworkEvent({ type: 'clash', cellIndex: index });
 
                         if (isTutorialMode && tutorialInteractiveStep === 5) {
-                            applyTutorialStepState(); // 攻撃完了、ターンエンドへ促す
+                            applyTutorialStepState();
                         }
                     } else {
                         playerScore += cellData.power;
@@ -3843,7 +3791,6 @@
         return groups;
     }
 
-    /* マスとマスの隙間（境界部分）のみを繋ぐ連結ビームの描画 */
     function renderLinkBeams(groups) {
         const svg = document.getElementById('linkSvgOverlay');
         if (!svg) return;
@@ -3861,7 +3808,6 @@
                     const dx = (b % 5) - (a % 5);
                     const dy = Math.floor(b / 5) - Math.floor(a / 5);
                     
-                    // 隣接しているセル同士のみ判定
                     if ((Math.abs(dx) === 1 && dy === 0) || (dx === 0 && Math.abs(dy) === 1)) {
                         if (areFacing(a, b)) {
                             const rectA = cellEls[a].getBoundingClientRect();
@@ -3937,20 +3883,6 @@
 
     function handleQuickItemSelect(type) {
         if (!isPlayerTurn || currentPhase !== 'standby' || inputLocked) return;
-
-        if (isTutorialMode) {
-            if (tutorialInteractiveStep === 4 && type !== 'debuff') {
-                showToast('👉 ガイドで指示された【弱体スプレー🧪】を選んでください');
-                return;
-            } else if (tutorialInteractiveStep === 6 && type !== 'powerup') {
-                showToast('👉 ガイドで指示された【パワーUP⚡】を選んでください');
-                return;
-            } else if (tutorialInteractiveStep !== 4 && tutorialInteractiveStep !== 6) {
-                showToast('👉 現在のステップでは道具を使用しません');
-                return;
-            }
-        }
-
         playSound('click');
 
         if (playerItemStocks[type] <= 0) {
@@ -4005,7 +3937,7 @@
         if (type === 'shield') {
             effectDesc = "シールド展開（1ターン無敵・ボス強襲防御）";
             changeStr = `${cell.currentPower} ➔ ${cell.currentPower} (変化なし)`;
-            document.getElementById('confirmItemIcon').textContent = "🛡️";
+            document.getElementById('confirmItemIcon').textContent = "🛡";
         } else if (type === 'powerup') {
             effectDesc = "攻撃力 +4 強化";
             changeStr = `${cell.currentPower} ➔ ${cell.currentPower + 4}`;
@@ -4084,27 +4016,17 @@
         } else if (type === 'shield') {
             cell.shieldActive = true;
             if (currentBattleMode === 'online') sendNetworkEvent({ type: 'item_shield', cellIndex: index });
-            showToast(`🛡️️ 【${cell.name}】にシールドを付与しました`);
+            showToast(`🛡️ 【${cell.name}】にシールドを付与しました`);
         } else if (type === 'powerup') {
             cell.bonusPower += 4;
             cell.power += 4;
             if (currentBattleMode === 'online') sendNetworkEvent({ type: 'item_powerup', cellIndex: index });
             showToast(`⚡ 【${cell.name}】の攻撃力がアップしました`);
-
-            if (isTutorialMode && tutorialInteractiveStep === 6) {
-                tutorialInteractiveStep = 7;
-                applyTutorialStepState();
-            }
         } else if (type === 'debuff') {
             cell.debuffPower += 5;
             cell.debuffTurns = 2;
             if (currentBattleMode === 'online') sendNetworkEvent({ type: 'item_debuff', cellIndex: index });
             showToast(`🧪 相手の【${cell.name}】を弱体化させました`);
-
-            if (isTutorialMode && tutorialInteractiveStep === 4) {
-                tutorialInteractiveStep = 5;
-                applyTutorialStepState();
-            }
         }
 
         selectedQuickItem = null;
@@ -4114,6 +4036,16 @@
         calculateConnectedGroups();
         renderBattleBoard();
         updateUndoButtonState();
+
+        if (isTutorialMode) {
+            if (tutorialInteractiveStep === 4) {
+                tutorialInteractiveStep = 5;
+                applyTutorialStepState();
+            } else if (tutorialInteractiveStep === 6) {
+                tutorialInteractiveStep = 7;
+                applyTutorialStepState();
+            }
+        }
     }
 
     function updateItemStockUI() {
