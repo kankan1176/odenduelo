@@ -622,6 +622,10 @@
             right: -5px !important;
             border-width: 2px !important;
         }
+        .mode-pc .piece-item-icon-tag {
+            font-size: 12px !important;
+            padding: 2px 4px !important;
+        }
         .mode-pc #battleRightColumn {
             flex: 1 1 520px !important;
             max-width: 640px !important;
@@ -740,7 +744,7 @@
                     <span class="text-[10px] sm:text-xs px-2.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/80 font-mono font-bold">NEW</span>
                 </div>
                 <div class="text-xs sm:text-sm text-stone-200 leading-relaxed font-serif pl-7">
-                    【🔥 バトル仕様強化】相手駒撃破時に「相手の戦闘時合計攻撃力」を獲得！ボス強襲被撃破駒のデッキ復帰＆アイテム残ターン表示の小型化を適用！
+                    【🔥 バトル仕様強化＆通信安定化】相手駒撃破で「相手の戦闘時合計攻撃力」を獲得！ボス強襲被撃破駒のデッキ復帰＆通信ターン同期不具合を解消！
                 </div>
             </div>
 
@@ -1314,7 +1318,7 @@
         <div class="bg-[#161311] border border-[#3b322c] rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl transition-all">
             <div class="flex items-center justify-between pb-2 border-b border-stone-800">
                 <div class="flex items-center gap-2.5">
-                    <span class="text-2xl sm:text-3xl">⚔️️</span>
+                    <span class="text-2xl sm:text-3xl">⚔</span>
                     <span class="font-bold text-base sm:text-2xl text-amber-100 font-serif">CPU対戦 難易度選択</span>
                 </div>
                 <button onclick="closeCpuSelectModal()" class="text-stone-400 hover:text-stone-200 text-2xl sm:text-3xl">✕</button>
@@ -1342,7 +1346,7 @@
                 <button onclick="confirmCpuDifficulty('matsu')" class="w-full p-4 rounded-xl border border-amber-900/80 bg-gradient-to-r from-[#20150a] to-[#140c06] hover:border-amber-500 active:scale-98 flex items-center justify-between text-left transition shadow-md">
                     <div>
                         <div class="font-bold text-sm sm:text-lg text-amber-200 font-serif">🌲 松（上級）</div>
-                        <div class="text-xs sm:text-sm text-stone-400 mt-1">プレイヤーの連結分断や道具も使いこなす達人</div>
+                        <div class="text-xs sm:text-stone-400 mt-1">プレイヤーの連結分断や道具も使いこなす達人</div>
                     </div>
                     <span class="text-xs sm:text-sm bg-amber-950 text-amber-300 border border-amber-800 px-3 py-1 rounded-lg font-mono font-bold">RATE +35</span>
                 </button>
@@ -1545,7 +1549,7 @@
 
     <script>
     /* ==========================================================================
-       おでん道 - 鍋の陣 完全スクリプト (Ver1.3.4 バトル仕様強化版)
+       おでん道 - 鍋の陣 完全スクリプト (Ver1.3.4 オンラインターン同期修正版)
        ========================================================================== */
 
     const ALL_PIECES_DATA = [
@@ -2455,7 +2459,8 @@
         roomRef.child('events').on('child_added', snap => {
             const ev = snap.val();
             if (!ev || ev.by === onlinePlayerRole) return;
-            if (ev.timestamp && ev.timestamp < matchStartTime - 5000) return;
+            // タイムスタンプ判定の許容幅を広く設定して誤破棄を根絶
+            if (ev.timestamp && ev.timestamp < matchStartTime - 30000) return;
 
             handleIncomingNetworkEvent(ev);
         });
@@ -2624,6 +2629,7 @@
             renderBattleBoard();
             showToast("⏪ 相手が操作を取り消しました");
         } else if (ev.type === 'turn_end') {
+            // 相手がターンエンドした通知を受信したため、こちらの手番に切り替え
             roundNumber = ev.nextRound;
             turnHalf = ev.nextHalf;
             switchTurnToPlayer();
@@ -3161,11 +3167,20 @@
         turnActionHistory = [];
         updateUndoButtonState();
         
+        let nextRound = roundNumber;
+        let nextHalf = turnHalf === 'first' ? 'second' : 'first';
+        if (turnHalf === 'second') nextRound++;
+
+        // オンライン対戦の場合、相手にターン終了と次のターン情報を直ちに通知
+        if (currentBattleMode === 'online') {
+            sendNetworkEvent({
+                type: 'turn_end',
+                nextRound: nextRound,
+                nextHalf: nextHalf
+            });
+        }
+        
         later(() => {
-            let nextRound = roundNumber;
-            let nextHalf = turnHalf === 'first' ? 'second' : 'first';
-            if (turnHalf === 'second') nextRound++;
-            
             const isRoundChanging = (nextHalf === 'first');
             roundNumber = nextRound;
             turnHalf = nextHalf;
@@ -3182,7 +3197,6 @@
     }
 
     function startOpponentTurn() {
-        if (currentBattleMode === 'online' && !battleOver) sendNetworkEvent({ type: 'turn_end', nextRound: roundNumber, nextHalf: turnHalf });
         if (battleOver) return;
         isPlayerTurn = false;
         hasPlacedPieceThisTurn = false;
@@ -3381,7 +3395,7 @@
                             setCellBurned(chosen.to, 'opponent');
                             boardCells[chosen.to] = null;
                             playSound('clash');
-                            showToast(`⚠️ 相手があなたの【${target.name}】を撃破！（相手+${gained}点）`);
+                            showToast(`⚠️️ 相手があなたの【${target.name}】を撃破！（相手+${gained}点）`);
                         } else {
                             opponentScore += target.power;
                             bossRemaining = Math.max(0, bossRemaining - 1);
@@ -3948,7 +3962,7 @@
         playSound('click');
 
         if (playerItemStocks[type] <= 0) {
-            showToast("⚠️️ このアイテムのストックがありません");
+            showToast("⚠ このアイテムのストックがありません");
             return;
         }
 
