@@ -723,6 +723,45 @@
             *, *::before, *::after { animation: none !important; transition: none !important; }
         }
 
+        /* 行動ログ */
+        .battle-action-log {
+            background: linear-gradient(180deg, rgba(20,17,16,.98), rgba(12,10,9,.98));
+            border: 1px solid #2b2522;
+            border-radius: 10px;
+            padding: 6px 8px;
+            flex: 0 0 auto;
+            min-height: 62px;
+        }
+        .battle-action-log-list {
+            height: 58px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scroll-behavior: smooth;
+            padding-right: 2px;
+        }
+        .battle-action-log-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 5px;
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(68,64,60,.28);
+            font-family: 'Shippori Mincho', serif;
+            font-size: 10px;
+            line-height: 1.35;
+            color: #d6d3d1;
+        }
+        .battle-action-log-row:last-child { border-bottom: 0; }
+        .battle-action-log-turn { color: #a8a29e; font-family: 'Inter', sans-serif; font-size: 8px; flex: 0 0 auto; padding-top: 1px; }
+        .battle-action-log-row.log-player .battle-action-log-text { color: #fda4af; }
+        .battle-action-log-row.log-opponent .battle-action-log-text { color: #7dd3fc; }
+        .battle-action-log-row.log-item .battle-action-log-text { color: #fde68a; }
+        .battle-action-log-row.log-battle .battle-action-log-text { color: #d8b4fe; font-weight: 700; }
+        .battle-action-log-row.log-system .battle-action-log-text { color: #a8a29e; }
+        .mode-pc .battle-action-log { padding: 8px 10px !important; border-radius: 12px !important; }
+        .mode-pc .battle-action-log-list { height: 92px !important; }
+        .mode-pc .battle-action-log-row { font-size: 13px !important; gap: 7px !important; padding: 3px 0 !important; }
+        .mode-pc .battle-action-log-turn { font-size: 10px !important; }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: #3b3531; border-radius: 4px; }
     </style>
@@ -739,7 +778,7 @@
                     <div class="flex items-center gap-2">
                         <span class="text-lg">📢</span>
                         <span class="text-xs sm:text-base font-bold text-amber-300 font-serif">アップデート情報</span>
-                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.3.9</span>
+                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.4.0</span>
                     </div>
                     <span class="text-[10px] sm:text-xs px-2.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/80 font-mono font-bold">NEW</span>
                 </div>
@@ -818,7 +857,7 @@
                 <div class="flex items-center gap-2">
                     <span class="text-xl">🍢</span>
                     <span class="font-bold text-sm sm:text-lg tracking-wider text-amber-100 font-serif">おでん道</span>
-                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.3.9</span>
+                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.4.0</span>
                 </div>
             </div>
             
@@ -1004,6 +1043,17 @@
                                 ※攻撃は1回のみ
                             </div>
                         </div>
+                    </div>
+
+                    <!-- 行動ログ -->
+                    <div id="battleActionLog" class="battle-action-log">
+                        <div class="flex items-center justify-between mb-1">
+                            <div class="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-stone-300">
+                                <span>📜</span><span>行動ログ</span>
+                            </div>
+                            <button onclick="clearActionLog()" class="text-[9px] sm:text-[10px] text-stone-500 hover:text-stone-300 underline">消去</button>
+                        </div>
+                        <div id="battleActionLogList" class="battle-action-log-list" aria-live="polite"></div>
                     </div>
 
                     <!-- 手札・道具・操作 -->
@@ -1555,7 +1605,7 @@
 
     <script>
     /* ==========================================================================
-       おでん道 - 鍋の陣 完全スクリプト (Ver1.3.9 チュートリアル全面改修版)
+       おでん道 - 鍋の陣 完全スクリプト (Ver1.4.0 チュートリアル全面改修版)
        ========================================================================== */
 
     const ALL_PIECES_DATA = [
@@ -1745,6 +1795,7 @@
             });
         }
         showToast("⏪ 1手前の操作に戻しました");
+        logBattleAction('あなた：直前の操作を取り消しました', 'system');
     }
 
     function updateUndoButtonState() {
@@ -2674,6 +2725,7 @@
                     oneWayFresh: false
                 };
                 playSound('place');
+                logBattleAction(`相手：${p.name}をマス${Number(ev.cellIndex) + 1}へ配置`, 'opponent');
                 calculateConnectedGroups();
                 renderBattleBoard();
             }
@@ -2687,6 +2739,7 @@
                 boardCells[ev.cellIndex] = null;
                 playSound('clash');
                 showToast(`⚠️ 相手があなたの【${pl.name}】を激突粉砕！（相手+${gained}点）`);
+                logBattleAction(`相手：${pl.name}を撃破 → +${gained}点`, 'battle');
                 calculateConnectedGroups();
                 updateBattleStatusHeader();
                 renderBattleBoard();
@@ -2700,6 +2753,7 @@
                 boardCells[ev.cellIndex] = null;
                 playSound('defeat');
                 showToast(`⚠ 相手が中立ボス【${monster.name}】を討伐！（相手+${monster.power}点）`);
+                logBattleAction(`相手：中立ボス ${monster.name}を撃破 → +${monster.power}点`, 'battle');
                 updateBattleStatusHeader();
                 renderBattleBoard();
                 checkBattleEndCondition();
@@ -2712,6 +2766,7 @@
                 oppPiece.tempDirs.push(ev.direction);
                 playSound('item');
                 showToast(`🧭 相手が道具【方向付与】を使用しました！`);
+                logBattleAction(`相手：方向付与 → ${oppPiece.name}`, 'item');
                 calculateConnectedGroups();
                 renderBattleBoard();
             }
@@ -2722,6 +2777,7 @@
                 oppPiece.shieldTurns = 1;
                 playSound('item');
                 showToast(`🛡 相手が【シールド】を展開しました！`);
+                logBattleAction(`相手：シールド → ${oppPiece.name}`, 'item');
                 renderBattleBoard();
             }
         } else if (ev.type === 'item_powerup') {
@@ -2731,6 +2787,7 @@
                 oppPiece.powerTurns = 1;
                 playSound('item');
                 showToast(`⚡ 相手が【パワーUP】を使用！（1ターン有効）`);
+                logBattleAction(`相手：パワーUP → ${oppPiece.name}（+4）`, 'item');
                 calculateConnectedGroups();
                 renderBattleBoard();
             }
@@ -2741,6 +2798,7 @@
                 myPiece.debuffTurns = 2;
                 playSound('debuff');
                 showToast(`🧪 相手が【弱体スプレー】を使用！あなたの【${myPiece.name}】が-5弱体化！（2T継続）`);
+                logBattleAction(`相手：弱体スプレー → ${myPiece.name}（-5 / 2T）`, 'item');
                 calculateConnectedGroups();
                 renderBattleBoard();
             }
@@ -2753,6 +2811,7 @@
                 myPiece.oneWayFresh = true;
                 playSound('debuff');
                 showToast(`🚧 相手が【一方通行】を使用！あなたの【${myPiece.name}】は3ターン「${getDirectionGlyphs([dir])}」方向のみになります`);
+                logBattleAction(`相手：一方通行 → ${myPiece.name} ${getDirectionGlyphs([dir])}（3T）`, 'item');
                 calculateConnectedGroups();
                 renderBattleBoard();
             }
@@ -2766,7 +2825,9 @@
             updateBattleStatusHeader();
             renderBattleBoard();
             showToast("⏪ 相手が操作を取り消しました");
+            logBattleAction('相手：直前の操作を取り消しました', 'system');
         } else if (ev.type === 'turn_end') {
+            logBattleAction('相手：ターン終了', 'system');
             // 相手がターンエンドした通知を受信したため、こちらの手番に切り替え
             roundNumber = ev.nextRound;
             turnHalf = ev.nextHalf;
@@ -2784,6 +2845,8 @@
 
     function startInteractiveTutorial() {
         initAudioEngine();
+        resetActionLog();
+        logBattleAction('チュートリアル開始', 'system');
         playSound('connect');
         isTutorialMode = true;
         tutorialInteractiveStep = 1;
@@ -2971,6 +3034,7 @@
         networkEventSeq = 0;
         lastRemoteSyncSeq = 0;
         processedNetworkEventKeys.clear();
+        resetActionLog();
 
         playerItemStocks = { ...DEFAULT_ITEM_STOCKS };
         opponentItemStocks = { ...DEFAULT_ITEM_STOCKS };
@@ -3019,6 +3083,7 @@
     }
 
     function startBattleSession() {
+        logBattleAction(isPlayerFirst ? 'あなたが先攻です' : '相手が先攻です', 'system');
         if (isPlayerFirst) {
             isPlayerTurn = true;
             turnHalf = 'first';
@@ -3263,6 +3328,7 @@
     }
 
     function endPlayerTurn() {
+        logBattleAction('あなた：ターン終了', 'system');
         triggerPhaseCutin('turnend', 'ターン終了', '', '🏁');
         inputLocked = true;
         turnActionHistory = [];
@@ -3299,6 +3365,7 @@
 
     function startOpponentTurn() {
         if (battleOver) return;
+        logBattleAction(currentBattleMode === 'cpu' ? 'CPUの手番です' : '相手の手番です', 'system');
         isPlayerTurn = false;
         hasPlacedPieceThisTurn = false;
         hasAttackedThisTurn = false;
@@ -3362,6 +3429,7 @@
     function switchTurnToPlayer() {
         checkBattleEndCondition();
         if (battleOver) return;
+        logBattleAction('あなたの手番です', 'system');
         isPlayerTurn = true;
         hasPlacedPieceThisTurn = false;
         hasAttackedThisTurn = false;
@@ -3608,6 +3676,7 @@
                 c.powerTurns = 1;
                 playSound('item');
                 showToast(`⚡ CPUが【${c.name}】にパワーUPを使用！`);
+                logBattleAction(`CPU：パワーUP → ${c.name}（+4）`, 'item');
                 calculateConnectedGroups();
                 renderBattleBoard();
                 return true;
@@ -3636,6 +3705,7 @@
                 t.debuffTurns = 2;
                 playSound('debuff');
                 showToast(`🧪 CPUがあなたの【${t.name}】に弱体スプレーを使用！`);
+                logBattleAction(`CPU：弱体スプレー → ${t.name}（-5 / 2T）`, 'item');
                 calculateConnectedGroups();
                 renderBattleBoard();
                 return true;
@@ -3673,6 +3743,7 @@
                 t.oneWayFresh = true;
                 playSound('debuff');
                 showToast(`🚧 CPUがあなたの【${t.name}】を一方通行に！3ターン「${getDirectionGlyphs([best.dir])}」方向のみ`);
+                logBattleAction(`CPU：一方通行 → ${t.name} ${getDirectionGlyphs([best.dir])}（3T）`, 'item');
                 calculateConnectedGroups();
                 renderBattleBoard();
                 return true;
@@ -3704,6 +3775,7 @@
                 c.shieldTurns = 1;
                 playSound('item');
                 showToast(`🛡 CPUが【${c.name}】にシールドを展開！`);
+                logBattleAction(`CPU：シールド → ${c.name}`, 'item');
                 renderBattleBoard();
                 return true;
             }
@@ -3737,6 +3809,7 @@
                 c.tempDirs.push(best.dir);
                 playSound('item');
                 showToast(`🧭 CPUが【${c.name}】へ方向付与！`);
+                logBattleAction(`CPU：方向付与 → ${c.name}`, 'item');
                 calculateConnectedGroups();
                 renderBattleBoard();
                 return true;
@@ -3756,12 +3829,14 @@
             boardCells[chosen.to] = null;
             playSound('clash');
             showToast(`⚠️ CPUがあなたの【${target.name}】を撃破！（CPU+${gained}点）`);
+            logBattleAction(`CPU：${target.name}を撃破 → +${gained}点`, 'battle');
         } else {
             opponentScore += target.power;
             bossRemaining = Math.max(0, bossRemaining - 1);
             boardCells[chosen.to] = null;
             playSound('defeat');
             showToast(`⚠️ CPUが中立ボス【${target.name}】を討伐！（CPU+${target.power}点）`);
+            logBattleAction(`CPU：中立ボス ${target.name}を撃破 → +${target.power}点`, 'battle');
         }
         calculateConnectedGroups();
         updateBattleStatusHeader();
@@ -3797,6 +3872,7 @@
                     oneWayFresh: false
                         };
                         playSound('place');
+                        logBattleAction(`CPU：${piece.name}をマス${choice.cellIndex + 1}へ配置`, 'opponent');
                         calculateConnectedGroups();
                         renderBattleBoard();
                     }
@@ -3861,6 +3937,7 @@
                 sendNetworkEvent({ type: 'boss_strike', targetCells: targets });
             }
 
+            logBattleAction(`中立ボス強襲：${targets.length}マスを攻撃`, 'battle');
             applyBossStrikeTargetCells(targets);
 
             later(() => {
@@ -4115,6 +4192,7 @@
                 hasPlacedPieceThisTurn = !isTutorialMode;
                 
                 playSound('place');
+                logBattleAction(`あなた：${piece.name}をマス${index + 1}へ配置`, 'player');
                 document.getElementById('selectedCardBriefText').textContent = "具材を配置しました";
                 document.getElementById('showSelectedCardDetailBtn').classList.add('hidden');
                 
@@ -4194,6 +4272,7 @@
                         boardCells[index] = null;
                         playSound('clash');
                         showToast(`💥 相手の【${cellData.name}】を激突撃破！（連結込み攻撃力 ${gained}点を獲得！）`);
+                        logBattleAction(`あなた：${cellData.name}を撃破 → +${gained}点`, 'battle');
                         
                         if (currentBattleMode === 'online') sendNetworkEvent({ type: 'clash', cellIndex: index, earnedPower: gained });
 
@@ -4226,6 +4305,7 @@
                         boardCells[index] = null;
                         playSound('defeat');
                         showToast(`🏆 中立ボス【${cellData.name}】を討伐しました！（+${cellData.power}点）`);
+                        logBattleAction(`あなた：中立ボス ${cellData.name}を撃破 → +${cellData.power}点`, 'battle');
 
                         if (currentBattleMode === 'online') sendNetworkEvent({ type: 'defeat_monster', cellIndex: index });
 
@@ -4537,27 +4617,32 @@
             cell.tempDirs.push(extraData);
             if (currentBattleMode === 'online') sendNetworkEvent({ type: 'item_direction', cellIndex: index, direction: extraData });
             showToast(`🧭 【${cell.name}】に方向を追加しました`);
+            logBattleAction(`あなた：方向付与 → ${cell.name} ${getDirectionGlyphs([extraData])}`, 'item');
         } else if (type === 'shield') {
             cell.shieldActive = true;
             cell.shieldTurns = 1; // 1ターン限定
             if (currentBattleMode === 'online') sendNetworkEvent({ type: 'item_shield', cellIndex: index });
             showToast(`🛡️ 【${cell.name}】にシールドを付与しました（1ターン）`);
+            logBattleAction(`あなた：シールド → ${cell.name}`, 'item');
         } else if (type === 'powerup') {
             cell.bonusPower = (cell.bonusPower || 0) + 4;
             cell.powerTurns = 1; // 1ターン限定
             if (currentBattleMode === 'online') sendNetworkEvent({ type: 'item_powerup', cellIndex: index });
             showToast(`⚡ 【${cell.name}】の攻撃力がアップ！（1ターン有効）`);
+            logBattleAction(`あなた：パワーUP → ${cell.name}（+4）`, 'item');
         } else if (type === 'debuff') {
             cell.debuffPower = (cell.debuffPower || 0) + 5;
             cell.debuffTurns = 2; // 2ターン継続
             if (currentBattleMode === 'online') sendNetworkEvent({ type: 'item_debuff', cellIndex: index });
             showToast(`🧪 相手の【${cell.name}】を弱体化させました（2ターン継続）`);
+            logBattleAction(`あなた：弱体スプレー → ${cell.name}（-5 / 2T）`, 'item');
         } else if (type === 'oneway' && extraData) {
             cell.oneWayDir = extraData;
             cell.oneWayTurns = 3;
             cell.oneWayFresh = true;
             if (currentBattleMode === 'online') sendNetworkEvent({ type: 'item_oneway', cellIndex: index, direction: extraData });
             showToast(`🚧 相手の【${cell.name}】を一方通行にしました（3ターン「${getDirectionGlyphs([extraData])}」方向のみ）`);
+            logBattleAction(`あなた：一方通行 → ${cell.name} ${getDirectionGlyphs([extraData])}（3T）`, 'item');
         }
 
         selectedQuickItem = null;
@@ -4698,6 +4783,51 @@
         playSound('click');
         document.getElementById('pieceDetailModal').classList.remove('flex');
         document.getElementById('pieceDetailModal').classList.add('hidden');
+    }
+
+    const battleActionLogs = [];
+    const MAX_ACTION_LOGS = 80;
+
+    function actionLogTurnLabel() {
+        if (!roundNumber) return '';
+        const half = turnHalf === 'first' ? '先' : '後';
+        return `${roundNumber}T${half}`;
+    }
+
+    function renderActionLog() {
+        const list = document.getElementById('battleActionLogList');
+        if (!list) return;
+        list.replaceChildren();
+        battleActionLogs.forEach(entry => {
+            const row = document.createElement('div');
+            row.className = `battle-action-log-row log-${entry.type || 'system'}`;
+            const turn = document.createElement('span');
+            turn.className = 'battle-action-log-turn';
+            turn.textContent = entry.turn || '';
+            const msg = document.createElement('span');
+            msg.className = 'battle-action-log-text';
+            msg.textContent = entry.message;
+            row.append(turn, msg);
+            list.appendChild(row);
+        });
+        requestAnimationFrame(() => { list.scrollTop = list.scrollHeight; });
+    }
+
+    function logBattleAction(message, type = 'system') {
+        if (!message) return;
+        battleActionLogs.push({ message: String(message), type, turn: actionLogTurnLabel() });
+        if (battleActionLogs.length > MAX_ACTION_LOGS) battleActionLogs.splice(0, battleActionLogs.length - MAX_ACTION_LOGS);
+        renderActionLog();
+    }
+
+    function clearActionLog() {
+        battleActionLogs.length = 0;
+        renderActionLog();
+    }
+
+    function resetActionLog() {
+        clearActionLog();
+        logBattleAction('対局を開始しました', 'system');
     }
 
     function showToast(msg) {
