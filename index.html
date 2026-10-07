@@ -778,7 +778,7 @@
                     <div class="flex items-center gap-2">
                         <span class="text-lg">📢</span>
                         <span class="text-xs sm:text-base font-bold text-amber-300 font-serif">アップデート情報</span>
-                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.4.0</span>
+                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.4.1</span>
                     </div>
                     <span class="text-[10px] sm:text-xs px-2.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/80 font-mono font-bold">NEW</span>
                 </div>
@@ -857,7 +857,7 @@
                 <div class="flex items-center gap-2">
                     <span class="text-xl">🍢</span>
                     <span class="font-bold text-sm sm:text-lg tracking-wider text-amber-100 font-serif">おでん道</span>
-                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.4.0</span>
+                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.4.1</span>
                 </div>
             </div>
             
@@ -1605,7 +1605,7 @@
 
     <script>
     /* ==========================================================================
-       おでん道 - 鍋の陣 完全スクリプト (Ver1.4.0 チュートリアル全面改修版)
+       おでん道 - 鍋の陣 完全スクリプト (Ver1.4.1 チュートリアル全面改修版)
        ========================================================================== */
 
     const ALL_PIECES_DATA = [
@@ -2620,8 +2620,8 @@
         renderBattleBoard();
     }
 
-    function sendNetworkEvent(eventPayload) {
-        if (currentBattleMode !== 'online' || !roomRef) return;
+    function sendNetworkEvent(eventPayload, options = {}) {
+        if (currentBattleMode !== 'online' || !roomRef) return Promise.resolve(0);
 
         const seq = ++networkEventSeq;
         const payload = {
@@ -2632,15 +2632,19 @@
             timestamp: firebase.database.ServerValue.TIMESTAMP
         };
 
+        const publishSnapshot = options.publishSnapshot !== false;
         const evRef = roomRef.child('events').push();
-        evRef.set(payload).then(() => {
-            // イベント確定後に最新盤面を保存。受信側はイベント欠落時もここから復旧できる。
-            return publishNetworkSyncState(seq);
+        return evRef.set(payload).then(() => {
+            // 通常イベントは確定後に最新盤面を保存する。
+            // turn_end / boss_strike のように送信後にローカル状態が変わるイベントは、
+            // 処理前スナップショットで相手を巻き戻さないよう個別に後送する。
+            if (publishSnapshot) return publishNetworkSyncState(seq);
         }).then(() => {
             if (roomRef) return roomRef.child('updatedAt').set(firebase.database.ServerValue.TIMESTAMP);
-        }).catch(err => {
+        }).then(() => seq).catch(err => {
             console.error('Firebase event write error:', err);
             showToast("⚠ 通信送信に失敗しました。接続状態を確認してください");
+            return 0;
         });
     }
 
@@ -3338,27 +3342,36 @@
         let nextHalf = turnHalf === 'first' ? 'second' : 'first';
         if (turnHalf === 'second') nextRound++;
 
-        // オンライン対戦の場合、相手にターン終了と次のターン情報を直ちに通知
+        // オンライン対戦の場合、相手にターン終了と次のターン情報を直ちに通知。
+        // ただしターン切替前の古い封印カウントを syncState に保存しない。
+        let turnEndSeqPromise = Promise.resolve(0);
         if (currentBattleMode === 'online') {
-            sendNetworkEvent({
+            turnEndSeqPromise = sendNetworkEvent({
                 type: 'turn_end',
                 nextRound: nextRound,
                 nextHalf: nextHalf
-            });
+            }, { publishSnapshot: false });
         }
         
         later(() => {
             const isRoundChanging = (nextHalf === 'first');
             roundNumber = nextRound;
             turnHalf = nextHalf;
+
+            const completeTurnSwitch = () => {
+                if (battleOver) return;
+                startOpponentTurn();
+                if (currentBattleMode === 'online') {
+                    turnEndSeqPromise.then(seq => {
+                        if (seq) publishNetworkSyncState(seq);
+                    });
+                }
+            };
             
             if (isRoundChanging) {
-                handleBossPhase(() => {
-                    if (battleOver) return;
-                    startOpponentTurn();
-                });
+                handleBossPhase(completeTurnSwitch);
             } else {
-                startOpponentTurn();
+                completeTurnSwitch();
             }
         }, 1000);
     }
@@ -3933,12 +3946,23 @@
             pieceIndices = shuffleArray(pieceIndices);
             let targets = pieceIndices.slice(0, 3); // 3マス固定
 
+            let bossStrikeSeqPromise = Promise.resolve(0);
             if (currentBattleMode === 'online') {
-                sendNetworkEvent({ type: 'boss_strike', targetCells: targets });
+                // 強襲適用前の盤面を snapshot にすると撃破駒が復活するため、イベントのみ先送信。
+                bossStrikeSeqPromise = sendNetworkEvent(
+                    { type: 'boss_strike', targetCells: targets },
+                    { publishSnapshot: false }
+                );
             }
 
             logBattleAction(`中立ボス強襲：${targets.length}マスを攻撃`, 'battle');
             applyBossStrikeTargetCells(targets);
+
+            if (currentBattleMode === 'online') {
+                bossStrikeSeqPromise.then(seq => {
+                    if (seq) publishNetworkSyncState(seq);
+                });
+            }
 
             later(() => {
                 checkBattleEndCondition();
@@ -4461,14 +4485,20 @@
     }
 
     function updateBurnedCells() {
+        const released = [];
         for (let i = 0; i < 25; i++) {
             if (burnedCells[i]) {
                 burnedCells[i].turns--;
                 if (burnedCells[i].turns <= 0) {
                     burnedCells[i] = null;
+                    released.push(i);
                 }
             }
         }
+        if (released.length) {
+            released.forEach(i => logBattleAction(`封印解除：マス${i + 1}`, 'system'));
+        }
+        return released;
     }
 
     function handleQuickItemSelect(type) {
