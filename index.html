@@ -739,12 +739,12 @@
                     <div class="flex items-center gap-2">
                         <span class="text-lg">📢</span>
                         <span class="text-xs sm:text-base font-bold text-amber-300 font-serif">アップデート情報</span>
-                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.3.8</span>
+                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.3.9</span>
                     </div>
                     <span class="text-[10px] sm:text-xs px-2.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/80 font-mono font-bold">NEW</span>
                 </div>
                 <div class="text-xs sm:text-sm text-stone-200 leading-relaxed font-serif pl-7">
-                    【🏆 得点ルール変更】相手駒撃破は連結込み攻撃力をそのまま獲得！中立ボス撃破はボス自身のポイントを獲得！撃破・強襲による既得点の減点を廃止！
+                    【🔰 チュートリアル全面改修】駒配置・連結・ターン進行・アイテム・撃破・勝敗を、6章の実戦操作で学べるようになりました！
                 </div>
             </div>
 
@@ -818,7 +818,7 @@
                 <div class="flex items-center gap-2">
                     <span class="text-xl">🍢</span>
                     <span class="font-bold text-sm sm:text-lg tracking-wider text-amber-100 font-serif">おでん道</span>
-                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.3.8</span>
+                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.3.9</span>
                 </div>
             </div>
             
@@ -899,7 +899,7 @@
                         <span class="text-2xl sm:text-4xl group-hover:scale-110 transition shrink-0">🔰</span>
                         <div class="text-left">
                             <div class="font-bold text-sm sm:text-xl text-stone-100 font-serif">実践指南【チュートリアル】</div>
-                            <div class="text-xs sm:text-sm text-sky-400 mt-1">実戦盤面で学ぶ新ルール＆決着の手ほどき（全8幕）</div>
+                            <div class="text-xs sm:text-sm text-sky-400 mt-1">配置から勝敗まで、実戦盤面で学ぶ基本ルール（全6章）</div>
                         </div>
                     </div>
                     <span class="text-xs sm:text-sm px-3 py-1.5 rounded-lg bg-sky-950 text-sky-300 border border-sky-800 font-bold shrink-0">実戦指南</span>
@@ -923,11 +923,11 @@
                     <span class="text-lg sm:text-2xl shrink-0 animate-bounce">👉</span>
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-2">
-                            <span id="tutStepLabel" class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 font-bold font-mono">Step 1/8</span>
+                            <span id="tutStepLabel" class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 font-bold font-mono">Step 1/6</span>
                             <span id="tutStepTitle" class="text-xs sm:text-base font-bold text-sky-200 font-serif truncate">具材の配置</span>
                         </div>
                         <div id="tutStepInstruction" class="text-[11px] sm:text-xs text-stone-200 leading-snug mt-0.5">
-                            手札の【大根】をタップし、中央の光るマスに置いてみましょう！
+                            手札の【大根】を選び、中央の光るマスに置いてみましょう！
                         </div>
                     </div>
                 </div>
@@ -1555,7 +1555,7 @@
 
     <script>
     /* ==========================================================================
-       おでん道 - 鍋の陣 完全スクリプト (Ver1.3.8 得点ルール改定版)
+       おでん道 - 鍋の陣 完全スクリプト (Ver1.3.9 チュートリアル全面改修版)
        ========================================================================== */
 
     const ALL_PIECES_DATA = [
@@ -1620,6 +1620,7 @@
 
     let isTutorialMode = false;
     let tutorialInteractiveStep = 1;
+    let tutorialCombatStage = 'enemy';
 
     let playerName = "名無しの出汁";
     let playerRate = 1500;
@@ -2786,6 +2787,7 @@
         playSound('connect');
         isTutorialMode = true;
         tutorialInteractiveStep = 1;
+        tutorialCombatStage = 'enemy';
         currentBattleMode = 'tutorial';
 
         playerHand = [1, 2, 15, 10];
@@ -2814,19 +2816,8 @@
         inputLocked = false;
         dangerTargetCells = [];
 
-        playerItemStocks = { direction: 3, shield: 3, powerup: 2, debuff: 2 };
-        opponentItemStocks = { direction: 3, shield: 3, powerup: 2, debuff: 2 };
-
-        boardCells[22] = {
-            type: 'monster',
-            id: 'tut_monster_boss',
-            name: '修練鬼',
-            icon: '👹',
-            power: 12,
-            basePower: 12,
-            owner: 'neutral',
-            dir: []
-        };
+        playerItemStocks = { ...DEFAULT_ITEM_STOCKS };
+        opponentItemStocks = { ...DEFAULT_ITEM_STOCKS };
 
         document.getElementById('opponentNameDisplay').textContent = "師範代（実戦指南）";
         updateBattleStatusHeader();
@@ -2848,51 +2839,46 @@
 
         if (!stepLabel || !stepTitle || !stepInstr) return;
 
+        stepLabel.textContent = `Step ${tutorialInteractiveStep}/6`;
+
         switch (tutorialInteractiveStep) {
             case 1:
-                stepLabel.textContent = "Step 1/8";
-                stepTitle.textContent = "具材の配置";
-                stepInstr.textContent = "手札の【大根】をタップし、中央の光るマス（マス12）に置いてみましょう！";
+                stepTitle.textContent = "駒の置き方";
+                stepInstr.textContent = "手札の【大根】をタップ → 中央の水色に光るマスへ配置します。1ターンに置ける具材は基本1枚です。";
                 break;
             case 2:
-                stepLabel.textContent = "Step 2/8";
-                stepTitle.textContent = "直交連結（出汁の道）";
-                stepInstr.textContent = "手札の【たまご】を大根の上（マス7）に配置し、矢印同士を正面から繋げましょう！";
+                stepTitle.textContent = "連結の仕方";
+                stepInstr.textContent = "【たまご】を大根の上へ置きましょう。隣り合う2枚の矢印が正面から向き合うと連結し、連結した具材のパワーが合算されます。";
                 break;
             case 3:
-                stepLabel.textContent = "Step 3/8";
-                stepTitle.textContent = "1ターン目のルール";
-                stepInstr.textContent = "連結成立でパワー7に合算！第1ターンは互いに攻撃禁止です。「アタックへ進む」➔「ターンエンド」で相手に手番を渡しましょう。";
+                stepTitle.textContent = "ターン進行";
+                stepInstr.textContent = currentPhase === 'standby'
+                    ? "自分の手番は「スタンバイ → アタック → ターンエンド」の順です。まず【アタックへ進む】を押してください。"
+                    : "第1ターンは攻撃できません。【ターンエンド】を押すと相手側の手番を経て、第2ターンから攻撃が解禁されます。";
                 break;
             case 4:
-                stepLabel.textContent = "Step 4/8";
-                stepTitle.textContent = "秘伝道具（弱体スプレー）";
-                stepInstr.textContent = "第2ターン開始！攻撃が解禁されました。下の【弱体スプレー🧪】を選び、相手の「ちくわ」（マス2）を弱体化させましょう！";
+                stepTitle.textContent = "アイテムの使い方";
+                stepInstr.textContent = "道具はスタンバイ中に使えます。【パワーUP⚡】を選び、中央の【大根】をタップして確定してください。ほかの道具も「道具選択 → 対象選択」が基本です。";
                 break;
             case 5:
-                stepLabel.textContent = "Step 5/8";
-                stepTitle.textContent = "正面激突と撃破マス封印";
-                stepInstr.textContent = "「アタックへ進む」を押し、矢印が向き合う相手の「ちくわ」をタップして激突・粉砕しましょう！";
+                stepTitle.textContent = "相手駒・中立ボスの撃破";
+                if (tutorialCombatStage === 'enemy') {
+                    stepInstr.textContent = "【アタックへ進む】を押し、上側の相手【ちくわ】を撃破しましょう。相手駒を倒すと、その駒の「連結込み攻撃力」と同じポイントを獲得します。";
+                } else if (tutorialCombatStage === 'boss') {
+                    stepInstr.textContent = "次のターンです。【アタックへ進む】を押し、下側の中立ボス【修練鬼】を撃破しましょう。ボスを倒すと、ボス自身のパワー分のポイントを獲得します。";
+                } else {
+                    stepInstr.textContent = "撃破処理を確認しています。";
+                }
                 break;
             case 6:
-                stepLabel.textContent = "Step 6/8";
-                stepTitle.textContent = "具材の追加＆パワーUP";
-                stepInstr.textContent = "手札の【つくね串】を大根の下（マス17）に配置し、下の【パワーUP⚡】を味方に使ってボス（12）討伐の力を蓄えましょう！";
-                break;
-            case 7:
-                stepLabel.textContent = "Step 7/8";
-                stepTitle.textContent = "中立ボスの討伐";
-                stepInstr.textContent = "全体のパワーが15に到達！「アタックへ進む」を押し、真下の中立ボス（パワー12）をタップして討伐しましょう！";
-                break;
-            case 8:
-                stepLabel.textContent = "Step 8/8";
-                stepTitle.textContent = "指南修了・完全勝利！";
-                stepInstr.textContent = "お見事！中立ボスを討伐して決着となりました。「指南を修了してメニューへ」を押してください。";
+                stepTitle.textContent = "勝敗について";
+                stepInstr.textContent = `指南完了！現在 ${playerScore} - ${opponentScore}。中立ボス全滅・盤面が埋まる・双方の手札と山札が尽きる、いずれかで終了し、最終ポイントが高い側が勝利します。`;
                 break;
         }
 
         renderBattleBoard();
         renderPlayerHand();
+        updateBattleStatusHeader();
         updatePhaseUI();
         updateUndoButtonState();
     }
@@ -3120,57 +3106,46 @@
             orderBadge.className = 'text-xs px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 font-bold';
             turnInd.textContent = "実践指南中";
             turnInd.className = "px-2 py-0.5 rounded text-[10px] sm:text-xs font-bold bg-sky-950 text-sky-200 border border-sky-800";
-            
+            attackNotice.classList.toggle('hidden', currentPhase !== 'attack');
+            handLabel.textContent = currentPhase === 'standby' ? "手札・道具（指南の指示に従って操作）" : "アタックフェーズ";
+
+            const enabled = "w-2/3 py-2 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
+            const enabledGold = "w-2/3 py-2 rounded-xl border-2 border-amber-400 bg-amber-800 text-amber-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
+            const disabled = "w-2/3 py-2 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
+
             if (tutorialInteractiveStep === 3) {
                 if (currentPhase === 'standby') {
-                    badge.textContent = "連結成立！";
+                    badge.textContent = "スタンバイ";
                     mainBtn.textContent = "アタックへ進む 👉";
-                    mainBtn.className = "w-2/3 py-2 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
+                    mainBtn.className = enabled;
                     mainBtn.disabled = false;
                 } else {
-                    badge.textContent = "第1ターン攻撃不可";
+                    badge.textContent = "第1ターン・攻撃不可";
                     mainBtn.textContent = "ターンエンド 👉";
-                    mainBtn.className = "w-2/3 py-2 rounded-xl border-2 border-amber-400 bg-amber-800 text-amber-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
+                    mainBtn.className = enabledGold;
                     mainBtn.disabled = false;
                 }
             } else if (tutorialInteractiveStep === 5) {
                 if (currentPhase === 'standby') {
-                    badge.textContent = "準備完了";
+                    badge.textContent = tutorialCombatStage === 'enemy' ? "相手駒を撃破" : "中立ボスを撃破";
                     mainBtn.textContent = "アタックへ進む 👉";
-                    mainBtn.className = "w-2/3 py-2 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
-                    mainBtn.disabled = false;
-                } else if (hasAttackedThisTurn) {
-                    badge.textContent = "攻撃完了（終了へ）";
-                    mainBtn.textContent = "ターンエンド 👉";
-                    mainBtn.className = "w-2/3 py-2 rounded-xl border-2 border-amber-400 bg-amber-800 text-amber-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
+                    mainBtn.className = enabled;
                     mainBtn.disabled = false;
                 } else {
-                    badge.textContent = "激突対象を選択";
-                    mainBtn.textContent = "ちくわをタップ！";
-                    mainBtn.className = "w-2/3 py-2 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
+                    badge.textContent = tutorialCombatStage === 'enemy' ? "ちくわをタップ" : "修練鬼をタップ";
+                    mainBtn.textContent = "盤面の対象をタップ！";
+                    mainBtn.className = disabled;
                     mainBtn.disabled = true;
                 }
-            } else if (tutorialInteractiveStep === 7) {
-                if (currentPhase === 'standby') {
-                    badge.textContent = "パワー15到達！";
-                    mainBtn.textContent = "アタックへ進む 👉";
-                    mainBtn.className = "w-2/3 py-2 rounded-xl border-2 border-sky-400 bg-sky-800 text-sky-100 font-black text-xs sm:text-base animate-pulse shadow-lg";
-                    mainBtn.disabled = false;
-                } else {
-                    badge.textContent = "ボス討伐可能！";
-                    mainBtn.textContent = "ボスをタップ！";
-                    mainBtn.className = "w-2/3 py-2 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
-                    mainBtn.disabled = true;
-                }
-            } else if (tutorialInteractiveStep === 8) {
+            } else if (tutorialInteractiveStep === 6) {
                 badge.textContent = "指南修了";
                 mainBtn.textContent = "指南を修了してメニューへ 🎉";
                 mainBtn.className = "w-2/3 py-2 rounded-xl border border-emerald-500 bg-emerald-800 text-emerald-100 font-black text-xs sm:text-base hover:brightness-110 active:scale-95 shadow-md";
                 mainBtn.disabled = false;
             } else {
-                badge.textContent = currentPhase === 'standby' ? "スタンバイ（配置）" : "アタック";
-                mainBtn.textContent = currentPhase === 'standby' ? "具材を置いてください" : "アタック";
-                mainBtn.className = "w-2/3 py-2 rounded-xl border border-stone-800 bg-stone-900 text-stone-500 font-bold text-xs sm:text-base cursor-not-allowed";
+                badge.textContent = tutorialInteractiveStep === 4 ? "道具を使う" : (tutorialInteractiveStep === 2 ? "矢印を連結" : "具材を配置");
+                mainBtn.textContent = tutorialInteractiveStep === 4 ? "パワーUPを使ってください" : "盤面の指示に従ってください";
+                mainBtn.className = disabled;
                 mainBtn.disabled = true;
             }
             return;
@@ -3225,15 +3200,15 @@
                     currentPhase = 'attack';
                     triggerPhaseCutin('battle', 'アタックフェーズ', '第1ターンは攻撃不可', '🛡️');
                     playSound('click');
-                    updatePhaseUI();
-                    renderBattleBoard();
+                    applyTutorialStepState();
                 } else {
                     currentPhase = 'standby';
                     roundNumber = 2;
                     turnHalf = 'first';
                     hasPlacedPieceThisTurn = false;
                     hasAttackedThisTurn = false;
-                    
+
+                    // 攻撃練習用の相手駒。たまご(7)と正面衝突できる位置。
                     boardCells[2] = {
                         ...ALL_PIECES_DATA.find(x => x.id === 3),
                         dir: ['down'],
@@ -3250,41 +3225,24 @@
                         tempDirs: [],
                         oneWayDir: null,
                         oneWayTurns: 0,
-                    oneWayFresh: false
+                        oneWayFresh: false
                     };
-                    
-                    triggerPhaseCutin('standby', '第2ターン開始', '攻撃解禁！', '⚔️');
+
+                    triggerPhaseCutin('standby', '第2ターン開始', 'ここから攻撃解禁', '⚔️');
                     tutorialInteractiveStep = 4;
                     applyTutorialStepState();
                 }
             } else if (tutorialInteractiveStep === 5) {
                 if (currentPhase === 'standby') {
                     currentPhase = 'attack';
-                    triggerPhaseCutin('battle', 'アタックフェーズ', '相手ちくわを激突！', '⚔️');
+                    triggerPhaseCutin('battle', 'アタックフェーズ', tutorialCombatStage === 'enemy' ? '相手駒を撃破' : '中立ボスを討伐', '⚔️');
                     playSound('click');
-                    updatePhaseUI();
-                    renderBattleBoard();
-                } else if (hasAttackedThisTurn) {
-                    currentPhase = 'standby';
-                    roundNumber = 3;
-                    turnHalf = 'first';
-                    hasPlacedPieceThisTurn = false;
-                    hasAttackedThisTurn = false;
-                    updateBurnedCells();
-                    triggerPhaseCutin('standby', '第3ターン開始', 'ボス討伐へ！', '🍢');
-                    tutorialInteractiveStep = 6;
                     applyTutorialStepState();
                 }
-            } else if (tutorialInteractiveStep === 7) {
-                if (currentPhase === 'standby') {
-                    currentPhase = 'attack';
-                    triggerPhaseCutin('battle', 'アタックフェーズ', '修練鬼を討伐！', '⚔');
-                    playSound('click');
-                    updatePhaseUI();
-                    renderBattleBoard();
-                }
-            } else if (tutorialInteractiveStep === 8) {
+            } else if (tutorialInteractiveStep === 6) {
                 isTutorialMode = false;
+                const tutBar = document.getElementById('tutorialGuideBar');
+                if (tutBar) tutBar.classList.add('hidden');
                 switchScreen('home');
             }
             return;
@@ -3984,16 +3942,13 @@
         
         if (isTutorialMode) {
             if (tutorialInteractiveStep === 1 && playerHand[index] !== 1) {
-                showToast('👉 ガイドで指示された【大根】を選んでください');
+                showToast('👉 まず【大根】を選んでください');
                 return;
             } else if (tutorialInteractiveStep === 2 && playerHand[index] !== 2) {
-                showToast('👉 ガイドで指示された【たまご】を選んでください');
+                showToast('👉 次は【たまご】を選んでください');
                 return;
-            } else if (tutorialInteractiveStep === 6 && playerHand[index] !== 15) {
-                showToast('👉 ガイドで指示された【つくね串】を選んでください');
-                return;
-            } else if (tutorialInteractiveStep !== 1 && tutorialInteractiveStep !== 2 && tutorialInteractiveStep !== 6) {
-                showToast('👉 現在のステップの指示に従ってください');
+            } else if (tutorialInteractiveStep !== 1 && tutorialInteractiveStep !== 2) {
+                showToast('👉 この章では手札の配置は行いません');
                 return;
             }
         }
@@ -4100,8 +4055,7 @@
                         cell.classList.add('tut-active-target');
                     } else {
                         if ((tutorialInteractiveStep === 1 && i === 12) || 
-                            (tutorialInteractiveStep === 2 && i === 7) || 
-                            (tutorialInteractiveStep === 6 && i === 17)) {
+                            (tutorialInteractiveStep === 2 && i === 7)) {
                             cell.classList.add('tut-active-target');
                         }
                     }
@@ -4122,11 +4076,16 @@
 
         const cellData = boardCells[index];
 
+        if (isTutorialMode && tutorialInteractiveStep === 4 && selectedQuickItem === 'powerup' && index !== 12) {
+            showToast('👉 中央の【大根】にパワーUPを使ってください');
+            return;
+        }
+
         if (currentPhase === 'standby') {
             if (isTutorialMode && !cellData && selectedHandIndex !== null) {
                 if ((tutorialInteractiveStep === 1 && index !== 12) ||
                     (tutorialInteractiveStep === 2 && index !== 7) ||
-                    (tutorialInteractiveStep === 6 && index !== 17)) {
+                    (tutorialInteractiveStep !== 1 && tutorialInteractiveStep !== 2)) {
                     showToast('👉 ガイドで水色に光っているマスに置いてください');
                     return;
                 }
@@ -4170,8 +4129,6 @@
                     } else if (tutorialInteractiveStep === 2) {
                         tutorialInteractiveStep = 3;
                         applyTutorialStepState();
-                    } else if (tutorialInteractiveStep === 6) {
-                        document.getElementById('tutStepInstruction').textContent = "つくね串を配置！下の【パワーUP⚡】を選び、味方具材（大根等）をタップして強化しましょう！";
                     }
                 }
 
@@ -4203,11 +4160,13 @@
             }
 
             if (isTutorialMode) {
-                if (tutorialInteractiveStep === 5 && index !== 2) {
-                    showToast("👉 マス2の相手【ちくわ】をタップして激突してください");
+                if (tutorialInteractiveStep !== 5) {
+                    showToast("👉 現在は攻撃練習の章ではありません");
                     return;
-                } else if (tutorialInteractiveStep === 7 && index !== 22) {
-                    showToast("👉 マス22の中立ボス【修練鬼】をタップして討伐してください");
+                }
+                const expected = tutorialCombatStage === 'enemy' ? 2 : 17;
+                if (index !== expected) {
+                    showToast(tutorialCombatStage === 'enemy' ? "👉 上側の相手【ちくわ】をタップしてください" : "👉 下側の中立ボス【修練鬼】をタップしてください");
                     return;
                 }
             }
@@ -4238,7 +4197,26 @@
                         
                         if (currentBattleMode === 'online') sendNetworkEvent({ type: 'clash', cellIndex: index, earnedPower: gained });
 
-                        if (isTutorialMode && tutorialInteractiveStep === 5) {
+                        if (isTutorialMode && tutorialInteractiveStep === 5 && tutorialCombatStage === 'enemy') {
+                            // 1ターン1回攻撃のルールを保ったまま、指南では相手手番を省略して次の自分ターンへ。
+                            tutorialCombatStage = 'boss';
+                            boardCells[17] = {
+                                type: 'monster',
+                                id: 'tut_monster_boss',
+                                name: '修練鬼',
+                                icon: '👹',
+                                power: 10,
+                                currentPower: 10,
+                                basePower: 10,
+                                owner: 'neutral',
+                                dir: []
+                            };
+                            currentPhase = 'standby';
+                            roundNumber = 3;
+                            turnHalf = 'first';
+                            hasPlacedPieceThisTurn = false;
+                            hasAttackedThisTurn = false;
+                            triggerPhaseCutin('standby', '次の自分ターン', '今度は中立ボスを討伐', '👹');
                             applyTutorialStepState();
                         }
                     } else {
@@ -4251,8 +4229,10 @@
 
                         if (currentBattleMode === 'online') sendNetworkEvent({ type: 'defeat_monster', cellIndex: index });
 
-                        if (isTutorialMode && tutorialInteractiveStep === 7) {
-                            tutorialInteractiveStep = 8;
+                        if (isTutorialMode && tutorialInteractiveStep === 5 && tutorialCombatStage === 'boss') {
+                            tutorialInteractiveStep = 6;
+                            tutorialCombatStage = 'done';
+                            currentPhase = 'standby';
                             applyTutorialStepState();
                         }
                     }
@@ -4414,6 +4394,17 @@
     function handleQuickItemSelect(type) {
         if (!isPlayerTurn || currentPhase !== 'standby' || inputLocked) return;
         playSound('click');
+
+        if (isTutorialMode) {
+            if (tutorialInteractiveStep !== 4) {
+                showToast("👉 アイテムは第4章で練習します");
+                return;
+            }
+            if (type !== 'powerup') {
+                showToast("👉 今回は【パワーUP⚡】を使ってみましょう");
+                return;
+            }
+        }
 
         if (playerItemStocks[type] <= 0) {
             showToast("⚠ このアイテムのストックがありません");
@@ -4577,14 +4568,10 @@
         renderBattleBoard();
         updateUndoButtonState();
 
-        if (isTutorialMode) {
-            if (tutorialInteractiveStep === 4) {
-                tutorialInteractiveStep = 5;
-                applyTutorialStepState();
-            } else if (tutorialInteractiveStep === 6) {
-                tutorialInteractiveStep = 7;
-                applyTutorialStepState();
-            }
+        if (isTutorialMode && tutorialInteractiveStep === 4 && type === 'powerup' && index === 12) {
+            tutorialInteractiveStep = 5;
+            tutorialCombatStage = 'enemy';
+            applyTutorialStepState();
         }
     }
 
