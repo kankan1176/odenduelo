@@ -739,12 +739,12 @@
                     <div class="flex items-center gap-2">
                         <span class="text-lg">📢</span>
                         <span class="text-xs sm:text-base font-bold text-amber-300 font-serif">アップデート情報</span>
-                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.3.4</span>
+                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 font-mono font-bold">Ver1.3.8</span>
                     </div>
                     <span class="text-[10px] sm:text-xs px-2.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/80 font-mono font-bold">NEW</span>
                 </div>
                 <div class="text-xs sm:text-sm text-stone-200 leading-relaxed font-serif pl-7">
-                    【🔥 バトル仕様強化＆通信安定化】相手駒撃破で「相手の戦闘時合計攻撃力」を獲得！ボス強襲被撃破駒のデッキ復帰＆通信ターン同期不具合を解消！
+                    【🏆 得点ルール変更】相手駒撃破は連結込み攻撃力をそのまま獲得！中立ボス撃破はボス自身のポイントを獲得！撃破・強襲による既得点の減点を廃止！
                 </div>
             </div>
 
@@ -818,7 +818,7 @@
                 <div class="flex items-center gap-2">
                     <span class="text-xl">🍢</span>
                     <span class="font-bold text-sm sm:text-lg tracking-wider text-amber-100 font-serif">おでん道</span>
-                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.3.4</span>
+                    <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono font-bold tracking-tight">Ver1.3.8</span>
                 </div>
             </div>
             
@@ -1021,8 +1021,8 @@
                             <!-- JS描画 -->
                         </div>
 
-                        <!-- 常設アイテム（4種） -->
-                        <div class="grid grid-cols-4 gap-1 pt-0.5">
+                        <!-- 常設アイテム（5種） -->
+                        <div class="grid grid-cols-5 gap-1 pt-0.5">
                             <button id="quickItemDirBtn" onclick="handleQuickItemSelect('direction')" class="item-quick-btn group" title="味方に方向矢印を1つ追加">
                                 <span class="text-xs sm:text-sm">🧭</span>
                                 <span class="font-bold text-[9px] sm:text-xs text-stone-200">方向付与</span>
@@ -1045,6 +1045,12 @@
                                 <span class="text-xs sm:text-sm">🧪</span>
                                 <span class="font-bold text-[9px] sm:text-xs text-purple-300">弱体スプレー</span>
                                 <span id="itemStockDebuffText" class="font-mono text-[9px] sm:text-[10px] font-bold text-purple-400">残2</span>
+                            </button>
+
+                            <button id="quickItemOneWayBtn" onclick="handleQuickItemSelect('oneway')" class="item-quick-btn group" title="相手駒を3ターン、指定した1方向だけの一方通行状態にする">
+                                <span class="text-xs sm:text-sm">🚧</span>
+                                <span class="font-bold text-[9px] sm:text-xs text-orange-300">一方通行</span>
+                                <span id="itemStockOneWayText" class="font-mono text-[9px] sm:text-[10px] font-bold text-orange-400">残3</span>
                             </button>
                         </div>
 
@@ -1145,7 +1151,7 @@
     <!-- 方向選択ミニポップアップ -->
     <div id="directionPickModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-3">
         <div class="bg-[#161311] border border-amber-600/90 rounded-2xl w-full max-w-xs p-5 space-y-4 shadow-2xl text-center">
-            <div class="font-bold text-base text-amber-100 font-serif">付与する方向を選択</div>
+            <div class="font-bold text-base text-amber-100 font-serif">方向を選択</div>
             <p class="text-xs text-stone-300 leading-relaxed">
                 選択した具材に付与したい方向の矢印を選んでください。<br>
                 <span class="text-amber-400 text-[11px]">※次の自分のターンまで有効</span>
@@ -1330,7 +1336,7 @@
                 <button onclick="confirmCpuDifficulty('ume')" class="w-full p-4 rounded-xl border border-emerald-900/80 bg-gradient-to-r from-[#0d1e16] to-[#08130e] hover:border-emerald-500 active:scale-98 flex items-center justify-between text-left transition shadow-md">
                     <div>
                         <div class="font-bold text-sm sm:text-lg text-emerald-200 font-serif">🌸 梅（初級）</div>
-                        <div class="text-xs sm:text-sm text-stone-400 mt-1">基本的な配置を行う穏やかな修行相手</div>
+                        <div class="text-xs sm:text-sm text-stone-400 mt-1">ほどよくランダム。基本ルールを覚えるための穏やかな相手</div>
                     </div>
                     <span class="text-xs sm:text-sm bg-emerald-950 text-emerald-300 border border-emerald-800 px-3 py-1 rounded-lg font-mono font-bold">RATE +15</span>
                 </button>
@@ -1338,7 +1344,7 @@
                 <button onclick="confirmCpuDifficulty('take')" class="w-full p-4 rounded-xl border border-sky-900/80 bg-gradient-to-r from-[#0d1822] to-[#081017] hover:border-sky-500 active:scale-98 flex items-center justify-between text-left transition shadow-md">
                     <div>
                         <div class="font-bold text-sm sm:text-lg text-sky-200 font-serif">🎋 竹（中級）</div>
-                        <div class="text-xs sm:text-sm text-stone-400 mt-1">連結を狙い、隙あらば激突・討伐を狙う本番仕様</div>
+                        <div class="text-xs sm:text-sm text-stone-400 mt-1">盤面を評価して連結・撃破を狙い、好機では道具も使用</div>
                     </div>
                     <span class="text-xs sm:text-sm bg-sky-950 text-sky-300 border border-sky-800 px-3 py-1 rounded-lg font-mono font-bold">RATE +25</span>
                 </button>
@@ -1346,7 +1352,7 @@
                 <button onclick="confirmCpuDifficulty('matsu')" class="w-full p-4 rounded-xl border border-amber-900/80 bg-gradient-to-r from-[#20150a] to-[#140c06] hover:border-amber-500 active:scale-98 flex items-center justify-between text-left transition shadow-md">
                     <div>
                         <div class="font-bold text-sm sm:text-lg text-amber-200 font-serif">🌲 松（上級）</div>
-                        <div class="text-xs sm:text-stone-400 mt-1">プレイヤーの連結分断や道具も使いこなす達人</div>
+                        <div class="text-xs sm:text-stone-400 mt-1">全候補を比較し、連結・撃破・防御・道具を総合判断する達人</div>
                     </div>
                     <span class="text-xs sm:text-sm bg-amber-950 text-amber-300 border border-amber-800 px-3 py-1 rounded-lg font-mono font-bold">RATE +35</span>
                 </button>
@@ -1549,7 +1555,7 @@
 
     <script>
     /* ==========================================================================
-       おでん道 - 鍋の陣 完全スクリプト (Ver1.3.4 オンラインターン同期修正版)
+       おでん道 - 鍋の陣 完全スクリプト (Ver1.3.8 得点ルール改定版)
        ========================================================================== */
 
     const ALL_PIECES_DATA = [
@@ -1581,7 +1587,8 @@
         direction: 3,
         shield: 3,
         powerup: 2,
-        debuff: 2
+        debuff: 2,
+        oneway: 3
     };
 
     let currentDeviceMode = 'mobile';
@@ -1603,6 +1610,9 @@
     let matchStartTime = 0;
     let sharedMonstersData = null;
     let isCleaningUpRoom = false;
+    let networkEventSeq = 0;
+    let lastRemoteSyncSeq = 0;
+    const processedNetworkEventKeys = new Set();
 
     let currentScreen = 'landing';
     let currentBattleMode = 'cpu';
@@ -1811,25 +1821,50 @@
         return roundNumber === 1;
     }
 
+    function getEffectiveDirs(piece) {
+        if (!piece || piece.type === 'monster') return [];
+        if ((piece.oneWayTurns || 0) > 0 && ['up','right','down','left'].includes(piece.oneWayDir)) {
+            return [piece.oneWayDir];
+        }
+        return Array.isArray(piece.dir) ? piece.dir : [];
+    }
+
+    function tickOneWayEffect(cell) {
+        if (!cell || (cell.oneWayTurns || 0) <= 0) return;
+        // 付与直後に迎える最初の対象手番は3Tの1ターン目として丸ごと有効にする
+        if (cell.oneWayFresh) {
+            cell.oneWayFresh = false;
+            return;
+        }
+        cell.oneWayTurns--;
+        if (cell.oneWayTurns <= 0) {
+            cell.oneWayTurns = 0;
+            cell.oneWayDir = null;
+            cell.oneWayFresh = false;
+        }
+    }
+
     function canStrike(a, b) {
         const pa = boardCells[a], pb = boardCells[b];
         if (!pa || !pb || pa.type === 'monster') return false;
         const dx = (b % 5) - (a % 5), dy = Math.floor(b / 5) - Math.floor(a / 5);
         const d = dx === 1 ? 'right' : dx === -1 ? 'left' : dy === 1 ? 'down' : 'up';
+        const paDirs = getEffectiveDirs(pa);
         if (pb.type === 'monster') {
-            return pa.dir && pa.dir.includes(d);
+            return paDirs.includes(d);
         }
         const o = { right: 'left', left: 'right', up: 'down', down: 'up' }[d];
-        return pa.dir && pb.dir && pa.dir.includes(d) && pb.dir.includes(o);
+        const pbDirs = getEffectiveDirs(pb);
+        return paDirs.includes(d) && pbDirs.includes(o);
     }
 
     function areFacing(a, b) {
         const pa = boardCells[a], pb = boardCells[b];
-        if (!pa || !pb || !pa.dir || !pb.dir) return false;
+        if (!pa || !pb) return false;
         const dx = (b % 5) - (a % 5), dy = Math.floor(b / 5) - Math.floor(a / 5);
         const d = dx === 1 ? 'right' : dx === -1 ? 'left' : dy === 1 ? 'down' : 'up';
         const o = { right: 'left', left: 'right', up: 'down', down: 'up' }[d];
-        return pa.dir.includes(d) && pb.dir.includes(o);
+        return getEffectiveDirs(pa).includes(d) && getEffectiveDirs(pb).includes(o);
     }
 
     function saveGame() {
@@ -2332,7 +2367,8 @@
                     createdAt: now,
                     updatedAt: now
                 }).then(() => {
-                    roomRef.onDisconnect().remove();
+                    // 切断時に部屋全体を消すと、一時的な回線断でも対局データが消えるため禁止。
+                    // 自分自身の presence だけを落とし、相手側に切断を検知させる。
                     roomRef.child('presence/host').onDisconnect().remove();
 
                     showOnlineWaitingModal(currentRoomCode);
@@ -2347,8 +2383,8 @@
                 turnHalf = 'first';
                 sharedMonstersData = data.monsters || [];
 
-                roomRef.onDisconnect().cancel();
-                roomRef.child('presence/host').onDisconnect().remove();
+                // ゲスト切断時にホストの presence を消してはいけない。
+                // 自分自身の presence だけを削除する。
                 roomRef.child('presence/guest').onDisconnect().remove();
 
                 roomRef.child('guest').set({ name: playerName, rate: playerRate, ready: true });
@@ -2405,6 +2441,7 @@
         }).finally(() => {
             currentRef.child('presence').off();
             currentRef.child('events').off();
+            currentRef.child('syncState').off();
             currentRef.off();
             if (roomRef === currentRef) { roomRef = null; currentRoomCode = null; }
             isCleaningUpRoom = false;
@@ -2413,6 +2450,12 @@
 
     function setupRoomListeners() {
         if (!roomRef) return;
+
+        // 二重登録されると同じイベントを複数回適用してしまうため、既存リスナーを必ず解除してから登録する。
+        roomRef.off('value');
+        roomRef.child('presence').off();
+        roomRef.child('events').off();
+        roomRef.child('syncState').off();
 
         roomRef.on('value', snap => {
             if (isCleaningUpRoom) return;
@@ -2456,22 +2499,97 @@
             }
         });
 
+        // イベントとは別に最新盤面のスナップショットを購読する。
+        // これにより child_added を一時的に取りこぼしても、最新状態へ自動復旧できる。
+        roomRef.child('syncState').on('value', snap => {
+            const state = snap.val();
+            if (!state || state.by === onlinePlayerRole || currentBattleMode !== 'online') return;
+            applyIncomingNetworkSyncState(state);
+        });
+
         roomRef.child('events').on('child_added', snap => {
+            const eventKey = snap.key;
             const ev = snap.val();
             if (!ev || ev.by === onlinePlayerRole) return;
-            // タイムスタンプ判定の許容幅を広く設定して誤破棄を根絶
-            if (ev.timestamp && ev.timestamp < matchStartTime - 30000) return;
 
+            // setupRoomListeners の再登録や再接続時にも同じイベントを二重適用しない。
+            if (eventKey && processedNetworkEventKeys.has(eventKey)) return;
+            if (eventKey) {
+                processedNetworkEventKeys.add(eventKey);
+                if (processedNetworkEventKeys.size > 400) {
+                    const oldest = processedNetworkEventKeys.values().next().value;
+                    processedNetworkEventKeys.delete(oldest);
+                }
+            }
+
+            // 旧実装の「端末ローカル時計で30秒以上古いイベントを破棄」は廃止。
+            // PC/スマホ間の時計ずれで正常な配置イベントまで消える原因になっていた。
             handleIncomingNetworkEvent(ev);
         });
     }
 
+    function createNetworkSyncState(seq) {
+        return {
+            by: onlinePlayerRole,
+            seq: Number(seq) || 0,
+            boardCells,
+            burnedCells,
+            playerScore,
+            opponentScore,
+            bossRemaining,
+            roundNumber,
+            turnHalf,
+            serverUpdatedAt: firebase.database.ServerValue.TIMESTAMP
+        };
+    }
+
+    function publishNetworkSyncState(seq) {
+        if (currentBattleMode !== 'online' || !roomRef) return Promise.resolve();
+        return roomRef.child('syncState').set(createNetworkSyncState(seq)).catch(err => {
+            console.error('Firebase syncState write error:', err);
+        });
+    }
+
+    function applyIncomingNetworkSyncState(state) {
+        const seq = Math.max(0, Number(state.seq) || 0);
+        if (seq && seq < lastRemoteSyncSeq) return;
+        if (seq) lastRemoteSyncSeq = seq;
+
+        // 送信者視点 player/opponent を受信者視点へ反転して復元する。
+        boardCells = normalizeNetBoard(state.boardCells);
+        burnedCells = normalizeNetBurned(state.burnedCells);
+        playerScore = Number(state.opponentScore) || 0;
+        opponentScore = Number(state.playerScore) || 0;
+        bossRemaining = Math.max(0, Math.min(3, Number(state.bossRemaining) || 0));
+
+        calculateConnectedGroups();
+        updateBattleStatusHeader();
+        updatePhaseUI();
+        renderBattleBoard();
+    }
+
     function sendNetworkEvent(eventPayload) {
         if (currentBattleMode !== 'online' || !roomRef) return;
-        eventPayload.by = onlinePlayerRole;
-        eventPayload.timestamp = Date.now();
-        roomRef.child('events').push(eventPayload);
-        roomRef.child('updatedAt').set(Date.now());
+
+        const seq = ++networkEventSeq;
+        const payload = {
+            ...eventPayload,
+            by: onlinePlayerRole,
+            seq,
+            // Firebase サーバー時刻を使用し、端末時計差を通信判定に使わない。
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        const evRef = roomRef.child('events').push();
+        evRef.set(payload).then(() => {
+            // イベント確定後に最新盤面を保存。受信側はイベント欠落時もここから復旧できる。
+            return publishNetworkSyncState(seq);
+        }).then(() => {
+            if (roomRef) return roomRef.child('updatedAt').set(firebase.database.ServerValue.TIMESTAMP);
+        }).catch(err => {
+            console.error('Firebase event write error:', err);
+            showToast("⚠ 通信送信に失敗しました。接続状態を確認してください");
+        });
     }
 
     function normalizeNetBoard(src) {
@@ -2499,7 +2617,10 @@
                 shieldActive: !!c.shieldActive, shieldTurns: num(c.shieldTurns, 9),
                 bonusPower: num(c.bonusPower, 99), powerTurns: num(c.powerTurns, 9),
                 debuffPower: num(c.debuffPower, 99), debuffTurns: num(c.debuffTurns, 9),
-                tempDirs: DIRS.filter(d => Object.values(c.tempDirs || {}).includes(d))
+                tempDirs: DIRS.filter(d => Object.values(c.tempDirs || {}).includes(d)),
+                oneWayDir: DIRS.includes(c.oneWayDir) ? c.oneWayDir : null,
+                oneWayTurns: num(c.oneWayTurns, 9),
+                oneWayFresh: !!c.oneWayFresh
             };
         }
         return out;
@@ -2528,13 +2649,15 @@
 
     function handleIncomingNetworkEvent(ev) {
         if (ev.type === 'place') {
-            if (opponentHand.length) opponentHand.shift();
-            if (opponentDrawPile.length) opponentHand.push(opponentDrawPile.shift());
-            const p = ALL_PIECES_DATA.find(x => x.id === ev.pieceId);
-            if (p) {
-                boardCells[ev.cellIndex] = {
+            const cellIndex = Number(ev.cellIndex);
+            const p = ALL_PIECES_DATA.find(x => x.id === Number(ev.pieceId));
+            const incomingDirs = Array.isArray(ev.dir) ? ev.dir : Object.values(ev.dir || {});
+            if (p && Number.isInteger(cellIndex) && cellIndex >= 0 && cellIndex < 25) {
+                // opponentHand は相手の実デッキと同じ順番ではないため shift() で擬似消費しない。
+                // 盤面の正本は syncState が保証する。
+                boardCells[cellIndex] = {
                     ...p,
-                    dir: [...ev.dir],
+                    dir: incomingDirs.filter(d => ['up','right','down','left'].includes(d)),
                     owner: 'opponent',
                     currentPower: p.power,
                     instanceId: `net_opp_${Date.now()}`,
@@ -2544,7 +2667,10 @@
                     powerTurns: 0,
                     debuffPower: 0,
                     debuffTurns: 0,
-                    tempDirs: []
+                    tempDirs: [],
+                    oneWayDir: null,
+                    oneWayTurns: 0,
+                    oneWayFresh: false
                 };
                 playSound('place');
                 calculateConnectedGroups();
@@ -2556,7 +2682,6 @@
                 // 戦闘時の相手の合計攻撃力（currentPower）を獲得
                 const gained = ev.earnedPower !== undefined ? ev.earnedPower : pl.currentPower;
                 opponentScore += gained;
-                playerScore = Math.max(0, playerScore - pl.power);
                 setCellBurned(ev.cellIndex, 'player');
                 boardCells[ev.cellIndex] = null;
                 playSound('clash');
@@ -2573,7 +2698,7 @@
                 bossRemaining = Math.max(0, bossRemaining - 1);
                 boardCells[ev.cellIndex] = null;
                 playSound('defeat');
-                showToast(`⚠ 相手が中立ボス【${monster.name}】を討伐しました！`);
+                showToast(`⚠ 相手が中立ボス【${monster.name}】を討伐！（相手+${monster.power}点）`);
                 updateBattleStatusHeader();
                 renderBattleBoard();
                 checkBattleEndCondition();
@@ -2615,6 +2740,18 @@
                 myPiece.debuffTurns = 2;
                 playSound('debuff');
                 showToast(`🧪 相手が【弱体スプレー】を使用！あなたの【${myPiece.name}】が-5弱体化！（2T継続）`);
+                calculateConnectedGroups();
+                renderBattleBoard();
+            }
+        } else if (ev.type === 'item_oneway') {
+            const myPiece = boardCells[ev.cellIndex];
+            const dir = ['up','right','down','left'].includes(ev.direction) ? ev.direction : null;
+            if (myPiece && myPiece.owner === 'player' && dir) {
+                myPiece.oneWayDir = dir;
+                myPiece.oneWayTurns = 3;
+                myPiece.oneWayFresh = true;
+                playSound('debuff');
+                showToast(`🚧 相手が【一方通行】を使用！あなたの【${myPiece.name}】は3ターン「${getDirectionGlyphs([dir])}」方向のみになります`);
                 calculateConnectedGroups();
                 renderBattleBoard();
             }
@@ -2845,6 +2982,9 @@
         previewPlacementIndex = null;
         selectedQuickItem = null;
         pendingItemConfirmation = null;
+        networkEventSeq = 0;
+        lastRemoteSyncSeq = 0;
+        processedNetworkEventKeys.clear();
 
         playerItemStocks = { ...DEFAULT_ITEM_STOCKS };
         opponentItemStocks = { ...DEFAULT_ITEM_STOCKS };
@@ -3107,7 +3247,10 @@
                         powerTurns: 0,
                         debuffPower: 0,
                         debuffTurns: 0,
-                        tempDirs: []
+                        tempDirs: [],
+                        oneWayDir: null,
+                        oneWayTurns: 0,
+                    oneWayFresh: false
                     };
                     
                     triggerPhaseCutin('standby', '第2ターン開始', '攻撃解禁！', '⚔️');
@@ -3209,6 +3352,7 @@
         // 相手ターン開始時：相手具材のバフ・デバフのカウント更新
         boardCells.forEach(cell => {
             if (cell && cell.owner === 'opponent') {
+                tickOneWayEffect(cell);
                 if (cell.debuffTurns > 0) {
                     cell.debuffTurns--;
                     if (cell.debuffTurns <= 0) cell.debuffPower = 0;
@@ -3271,6 +3415,7 @@
         // プレイヤー手番開始時：プレイヤー具材のバフ・デバフのカウント更新
         boardCells.forEach(cell => {
             if (cell && cell.owner === 'player') {
+                tickOneWayEffect(cell);
                 if (cell.debuffTurns > 0) {
                     cell.debuffTurns--;
                     if (cell.debuffTurns <= 0) cell.debuffPower = 0;
@@ -3303,120 +3448,432 @@
         updateUndoButtonState();
     }
 
+    function cpuGetNeighbors(index) {
+        const out = [];
+        if (index % 5 !== 0) out.push(index - 1);
+        if (index % 5 !== 4) out.push(index + 1);
+        if (index >= 5) out.push(index - 5);
+        if (index < 20) out.push(index + 5);
+        return out;
+    }
+
+    function cpuDirectionBetween(a, b) {
+        const dx = (b % 5) - (a % 5);
+        const dy = Math.floor(b / 5) - Math.floor(a / 5);
+        if (dx === 1 && dy === 0) return 'right';
+        if (dx === -1 && dy === 0) return 'left';
+        if (dy === 1 && dx === 0) return 'down';
+        if (dy === -1 && dx === 0) return 'up';
+        return null;
+    }
+
+    function cpuOppositeDirection(dir) {
+        return { right: 'left', left: 'right', up: 'down', down: 'up' }[dir] || null;
+    }
+
+    function cpuCanConnectPieceAt(piece, cellIndex, otherCellIndex) {
+        const other = boardCells[otherCellIndex];
+        if (!piece || !other || other.type === 'monster' || other.owner !== 'opponent') return false;
+        const dir = cpuDirectionBetween(cellIndex, otherCellIndex);
+        if (!dir) return false;
+        const opposite = cpuOppositeDirection(dir);
+        return piece.dir.includes(dir) && getEffectiveDirs(other).includes(opposite);
+    }
+
+    function cpuCanThreatenFromPiece(piece, cellIndex, targetIndex) {
+        const target = boardCells[targetIndex];
+        if (!piece || !target || target.owner === 'opponent') return false;
+        const dir = cpuDirectionBetween(cellIndex, targetIndex);
+        if (!dir || !piece.dir.includes(dir)) return false;
+        if (target.type === 'monster') return true;
+        const opposite = cpuOppositeDirection(dir);
+        return getEffectiveDirs(target).includes(opposite);
+    }
+
+    function cpuOwnGroupInfo(startIndex) {
+        const start = boardCells[startIndex];
+        if (!start || start.owner !== 'opponent' || start.type === 'monster') return { size: 0, power: 0, cells: [] };
+        const q = [startIndex];
+        const seen = new Set([startIndex]);
+        const cells = [];
+        let power = 0;
+        while (q.length) {
+            const cur = q.shift();
+            const c = boardCells[cur];
+            if (!c || c.owner !== 'opponent' || c.type === 'monster') continue;
+            cells.push(cur);
+            power += Math.max(0, (c.power || 0) + (c.bonusPower || 0) - (c.debuffPower || 0));
+            for (const n of cpuGetNeighbors(cur)) {
+                if (seen.has(n)) continue;
+                const nc = boardCells[n];
+                if (!nc || nc.owner !== 'opponent' || nc.type === 'monster') continue;
+                if (areFacing(cur, n)) {
+                    seen.add(n);
+                    q.push(n);
+                }
+            }
+        }
+        return { size: cells.length, power, cells };
+    }
+
+    function cpuEvaluatePlacement(pieceId, cellIndex) {
+        const piece = ALL_PIECES_DATA.find(p => p.id === pieceId);
+        if (!piece || boardCells[cellIndex] || burnedCells[cellIndex]) return -Infinity;
+
+        let score = piece.power * 2.2 + piece.dir.length * 1.2;
+        const neighbors = cpuGetNeighbors(cellIndex);
+        let ownAdj = 0, links = 0, threats = 0, danger = 0, blocks = 0;
+
+        for (const n of neighbors) {
+            const other = boardCells[n];
+            if (!other) continue;
+            if (other.owner === 'opponent') {
+                ownAdj++;
+                if (cpuCanConnectPieceAt(piece, cellIndex, n)) links++;
+            } else if (other.owner === 'player' || other.owner === 'neutral') {
+                if (cpuCanThreatenFromPiece(piece, cellIndex, n)) threats++;
+                if (other.owner === 'player' && other.currentPower >= piece.power) danger++;
+            }
+        }
+
+        // 仮置きして実際の連結規模を評価
+        const old = boardCells[cellIndex];
+        boardCells[cellIndex] = {
+            ...piece,
+            dir: [...piece.dir], owner: 'opponent', currentPower: piece.power,
+            shieldActive: false, shieldTurns: 0, bonusPower: 0, powerTurns: 0,
+            debuffPower: 0, debuffTurns: 0, tempDirs: []
+        };
+        const group = cpuOwnGroupInfo(cellIndex);
+        boardCells[cellIndex] = old;
+
+        // 相手が次に置きたそうな中央・連結点を塞ぐ価値
+        if (neighbors.some(n => boardCells[n]?.owner === 'player')) blocks += 1;
+        if ([6,7,8,11,12,13,16,17,18].includes(cellIndex)) score += 1.8;
+        if (cellIndex === 12) score += 1.5;
+
+        score += links * 8.5;
+        score += Math.max(0, group.size - 1) * 6.5;
+        score += group.power * 0.65;
+        score += threats * (roundNumber === 1 ? 2.5 : 6.5);
+        score += blocks * 2.5;
+        score -= danger * 2.5;
+
+        // 松は先を見越した「次の連結余地」も評価
+        if (cpuDifficulty === 'matsu') {
+            let futureOpen = 0;
+            for (const n of neighbors) {
+                if (!boardCells[n] && !burnedCells[n]) futureOpen++;
+            }
+            score += futureOpen * 0.9;
+            if (links >= 2) score += 5;
+        }
+
+        return score;
+    }
+
+    function cpuChoosePlacement() {
+        const emptyCells = [];
+        for (let i = 0; i < 25; i++) if (!boardCells[i] && !burnedCells[i]) emptyCells.push(i);
+        if (!emptyCells.length || !opponentHand.length) return null;
+
+        const candidates = [];
+        opponentHand.forEach((pieceId, handIdx) => {
+            emptyCells.forEach(cellIndex => {
+                let score = cpuEvaluatePlacement(pieceId, cellIndex);
+                // 難易度ごとの思考のブレ
+                if (cpuDifficulty === 'ume') score += Math.random() * 18 - 9;
+                else if (cpuDifficulty === 'take') score += Math.random() * 5 - 2.5;
+                else score += Math.random() * 1.2 - 0.6;
+                candidates.push({ pieceId, handIdx, cellIndex, score });
+            });
+        });
+        candidates.sort((a,b) => b.score - a.score);
+
+        if (cpuDifficulty === 'ume') {
+            const pool = candidates.slice(0, Math.min(12, candidates.length));
+            return pool[Math.floor(Math.random() * pool.length)] || candidates[0];
+        }
+        if (cpuDifficulty === 'take') {
+            const pool = candidates.slice(0, Math.min(4, candidates.length));
+            return pool[Math.floor(Math.random() * Math.min(2, pool.length))] || candidates[0];
+        }
+        return candidates[0];
+    }
+
+    function cpuListAttacks() {
+        calculateConnectedGroups();
+        const attacks = [];
+        for (let i = 0; i < 25; i++) {
+            const attacker = boardCells[i];
+            if (!attacker || attacker.owner !== 'opponent' || attacker.type === 'monster') continue;
+            for (const n of cpuGetNeighbors(i)) {
+                const target = boardCells[n];
+                if (!target || (target.owner !== 'player' && target.owner !== 'neutral') || target.shieldActive) continue;
+                if (!canStrike(i, n) || attacker.currentPower <= target.currentPower) continue;
+
+                let score = target.owner === 'player'
+                    ? target.currentPower * 2.4 + target.power * 1.6
+                    : target.power * 2.8 + (bossRemaining === 1 ? 12 : 0);
+                score += Math.max(0, attacker.currentPower - target.currentPower) * 0.25;
+                if (target.owner === 'player' && getEffectiveDirs(target).length >= 3) score += 3;
+                attacks.push({ from: i, to: n, target, attacker, score });
+            }
+        }
+        attacks.sort((a,b) => b.score - a.score);
+        return attacks;
+    }
+
+    function cpuTryUseSmartItem() {
+        if (cpuDifficulty === 'ume') return false;
+        calculateConnectedGroups();
+
+        // 1) パワーUPで即撃破可能になるなら最優先
+        if (opponentItemStocks.powerup > 0) {
+            let best = null;
+            for (let i = 0; i < 25; i++) {
+                const c = boardCells[i];
+                if (!c || c.owner !== 'opponent' || c.type === 'monster') continue;
+                for (const n of cpuGetNeighbors(i)) {
+                    const t = boardCells[n];
+                    if (!t || (t.owner !== 'player' && t.owner !== 'neutral') || t.shieldActive || !canStrike(i,n)) continue;
+                    if (c.currentPower <= t.currentPower && c.currentPower + 4 > t.currentPower) {
+                        const value = (t.owner === 'player' ? t.currentPower * 2 : t.power * 2) + t.power;
+                        if (!best || value > best.value) best = { index: i, value };
+                    }
+                }
+            }
+            if (best && (cpuDifficulty === 'matsu' || Math.random() < 0.75)) {
+                const c = boardCells[best.index];
+                opponentItemStocks.powerup--;
+                c.bonusPower = (c.bonusPower || 0) + 4;
+                c.powerTurns = 1;
+                playSound('item');
+                showToast(`⚡ CPUが【${c.name}】にパワーUPを使用！`);
+                calculateConnectedGroups();
+                renderBattleBoard();
+                return true;
+            }
+        }
+
+        // 2) 弱体化で即撃破ラインを作る
+        if (opponentItemStocks.debuff > 0) {
+            let best = null;
+            for (let tIdx = 0; tIdx < 25; tIdx++) {
+                const t = boardCells[tIdx];
+                if (!t || t.owner !== 'player' || t.shieldActive) continue;
+                for (const aIdx of cpuGetNeighbors(tIdx)) {
+                    const a = boardCells[aIdx];
+                    if (!a || a.owner !== 'opponent' || !canStrike(aIdx, tIdx)) continue;
+                    if (a.currentPower <= t.currentPower && a.currentPower > Math.max(0, t.currentPower - 5)) {
+                        const value = t.currentPower * 2 + t.power;
+                        if (!best || value > best.value) best = { index: tIdx, value };
+                    }
+                }
+            }
+            if (best && (cpuDifficulty === 'matsu' || Math.random() < 0.65)) {
+                const t = boardCells[best.index];
+                opponentItemStocks.debuff--;
+                t.debuffPower = (t.debuffPower || 0) + 5;
+                t.debuffTurns = 2;
+                playSound('debuff');
+                showToast(`🧪 CPUがあなたの【${t.name}】に弱体スプレーを使用！`);
+                calculateConnectedGroups();
+                renderBattleBoard();
+                return true;
+            }
+        }
+
+        // 3) 一方通行：相手の強い連結駒を3ターン封鎖（竹・松）
+        if (opponentItemStocks.oneway > 0) {
+            let best = null;
+            for (let i = 0; i < 25; i++) {
+                const t = boardCells[i];
+                if (!t || t.owner !== 'player' || t.type === 'monster' || (t.oneWayTurns || 0) > 0) continue;
+                const dirs = getEffectiveDirs(t);
+                if (dirs.length < 2) continue;
+                for (const keepDir of ['up','right','down','left']) {
+                    let blocks = 0;
+                    let value = t.currentPower + dirs.length * 4;
+                    for (const n of cpuGetNeighbors(i)) {
+                        const d = cpuDirectionBetween(i, n);
+                        if (!d || d === keepDir) continue;
+                        const other = boardCells[n];
+                        if (other && (other.owner === 'player' || other.owner === 'opponent' || other.type === 'monster') && canStrike(i, n)) blocks++;
+                    }
+                    value += blocks * 8;
+                    if (!dirs.includes(keepDir)) value += 3;
+                    if (!best || value > best.value) best = { index: i, dir: keepDir, value };
+                }
+            }
+            const threshold = cpuDifficulty === 'matsu' ? 13 : 20;
+            if (best && best.value >= threshold && (cpuDifficulty === 'matsu' || Math.random() < 0.55)) {
+                const t = boardCells[best.index];
+                opponentItemStocks.oneway--;
+                t.oneWayDir = best.dir;
+                t.oneWayTurns = 3;
+                t.oneWayFresh = true;
+                playSound('debuff');
+                showToast(`🚧 CPUがあなたの【${t.name}】を一方通行に！3ターン「${getDirectionGlyphs([best.dir])}」方向のみ`);
+                calculateConnectedGroups();
+                renderBattleBoard();
+                return true;
+            }
+        }
+
+        if (cpuDifficulty !== 'matsu') return false;
+
+        // 4) 松：危険な高価値駒をシールド
+        if (opponentItemStocks.shield > 0) {
+            let best = null;
+            for (let i = 0; i < 25; i++) {
+                const c = boardCells[i];
+                if (!c || c.owner !== 'opponent' || c.type === 'monster' || c.shieldActive) continue;
+                let threatened = false;
+                for (const n of cpuGetNeighbors(i)) {
+                    const p = boardCells[n];
+                    if (p && p.owner === 'player' && canStrike(n, i) && p.currentPower > c.currentPower) threatened = true;
+                }
+                if (threatened) {
+                    const value = c.currentPower + c.power * 2;
+                    if (!best || value > best.value) best = { index: i, value };
+                }
+            }
+            if (best) {
+                const c = boardCells[best.index];
+                opponentItemStocks.shield--;
+                c.shieldActive = true;
+                c.shieldTurns = 1;
+                playSound('item');
+                showToast(`🛡 CPUが【${c.name}】にシールドを展開！`);
+                renderBattleBoard();
+                return true;
+            }
+        }
+
+        // 5) 松：方向付与で連結または攻撃経路を生成
+        if (opponentItemStocks.direction > 0) {
+            let best = null;
+            for (let i = 0; i < 25; i++) {
+                const c = boardCells[i];
+                if (!c || c.owner !== 'opponent' || c.type === 'monster') continue;
+                for (const n of cpuGetNeighbors(i)) {
+                    const dir = cpuDirectionBetween(i, n);
+                    if (!dir || getEffectiveDirs(c).includes(dir)) continue;
+                    const other = boardCells[n];
+                    let value = 0;
+                    if (other?.owner === 'opponent') {
+                        const opposite = cpuOppositeDirection(dir);
+                        if (getEffectiveDirs(other).includes(opposite)) value = 8 + other.currentPower;
+                    } else if (other && (other.owner === 'player' || other.owner === 'neutral')) {
+                        if (other.type === 'monster' || getEffectiveDirs(other).includes(cpuOppositeDirection(dir))) value = 5 + other.currentPower * 0.5;
+                    }
+                    if (value > 0 && (!best || value > best.value)) best = { index: i, dir, value };
+                }
+            }
+            if (best) {
+                const c = boardCells[best.index];
+                opponentItemStocks.direction--;
+                c.dir.push(best.dir);
+                if (!c.tempDirs) c.tempDirs = [];
+                c.tempDirs.push(best.dir);
+                playSound('item');
+                showToast(`🧭 CPUが【${c.name}】へ方向付与！`);
+                calculateConnectedGroups();
+                renderBattleBoard();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function cpuPerformAttack(chosen) {
+        if (!chosen) return;
+        const target = boardCells[chosen.to];
+        if (!target) return;
+        if (target.owner === 'player') {
+            const gained = target.currentPower;
+            opponentScore += gained;
+            setCellBurned(chosen.to, 'opponent');
+            boardCells[chosen.to] = null;
+            playSound('clash');
+            showToast(`⚠️ CPUがあなたの【${target.name}】を撃破！（CPU+${gained}点）`);
+        } else {
+            opponentScore += target.power;
+            bossRemaining = Math.max(0, bossRemaining - 1);
+            boardCells[chosen.to] = null;
+            playSound('defeat');
+            showToast(`⚠️ CPUが中立ボス【${target.name}】を討伐！（CPU+${target.power}点）`);
+        }
+        calculateConnectedGroups();
+        updateBattleStatusHeader();
+        renderBattleBoard();
+        checkBattleEndCondition();
+    }
+
     function executeCpuTurn() {
         if (battleOver || isPlayerTurn) return;
 
         if (currentPhase === 'standby') {
             later(() => {
-                let emptyCells = [];
-                for(let i=0; i<25; i++) {
-                    if (!boardCells[i] && !burnedCells[i]) emptyCells.push(i);
-                }
-                
-                if (emptyCells.length > 0 && opponentHand.length > 0) {
-                    let targetCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-                    
-                    if (cpuDifficulty === 'take' || cpuDifficulty === 'matsu') {
-                        let adjCells = emptyCells.filter(c => {
-                            let isAdj = false;
-                            [c-1, c+1, c-5, c+5].forEach(n => {
-                                if(boardCells[n] && boardCells[n].owner === 'opponent') isAdj = true;
-                            });
-                            return isAdj;
-                        });
-                        if(adjCells.length > 0) targetCell = adjCells[Math.floor(Math.random() * adjCells.length)];
-                    }
-
-                    let handIdx = Math.floor(Math.random() * opponentHand.length);
-                    let pieceId = opponentHand.splice(handIdx, 1)[0];
+                const choice = cpuChoosePlacement();
+                if (choice) {
+                    const pieceId = opponentHand.splice(choice.handIdx, 1)[0];
                     if (opponentDrawPile.length > 0) opponentHand.push(opponentDrawPile.shift());
-                    
-                    let piece = ALL_PIECES_DATA.find(p => p.id === pieceId);
-                    
-                    boardCells[targetCell] = {
-                        ...piece,
-                        dir: [...piece.dir],
-                        owner: 'opponent',
-                        currentPower: piece.power,
-                        shieldActive: false,
-                        shieldTurns: 0,
-                        bonusPower: 0,
-                        powerTurns: 0,
-                        debuffPower: 0,
-                        debuffTurns: 0,
-                        tempDirs: []
-                    };
-                    playSound('place');
-                    calculateConnectedGroups();
-                    renderBattleBoard();
+                    const piece = ALL_PIECES_DATA.find(p => p.id === pieceId);
+                    if (piece) {
+                        boardCells[choice.cellIndex] = {
+                            ...piece,
+                            dir: [...piece.dir],
+                            owner: 'opponent',
+                            currentPower: piece.power,
+                            shieldActive: false,
+                            shieldTurns: 0,
+                            bonusPower: 0,
+                            powerTurns: 0,
+                            debuffPower: 0,
+                            debuffTurns: 0,
+                            tempDirs: [],
+                            oneWayDir: null,
+                            oneWayTurns: 0,
+                    oneWayFresh: false
+                        };
+                        playSound('place');
+                        calculateConnectedGroups();
+                        renderBattleBoard();
+                    }
                 }
-                
+
+                // 竹・松は盤面状況に応じて道具を1つ使用
+                if (cpuDifficulty !== 'ume') cpuTryUseSmartItem();
+
                 later(() => {
                     currentPhase = 'attack';
                     triggerPhaseCutin('battle', '相手のアタック', '', '⚔️');
                     updatePhaseUI();
                     renderBattleBoard();
-                    later(executeCpuTurn, 1500);
-                }, 1000);
-            }, 1000);
+                    later(executeCpuTurn, 1200);
+                }, 800);
+            }, 800);
         } else if (currentPhase === 'attack') {
             later(() => {
                 if (!isAttackRestricted()) {
-                    let attacks = [];
-                    for(let i=0; i<25; i++) {
-                        let oppPiece = boardCells[i];
-                        if (oppPiece && oppPiece.owner === 'opponent') {
-                            let neighbors = [];
-                            if (i % 5 !== 0) neighbors.push(i - 1);
-                            if (i % 5 !== 4) neighbors.push(i + 1);
-                            if (i >= 5) neighbors.push(i - 5);
-                            if (i < 20) neighbors.push(i + 5);
-                            
-                            neighbors.forEach(n => {
-                                let target = boardCells[n];
-                                if (target && (target.owner === 'player' || target.owner === 'neutral') && !target.shieldActive) {
-                                    if (canStrike(i, n) && oppPiece.currentPower > target.currentPower) {
-                                        attacks.push({ from: i, to: n, target: target });
-                                    }
-                                }
-                            });
-                        }
-                    }
-                    
+                    const attacks = cpuListAttacks();
                     if (attacks.length > 0) {
-                        let chosen = attacks[Math.floor(Math.random() * attacks.length)];
-                        let target = chosen.target;
-                        
-                        if (target.owner === 'player') {
-                            // 相手側への得点加算：戦闘時の合計攻撃力を獲得
-                            const gained = target.currentPower;
-                            opponentScore += gained;
-                            playerScore = Math.max(0, playerScore - target.power);
-                            setCellBurned(chosen.to, 'opponent');
-                            boardCells[chosen.to] = null;
-                            playSound('clash');
-                            showToast(`⚠️️ 相手があなたの【${target.name}】を撃破！（相手+${gained}点）`);
+                        let chosen;
+                        if (cpuDifficulty === 'ume') {
+                            chosen = attacks[Math.floor(Math.random() * attacks.length)];
+                        } else if (cpuDifficulty === 'take') {
+                            chosen = attacks[Math.floor(Math.random() * Math.min(2, attacks.length))];
                         } else {
-                            opponentScore += target.power;
-                            bossRemaining = Math.max(0, bossRemaining - 1);
-                            boardCells[chosen.to] = null;
-                            playSound('defeat');
-                            showToast(`⚠️ 相手が中立ボス【${target.name}】を討伐！`);
+                            chosen = attacks[0];
                         }
-                        
-                        calculateConnectedGroups();
-                        updateBattleStatusHeader();
-                        renderBattleBoard();
-                        checkBattleEndCondition();
+                        cpuPerformAttack(chosen);
                     }
                 }
-                
-                if (!battleOver) {
-                    later(() => {
-                        endOpponentTurn();
-                    }, 1000);
-                }
-            }, 1000);
+
+                if (!battleOver) later(() => endOpponentTurn(), 900);
+            }, 850);
         }
     }
 
@@ -3466,11 +3923,9 @@
                     showToast(`🛡️ 【${piece.name}】のシールドがボスの強襲を防ぎました！`);
                 } else {
                     if (piece.owner === 'player') {
-                        playerScore = Math.max(0, playerScore - piece.power);
                         // 中立ボスに倒された駒は再度デッキ（山札の底）へ戻る
                         if (piece.id) playerDrawPile.push(piece.id);
                     } else if (piece.owner === 'opponent') {
-                        opponentScore = Math.max(0, opponentScore - piece.power);
                         // 相手の駒もデッキへ戻る
                         if (piece.id) opponentDrawPile.push(piece.id);
                     }
@@ -3609,16 +4064,16 @@
                             <div class="power-diamond ${isPlayer ? 'diamond-player' : 'diamond-opponent'}">
                                 <span class="power-diamond-text">${piece.currentPower}</span>
                             </div>
-                            ${piece.dir.map(d => `<div class="dir-arrow dir-${d} ${isPlayer ? 'dir-player' : 'dir-opponent'} ${piece.tempDirs && piece.tempDirs.includes(d) ? 'dir-temp' : ''}"></div>`).join('')}
+                            ${getEffectiveDirs(piece).map(d => `<div class="dir-arrow dir-${d} ${isPlayer ? 'dir-player' : 'dir-opponent'} ${(piece.oneWayTurns || 0) > 0 ? 'dir-temp' : (piece.tempDirs && piece.tempDirs.includes(d) ? 'dir-temp' : '')}"></div>`).join('')}
                         </div>
                     `;
                 }
 
                 if (isPlayerTurn && !inputLocked) {
                     if (currentPhase === 'standby' && selectedQuickItem && piece.type !== 'monster') {
-                        if (selectedQuickItem === 'debuff' && piece.owner === 'opponent') {
+                        if ((selectedQuickItem === 'debuff' || selectedQuickItem === 'oneway') && piece.owner === 'opponent') {
                             cell.classList.add('item-target-debuff-candidate');
-                        } else if (selectedQuickItem !== 'debuff' && piece.owner === 'player') {
+                        } else if (selectedQuickItem !== 'debuff' && selectedQuickItem !== 'oneway' && piece.owner === 'player') {
                             cell.classList.add('item-target-candidate');
                         }
                     } else if (currentPhase === 'attack' && !hasAttackedThisTurn && !isAttackRestricted()) {
@@ -3727,11 +4182,11 @@
 
                 checkBattleEndCondition();
             } else if (cellData && selectedQuickItem) {
-                if (selectedQuickItem === 'debuff') {
+                if (selectedQuickItem === 'debuff' || selectedQuickItem === 'oneway') {
                     if (cellData.owner === 'opponent') {
-                        showItemConfirmModal(index, 'debuff');
+                        showItemConfirmModal(index, selectedQuickItem);
                     } else {
-                        showToast("⚠️ 弱体スプレーは相手の具材にのみ使用可能です");
+                        showToast(selectedQuickItem === 'oneway' ? "⚠️ 一方通行は相手の具材にのみ使用可能です" : "⚠️ 弱体スプレーは相手の具材にのみ使用可能です");
                     }
                 } else {
                     if (cellData.owner === 'player') {
@@ -3775,12 +4230,11 @@
                         // 敵駒粉砕：戦闘時の相手の合計攻撃力（currentPower）を獲得！
                         const gained = cellData.currentPower;
                         playerScore += gained;
-                        opponentScore = Math.max(0, opponentScore - cellData.power);
                         
                         setCellBurned(index, 'player');
                         boardCells[index] = null;
                         playSound('clash');
-                        showToast(`💥 相手の【${cellData.name}】を激突撃破！（相手の攻撃力+${gained}点を獲得！）`);
+                        showToast(`💥 相手の【${cellData.name}】を激突撃破！（連結込み攻撃力 ${gained}点を獲得！）`);
                         
                         if (currentBattleMode === 'online') sendNetworkEvent({ type: 'clash', cellIndex: index, earnedPower: gained });
 
@@ -3980,15 +4434,17 @@
             const btn = document.getElementById(
                 type === 'direction' ? 'quickItemDirBtn' : 
                 type === 'shield' ? 'quickItemShieldBtn' : 
-                type === 'powerup' ? 'quickItemPowerBtn' : 'quickItemDebuffBtn'
+                type === 'powerup' ? 'quickItemPowerBtn' :
+                type === 'debuff' ? 'quickItemDebuffBtn' : 'quickItemOneWayBtn'
             );
-            if (btn) btn.classList.add(type === 'debuff' ? 'active-debuff' : 'active');
+            if (btn) btn.classList.add((type === 'debuff' || type === 'oneway') ? 'active-debuff' : 'active');
 
             let desc = "";
             if (type === 'direction') desc = "【方向付与】味方の具材をタップ";
             if (type === 'shield') desc = "【シールド】味方の具材をタップ（1ターン無敵）";
             if (type === 'powerup') desc = "【パワーUP】味方の具材をタップ（1ターン+4）";
             if (type === 'debuff') desc = "【弱体スプレー】相手の具材をタップ（2ターン-5）";
+            if (type === 'oneway') desc = "【一方通行】相手の具材をタップ（3ターン・指定方向のみ）";
             
             document.getElementById('selectedCardBriefText').textContent = desc;
         }
@@ -4000,7 +4456,7 @@
         const cell = boardCells[index];
         playSound('click');
 
-        if (type === 'direction') {
+        if (type === 'direction' || type === 'oneway') {
             document.getElementById('directionPickModal').classList.remove('hidden');
             document.getElementById('directionPickModal').classList.add('flex');
             return;
@@ -4053,13 +4509,14 @@
         document.getElementById('directionPickModal').classList.add('hidden');
         
         const cell = boardCells[pendingItemConfirmation.index];
-        if (cell.dir.includes(dir)) {
+        const itemType = pendingItemConfirmation.type;
+        if (itemType === 'direction' && cell.dir.includes(dir)) {
             showToast("⚠ その具材は既にその方向の矢印を持っています");
             pendingItemConfirmation = null;
             return;
         }
 
-        applyItemEffect(pendingItemConfirmation.index, 'direction', dir);
+        applyItemEffect(pendingItemConfirmation.index, itemType, dir);
         pendingItemConfirmation = null;
     }
 
@@ -4081,7 +4538,7 @@
 
         playerItemStocks[type]--;
         updateItemStockUI();
-        playSound(type === 'debuff' ? 'debuff' : 'item');
+        playSound((type === 'debuff' || type === 'oneway') ? 'debuff' : 'item');
 
         if (type === 'direction' && extraData) {
             cell.dir.push(extraData);
@@ -4104,6 +4561,12 @@
             cell.debuffTurns = 2; // 2ターン継続
             if (currentBattleMode === 'online') sendNetworkEvent({ type: 'item_debuff', cellIndex: index });
             showToast(`🧪 相手の【${cell.name}】を弱体化させました（2ターン継続）`);
+        } else if (type === 'oneway' && extraData) {
+            cell.oneWayDir = extraData;
+            cell.oneWayTurns = 3;
+            cell.oneWayFresh = true;
+            if (currentBattleMode === 'online') sendNetworkEvent({ type: 'item_oneway', cellIndex: index, direction: extraData });
+            showToast(`🚧 相手の【${cell.name}】を一方通行にしました（3ターン「${getDirectionGlyphs([extraData])}」方向のみ）`);
         }
 
         selectedQuickItem = null;
@@ -4131,11 +4594,13 @@
         document.getElementById('itemStockShieldText').textContent = `残${d.shield}`;
         document.getElementById('itemStockPowerText').textContent = `残${d.powerup}`;
         document.getElementById('itemStockDebuffText').textContent = `残${d.debuff}`;
+        document.getElementById('itemStockOneWayText').textContent = `残${d.oneway}`;
 
         document.getElementById('quickItemDirBtn').disabled = d.direction <= 0;
         document.getElementById('quickItemShieldBtn').disabled = d.shield <= 0;
         document.getElementById('quickItemPowerBtn').disabled = d.powerup <= 0;
         document.getElementById('quickItemDebuffBtn').disabled = d.debuff <= 0;
+        document.getElementById('quickItemOneWayBtn').disabled = d.oneway <= 0;
     }
 
     function updateBattleStatusHeader() {
@@ -4235,7 +4700,7 @@
         document.getElementById('detailPieceStars').textContent = piece.stars;
         document.getElementById('detailPieceCost').textContent = piece.cost;
         document.getElementById('detailPiecePower').textContent = piece.power;
-        document.getElementById('detailPieceDirs').textContent = getDirectionGlyphs(piece.dir);
+        document.getElementById('detailPieceDirs').textContent = getDirectionGlyphs(getEffectiveDirs(piece)) + ((piece.oneWayTurns || 0) > 0 ? `（🚧一方通行 ${piece.oneWayTurns}T）` : '');
         document.getElementById('detailPieceDesc').textContent = piece.desc;
         
         document.getElementById('pieceDetailModal').classList.remove('hidden');
@@ -4304,9 +4769,9 @@
         } else if (currentRulePage === 2) {
             content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">2. 直交連結（出汁の道）</h3><p>矢印が正面から向き合うように具材を配置すると、連結が成立します。連結した具材グループは、全体のパワーが合算されて超強化されます！</p>`;
         } else if (currentRulePage === 3) {
-            content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">3. 激突とボス討伐</h3><p>アタックフェーズでは、矢印が向かい合っていて、かつ相手やボスのパワーを上回っている場合に攻撃可能です（1ターン1回のみ）。攻撃すると相手の駒を消し飛ばし、戦闘時の相手の合計攻撃力分のスコアを獲得できます。</p>`;
+            content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">3. 激突とボス討伐</h3><p>アタックフェーズでは、矢印が向かい合っていて、かつ相手やボスのパワーを上回っている場合に攻撃可能です（1ターン1回のみ）。<br><br><span class="text-rose-300 font-bold">相手の駒を撃破した場合</span>：撃破された駒の<strong>連結込みの戦闘時攻撃力</strong>と同じポイントを獲得します。<br><span class="text-purple-300 font-bold">中立ボスを撃破した場合</span>：そのボス自身が持つ<strong>ボスポイント</strong>を獲得します。<br><br>一度獲得したポイントは、駒が撃破されたりボスの強襲を受けても減少しません。</p>`;
         } else if (currentRulePage === 4) {
-            content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">4. 秘伝の道具と巻き戻し</h3><p>常設道具（方向付与・シールド・パワーUP・弱体スプレー）を駆使して戦況を有利に導きます。各道具には持続ターンがあり、ターンエンド前なら【⏪ 戻す】ボタンで操作を何度でも取り消せます。</p>`;
+            content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">4. 秘伝の道具と巻き戻し</h3><p>常設道具（方向付与・シールド・パワーUP・弱体スプレー・一方通行）を駆使して戦況を有利に導きます。【一方通行】は相手駒1つを3ターン、指定した1方向だけに制限します。各道具には持続ターンがあり、ターンエンド前なら【⏪ 戻す】ボタンで操作を何度でも取り消せます。</p>`;
         } else if (currentRulePage === 5) {
             content.innerHTML = `<h3 class="text-amber-300 font-bold mb-2">5. 天災（ボスの強襲）</h3><p>第3ターン、第6ターン...と3の倍数ターン終了時、盤面に残っているボスが無差別に3マスを強襲します。やられた駒は山札（デッキ）へと戻ります。シールドで防ぐか、素早く倒してしまいましょう。</p>`;
         }
